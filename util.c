@@ -4,8 +4,26 @@
 
 #define max(a,b) ((a)>(b) ? (a):(b))
 #define min(a,b) ((a)<(b) ? (a):(b))
+#define floor(a)   ((a)==(int)(a) ? a : (int)(a) - ((a)<0))
+#define ceiling(a) ((a)==(int)(a) ? a : (int)(a) + ((a)<0))
 
 Ptr* cpy_Ptr(Ptr* x, I n) { DECL_ARR(Ptr,xx,n); DDO(i,n)xx[i]=x[i]; return xx; }
+
+// Numbers
+// TODO: complex case
+Zv getZ(V v) { return *(Z)v->v; }
+Zv getSafeZ(V v) { // floor if real
+  switch (v->t) {
+    case Z_t: return *(Z)v->v;
+    case R_t: return floor(*(R)v->v);
+  }
+}
+Rv getR(V v) {
+  switch (v->t) {
+    case Z_t: return (Rv)*(Z)v->v;
+    case R_t: return *(R)v->v;
+  }
+}
 
 // List properties
 // TODO clean FOR_EACH
