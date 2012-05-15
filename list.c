@@ -37,6 +37,9 @@ D_F2(concat) {
   }
 }
 
+D_F2(select) { I i=*(Z)r->v; V v=list_at(l,i); del(l);del(r);return v; }
+D_D2(select) { return 2*!!(r->t&ARITH_t) + !!(l->t&LIST_t); }
+
 // EXPORT DEFINITIONS
 EXTERN_BUILTINS;
 void list_init() {
@@ -44,4 +47,7 @@ void list_init() {
   B_f2[';'] = &cross_f2;
 
   B_f2[','] = &concat_f2;
+
+  B_f2['}'] = &select_f2;
+  B_d2['}'] = &select_d2;
 }
