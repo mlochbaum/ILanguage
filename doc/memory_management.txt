@@ -1,0 +1,14 @@
+Memory is handled with a reference counting scheme.
+Complete handling rules are as follows:
+
+For small values, i.e. those which cannot contain other objects,
+the reference count will remain at one. These will be copied by
+value in all situations.
+
+Other values are initialized with a reference count of zero.
+Once the value is assigned to a name or placed in a structure,
+its reference count is incremented. "Deleting" such a variable
+decrements its reference count, and kills it if that is zero.
+Values with zero reference count will be appropriately deleted
+or reused by functions applied to them if their reference
+count is zero.

@@ -1,0 +1,4 @@
+Every function can be applied either in-place or normally.
+A normal application leaves the input values unmodified.
+An in-place application requires that its input values are freed or modified into the return value.
+The scanner chooses which one to use based on the reference count of the arguments.

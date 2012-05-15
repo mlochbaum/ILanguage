@@ -1,0 +1,28 @@
+This is the C source for an interpreter for the I language. The language is not fully specified as of this writing, so this source provides the current specification of I.
+
+This document assumes familiarity with the basic functionality of I.
+
+The goals of this implementation are as follows:
+Simplicity. The source should be small, as well as modular and extensible.
+Correctness. The source should be free of bugs and memory leaks.
+Speed. Execution should be fast for canonical operations with known types.
+
+
+
+The console is a simple REPL, implemented in main.c. Evaluation consists of several steps:
+
+
+Input (main.c): a string is read from the console.
+
+
+Scanning and parsing (parse.c, scan.c):
+
+Verification (verify.c): The string is first verified for matching parentheses and quotes. If these are incorrect, an error is printed immediately.
+
+Word formation, parsing, and evaluation take place concurrently. Each word goes through:
+Word formation (scan.c):
+The word type is determined by first letter. Then the word is scanned until it ends.
+Parsing (parse.c):
+The word is turned into an I value.
+Execution (apply.c):
+The word is applied to the stack.
