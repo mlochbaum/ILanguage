@@ -1,0 +1,66 @@
+Welcome to I! I is a language in the spirit of J and Lisp, which
+generalizes the array and functional capabilities of J to deal with a much
+broader variety of data structures.
+
+The following documentation is currently quite brief; I will expand on it
+in the next few days.
+
+After building I, you will have a simple (VERY simple) command-line
+interpreter, which accepts on-line-long commands.
+
+Every entity in I is an operation.
+Syntactically, every I operation is an infix function, which means that
+every one takes exactly two arguments.
+This doesn't prevent there from being one-argument functions, because the
+operation . (apply) applies the right argument to the left, so that
+the right argument has only one argument.
+
+    ORDER OF OPERATIONS
+Order of operations proceeds from left to right.
+Parentheses may be used to specify the order, and additionally whitespace
+functions to specify the order of precedence of an operator.
+For example, the expression
+b.-   +,-   b.q - 4*a*c . Q   /   2*a
+parenthesizes as
+((b.-)(+,-)(((b.q)-((4*a)*c)).Q))/(2*a)
+. I tend to think the first is JUST A LITTLE nicer to look at.
+Note that I used three spaces around +,- and / where two would have
+sufficed.
+Using excessive space around operations that are next to long bits of code
+is recommended for sanity;
+it's also extremely good practice to place the same amount of space on
+both sides of an operator.
+This is because EVERY token can be an operator. If you don't follow the
+rule, you will quickly confuse which tokens are operators and which are
+operands.
+
+    TOKENIZATION
+You may have guessed from the above that most tokens are single characters.
+Tokens may be of five types:
+  One alphabetic or ASCII special character.
+  A number, which starts with a numeric, contains numerics, and may contain
+    a decimal point with numerics immediately surrounding (no whitespace).
+    Numbers can also start with _, which indicates negation. (- is a
+    function and must be applied like 5.-).
+  A name, which is set off by single quotes and can contain any sequence
+    of characters which are not single quotes.
+  A string, set off by double quotes. Additional double quotes are escaped
+    by doubling, as in "The character "" is a double quote.".
+  A quasiquote, set off by backquotes and reserved for system functions.
+
+    OPERATIONS
+The available operations are detailed in the other files in this folder.
+Aside from the information here, the ONLY things you need to learn about
+I are which functions are built in and which data structures are defined.
+
+    MAPPING
+Every operation has a domain to which it can reasonably apply (for example,
+arithmetic functions can only apply to numbers).
+If an operation is applied to something outside of its domain, it attempts
+to map over the argument by a method defined as part of the data structure.
+For example, the mapping operation for a list is to apply the function to
+each element of the list and give the list of results.
+Data structures and their mapping methods are given in the relevant
+documentation files here.
+Functions are always given with their domain; if unstated, it defaults
+to true.
