@@ -101,8 +101,9 @@ V parse(Str* s) {
   W w = Wpop(stack); V v = w->v; FREE(w);
   (*s)++;
   if (stack->l) {
-    while (stack->l) FREE(Wpop(stack));
-    FREE(stack);
+    while (stack->l) {
+      W w = Wpop(stack); V v = w->v; FREE(w); del(v);
+    } FREE(stack); FREE(p); del(v);
     return Err("Incorrect number of functions");
   }
   FREE(p);
