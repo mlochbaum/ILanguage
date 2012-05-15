@@ -1,0 +1,18 @@
+A list is simply a list of objects. Inhomogeneous lists are supported,
+although there is implicit support for true homogeneous lists which store
+header data only once and do not require as much type-checking.
+All homogeneous lists are automatically represented in this way.
+Homogeneous lists can still form ragged arrays.
+
+Strings are (necessarily homogeneous) lists of characters.
+Therefore all operations here apply to them.
+
+The following functions do things with lists. Unless otherwise stated,
+their domain is everything.
+
+; monad: Make into a one-element list.
+; dyad: Combine into a two-element list.
+
+, monad: flatten into a list with no sublists.
+, dyad: if both arguments are lists, concatenate them. If only the left
+  argument is a list, append the right argument. Otherwise, same as ; .
