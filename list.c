@@ -25,11 +25,11 @@ D_F2(concat) {
         A a=l->v; I s=t_sizeof(t);
         Ptr v=malloc(s*c);
         memcpy(v, a->v, s*a->l); memcpy(v+s*a->l, r->v, s);
-        return makeA(t, c, ll+1, 0, v);
+        del(l); del(r); return makeA(t, c, ll+1, 0, v);
       } else {
         DECL_ARR(V,v,c);
         DFOR_EACH(i, (L)l->v) v[i]=list_at(l,i); v[ll]=r;
-        return makeL(t, c, ll+1, 0, v);
+        del(l); return makeL(t, c, ll+1, 0, v);
       }
     }
   } else {
