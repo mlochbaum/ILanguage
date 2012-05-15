@@ -1,0 +1,9 @@
+This is I, a language which generalizes constructs from J.
+
+See doc/ for documentation.
+
+To build,
+gcc main.c -o I
+.
+
+Then ./I is a command-line interpreter.
