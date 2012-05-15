@@ -79,7 +79,7 @@ Str Afmt(A a) {
   if (l==1) {
     GETSTRING(st, 0); len=1+strlen(st);
     s=realloc(s,len+3); strcpy(s+1,st); FREE(st);
-    strcpy(s+len,"., "); return s;
+    strcpy(s+len,".; "); return s;
   }
   I e=1; DDO(i, l) {
     GETSTRING(st, i); len=1+strlen(st);

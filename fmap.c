@@ -21,7 +21,7 @@ V fmap_LIST(V f, I n, V* x, I d, I l) {
     if (d&1<<j) { increfn(x[j], l); xi[j]=x[j]; }
     else { i[j]=LIST_O(x[j]); c[j]=LIST_C(x[j]); }
   }
-  DDO(k, n) {
+  DDO(k, l) {
     DO(j,n) if (!(d&1<<j)) {
       xi[j]=list_at(x[j],i[j]);
       i[j]++; if(i[j]==c[j]) i[j]=0;
