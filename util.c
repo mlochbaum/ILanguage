@@ -17,7 +17,7 @@ Ptr* cpy_Ptr(Ptr* x, I n) { DECL_ARR(Ptr,xx,n); DDO(i,n)xx[i]=x[i]; return xx; }
 // #define LIST_PROP(p) I list_##p(V v){ switch(v->t){ case L_t: return ((L)v->v)->p; case A_t: return ((A)v->v)->p; } }
 // LIST_PROP(c); LIST_PROP(l); LIST_PROP(o);
 #define LIST_C(l) ((L)l->v)->c
-#define LIST_L(l) ((L)l->v)->l
+#define LIST_L(ll) ((L)ll->v)->l
 #define LIST_O(l) ((L)l->v)->o
 #define LIST_T(l) ((L)l->v)->t
 
@@ -29,10 +29,15 @@ I t_sizeof(T t) { switch(t) {ON_TYPES(ALL,LINE)} }
 V arr_at(A a, I i) {
   return makeV(a->t, cpyval(a->t, ARR_PTR_AT(a, i)));
 }
-
 V list_at(V v, I i) {
   switch (v->t) {
     case L_t: return cpy(LIST_AT(((L)v->v), i));
     case A_t: return arr_at((A)v->v, i);
   }
+}
+
+// Find next power of two for length: or with
+// all down bitshifts, then add one.
+I next_pow_2(I l) {
+  I c=l-1; I i=32; while (i) { c |= c>>i; i>>=1; } return c+1;
 }

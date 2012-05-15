@@ -10,22 +10,20 @@ V apply(V f, I n, V* x) {
   if (f->t & CONST_t) { DDO(i,n) del(x[i]); return f; }
   V v; if (f->t & (O_t+L_t+A_t)) {
     switch (f->t) {LINE(O) LINE(L) LINE(A)}
-    return v;
-  }
-  I d = dom(f,n,x); if ((d+1)==1<<n) {
-    switch (f->t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
   } else {
-    return fmap(f,n,x,d);
+    I d = dom(f,n,x);
+    if ((d+1)==1<<n) switch (f->t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
+    else return fmap(f,n,x,d);
   }
   del(f); return v;
 #undef LINE
 }
 
 V apply_O(O o, I n, V* x) {
-  DDO(i, n) increfn(x[i], o->l);
-  DECL_ARR(V, xx, o->l);
-  DDO(j, o->l) xx[j]=apply(o->x[j], n, x);
-  return apply(o->f, o->l, xx);
+  DDO(i, n) increfn(x[i], o->l-1);
+  V xx[o->l];
+  DDO(j, o->l) xx[j]=apply(cpy(o->x[j]), n, x);
+  return apply(cpy(o->f), o->l, xx);
 }
 V apply_F(F f, I n, V* x) {
   switch (f->f->t) {

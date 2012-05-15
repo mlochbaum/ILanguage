@@ -44,9 +44,7 @@ V makeA(I t , I c , I l , I o , Ptr v) {
 
 // Custom make functions
 V wrapArrayList(T t, I l, Ptr v) {
-  // Find next power of two for length: or with
-  // all down bitshifts, then add one.
-  I c=l-1; I i=32; while (i) { c |= c>>i; i>>=1; } c++;
+  I c=next_pow_2(l);
   v=realloc(v, c*t_sizeof(t));
   return makeA(t, c, l, 0, v);
 }
@@ -55,8 +53,8 @@ Ptr toHomogeneousArray(T t, I l, V* v) {
   DDO(i,l) memcpy(c+i*s, v[i]->v, s); return (Ptr) c;
 }
 V wrapList(I l, V* v) {
-  I c=l-1; I i=32; while (i) { c |= c>>i; i>>=1; } c++;
-  T t=0; DO(i,l)t|=v[i]->t;
+  I c=next_pow_2(l);
+  T t=0; DDO(i,l)t|=v[i]->t;
   if(!(t&(t-1))){
     V r=wrapArrayList(t,l,toHomogeneousArray(t,l,v)); FREE(v); return r;
   }
@@ -113,9 +111,10 @@ DECL_OC
 
 void freeV(V v) {
   switch (v->t) {
-    case L_t: FREE(((L)v->v)->v); break;
     case O_t: FREE(((O)v->v)->x); break;
     case F_t: FREE(((F)v->v)->x); break;
+    case L_t: FREE(((L)v->v)->v); break;
+    case A_t: FREE(((A)v->v)->v); break;
   }
   FREE(v->v); FREE(v);
 }
