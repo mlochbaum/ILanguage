@@ -1,7 +1,6 @@
 #include <stdlib.h>
 
 /////////////// parseChar //////////////////
-I isBuiltin(B c) { return 1; } //TODO: test
 V parseChar(Str* s) { return newB(*(*s)++); }
 
 /////////////// parseNum ///////////////////

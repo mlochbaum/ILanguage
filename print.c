@@ -93,7 +93,6 @@ Str Afmt(A a) {
 }
 
 Str toString(V v) {
-  //TODO: the obvious.
   switch (v->t) {
     case E_t: return *(E)v->v;
     case B_t: return chartostr(*(B)v->v);
@@ -104,7 +103,7 @@ Str toString(V v) {
     case S_t: return quote('"', chartostr(*(S)v->v));
     case Z_t: return Zfmt(*(Z)v->v);
     case R_t: return Rfmt(*(R)v->v);
-    case C_t: return strdup("Dude, that's complex.");
+    case C_t: return strdup("Dude, that's complex."); //TODO
     case L_t: return Lfmt((L)v->v);
     case A_t: return Afmt((A)v->v);
   }
