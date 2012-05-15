@@ -40,6 +40,31 @@ D_F2(concat) {
 D_F2(select) { I i=*(Z)r->v; V v=list_at(l,i); del(l);del(r);return v; }
 D_D2(select) { return 2*!!(r->t&ARITH_t) + !!(l->t&LIST_t); }
 
+// TODO clean iota
+D_F1(iota) {
+  I ll=getCeilZ(l); del(l);
+  if (ll<0) {
+    ll=-ll; I c=next_pow_2(ll);
+    DECL_ARR(Zv,v,c); DDO(i,ll)v[i]=ll-1-i; return makeA(Z_t, c, ll, 0, v);
+  } else {
+    I c=next_pow_2(ll);
+    DECL_ARR(Zv,v,c); DDO(i,ll)v[i]=i; return makeA(Z_t, c, ll, 0, v);
+  }
+}
+D_F2(iota) {
+  switch (l->t) {
+    case Z_t: { Zv lz=getZ(l), ll=getCeilZ(r)-lz; del(l); del(r);
+                I s=sign(ll); ll*=s; I c=next_pow_2(ll); DECL_ARR(Zv,v,c);
+                DDO(i,ll)v[i]=lz+s*i; return makeA(Z_t, c, ll, 0, v);
+              }
+    case R_t: { Rv lr=getR(l), llr=getR(r)-lr; del(l); del(r);
+                I s=sign(llr), ll=ceiling(s*llr);
+                I c=next_pow_2(ll); DECL_ARR(Rv,v,c);
+                DDO(i,ll)v[i]=lr+(Rv)s*i; return makeA(R_t, c, ll, 0, v);
+              }
+  }
+}
+
 // EXPORT DEFINITIONS
 EXTERN_BUILTINS;
 void list_init() {
@@ -50,4 +75,7 @@ void list_init() {
 
   B_f2['}'] = &select_f2;
   B_d2['}'] = &select_d2;
+
+  B_f1['i'] = &iota_f1;
+  B_f2['i'] = &iota_f2;
 }
