@@ -50,7 +50,7 @@ V wrapArrayList(T t, I l, Ptr v) {
 }
 Ptr toHomogeneousArray(T t, I l, V* v) {
   I s=t_sizeof(t); char* c=MALLOC(l*s);
-  DDO(i,l) memcpy(c+i*s, v[i]->v, s); return (Ptr) c;
+  DDO(i,l) {memcpy(c+i*s, v[i]->v, s); del(v[i]);} return (Ptr) c;
 }
 V wrapList(I l, V* v) {
   I c=next_pow_2(l);

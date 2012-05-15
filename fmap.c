@@ -16,7 +16,7 @@ V fmap(V f, I n, V* x, I d) {
 
 V fmap_LIST(V f, I n, V* x, I d, I l) {
   DECL_ARR(V, v, l); I i[n], c[n]; V xi[n];
-  increfn(f,l);
+  increfn(f,l-1);
   DDO(j, n) {
     if (d&1<<j) { increfn(x[j], l); xi[j]=x[j]; }
     else { i[j]=LIST_O(x[j]); c[j]=LIST_C(x[j]); }

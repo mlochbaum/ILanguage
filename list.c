@@ -11,11 +11,12 @@ D_F2(concat) {
         I s = t_sizeof(t);
         Ptr v=malloc(s*c);
         memcpy(v, ((A)l->v)->v, s*ll); memcpy(v+s*ll, ((A)r->v)->v, s*lr);
-        return makeA(t, c, lv, 0, v);
+        del(l); del(r); return makeA(t, c, lv, 0, v);
       } else {
         DECL_ARR(V,v,c);
         DFOR_EACH(i, (L)l->v) v[i]=list_at(l,i);
         FOR_EACH(i, (L)r->v) v[i+ll]=list_at(r,i);
+        del(l); del(r); return makeL(t, c, lv, 0, v);
       }
     } else {
       T tl=LIST_T(l), t=tl|r->t;
