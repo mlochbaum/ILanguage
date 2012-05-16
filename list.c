@@ -37,8 +37,11 @@ D_F2(concat) {
   }
 }
 
-D_F2(select) { I i=*(Z)r->v; V v=list_at(l,i); del(l);del(r);return v; }
 D_D2(select) { return 2*!!(r->t&ARITH_t) + !!(l->t&LIST_t); }
+D_F2(select) {
+  I i=*(Z)r->v, ll=LIST_L(l); if (i<0 && i>-ll) i+=ll;
+  V v=list_at(l,i); del(l);del(r);return v;
+}
 
 // TODO clean iota
 D_F1(iota) {
