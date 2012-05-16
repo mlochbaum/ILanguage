@@ -3,19 +3,20 @@ D_D2(arith) { return (2 * !!(r->t&ARITH_t)) + !!(l->t&ARITH_t); }
 
 //Monads
 //TODO: complex case
-#define M_L(type, op) case type##_t: v=new##type(op *(type)l->v); break
 #define OP(op) { V v; switch (l->t) { M_L(Z,op); M_L(R,op); } del(l); return v; }
+#define M_L(type, op) case type##_t: v=new##type(op *(type)l->v); break
 D_F1(negate) OP(-);
 D_F1(reciprocal) OP(1/);
 #undef M_L
 #define M_L(type, op) case type##_t: v=new##type(op(*(type)l->v)); break
 D_F1(floor) OP(floor);
 D_F1(ceiling) OP(ceiling);
+#undef M_L
 #undef OP
 
 //Dyads
-#define D_L(type, op) case type##_t: v=new##type(get##type(l)op get##type(r)); break
 #define OP(op) { V v; switch (max(l->t,r->t)) { D_L(Z,op); D_L(R,op); } del(l);del(r); return v; }
+#define D_L(type, op) case type##_t: v=new##type(get##type(l)op get##type(r)); break
 D_F2(plus) OP(+);
 D_F2(minus) OP(-);
 D_F2(times) OP(*);
@@ -28,6 +29,7 @@ D_F2(mod) OP(MOD);
 D_F2(min) OP(min);
 D_F2(max) OP(max);
 #undef D_L
+#undef OP
 
 // EXPORT DEFINITIONS
 EXTERN_BUILTINS;

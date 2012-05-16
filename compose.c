@@ -16,6 +16,7 @@ D_F21(rbind) { return apply2(r,l,ll); }
 D_F21(compose) { return apply1(r, apply1(l,ll)); }
 D_F22(compose) { return apply2(r, apply1(l,ll), apply1(cpy(l),rr)); }
 
+EXTERN_BUILTINS;
 void compose_init() {
   B_f1['['] = B_f1[']'] = &left_f1;
   B_f2['['] = &left_f2;
