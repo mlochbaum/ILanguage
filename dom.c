@@ -4,9 +4,14 @@ I dom(V f, I n, V* x) {
 #undef LINE
 }
 
+I dom_F(F f, I n, V* x) {
+  switch (f->f->t) {
+    case B_t: return dom_FB(f, n, x);
+    //case Q_t: return apply_FQ(f, n, x);
+  }
+}
 // TODO
-I dom_F(V f, I n, V* x) { return dom_true(n); }
-I dom_N(V f, I n, V* x) { return dom_true(n); }
-I dom_Q(V f, I n, V* x) { return dom_true(n); }
+I dom_N(N f, I n, V* x) { return dom_true(n); }
+I dom_Q(Q f, I n, V* x) { return dom_true(n); }
 
 I dom_true(I n) { return (1<<n)-1; }

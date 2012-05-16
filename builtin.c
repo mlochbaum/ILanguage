@@ -39,7 +39,7 @@ typedef V (*F22)(V,V,V,V);  F22 B_f22[256];
   extern F21 B_f21[256]; \
   extern F22 B_f22[256]
 
-D_D1(true){return 1;}  D_D2(true){return 3;}
+D_D1(true){return 1;}   D_D2(true){return 3;}
 D_D11(true){return 1;}  D_D12(true){return 3;}
 D_D21(true){return 1;}  D_D22(true){return 3;}
 
@@ -106,4 +106,14 @@ V apply_FB(F f, I n, V* xx) {
 #define LINE(n) case n: return apply_B##n((B)f->f->v, f->x, xx);
   switch (10*f->l + n) { LINE(11) LINE(12) LINE(21) LINE(22) }
 #undef LINE
+}
+
+I dom_FB(F f, I n, V* xx) {
+  B b=f->f->v; V* x=f->x;
+  switch (10*f->l + n) {
+    case 11: return B_d11[*b](x[0], xx[0]);
+    case 12: return B_d12[*b](x[0], xx[0], xx[1]);
+    case 21: return B_d21[*b](x[0], x[1], xx[0]);
+    case 22: return B_d22[*b](x[0], x[1], xx[0], xx[1]);
+  }
 }
