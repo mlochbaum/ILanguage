@@ -38,14 +38,14 @@ V apply_Q(Q q, I n, V* x) {
   return Err("Dude, I have no clue what you're talking about.");
 }
 V apply_L(L l, I n, V* x) {
+  DDO(i,n) increfn(x[i],l->l-1);
   DECL_ARR(V, v, l->c);
-  I j=0; DFOR_EACH(i, l) { v[j] = apply(l->v[i], n, x); j++; }
+  I j=0; I i1; FOR_EACH(i, l) { v[j] = apply(cpy(l->v[i]), n, x); j++; }
   return wrapList(l->l, v);
 }
 V apply_A(A a, I n, V* x) {
-  DECL_ARR(V, v, a->c); DECL(V, f); f->t=a->t; f->r=1;
-  I j=0; DFOR_EACH(i, a) {
-    f->v = a->v+i; v[j] = apply(f, n, x); j++;
-  }
+  DDO(i,n) increfn(x[i],a->l-1);
+  DECL_ARR(V, v, a->c);
+  DO(i, a->l) v[i] = apply(arr_at(a,i), n, x);
   return wrapList(a->l, v);
 }
