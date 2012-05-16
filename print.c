@@ -78,7 +78,7 @@ Str Afmt(A a) {
   DECL(V,v); v->t=a->t;
   if (l==1) {
     GETSTRING(st, 0); len=1+strlen(st);
-    s=realloc(s,len+3); strcpy(s+1,st); FREE(st);
+    s=realloc(s,len+4); strcpy(s+1,st); FREE(st);
     strcpy(s+len,".; "); return s;
   }
   I e=1; DDO(i, l) {
