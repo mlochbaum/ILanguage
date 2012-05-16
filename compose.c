@@ -5,6 +5,8 @@ D_F2(right) { return r; }
 D_F2(apply) { return apply1(r,l); }
 D_F2(flip)  { return apply1(l,r); }
 D_F2(compose) { DECL_ARR(V,v,1); v[0]=l; return makeO(r,1,v); }
+D_F11(compose) { DECL_ARR(V,v,1); v[0]=ll; return makeO(l,1,v); }
+D_F12(compose) { DECL_ARR(V,v,2); v[0]=ll; v[1]=rr; return makeO(l,2,v); }
 
 D_F11(flip)  { return apply2(l,ll,ll); }
 D_F12(flip)  { return apply2(l,rr,ll); }
@@ -25,6 +27,8 @@ void compose_init() {
   B_f2['.'] = &apply_f2;
   B_f2['~'] = &flip_f2;
   B_f2['o'] = &compose_f2;
+  B_f11['o'] = &compose_f11;
+  B_f12['o'] = &compose_f12;
   B_f21['O'] = &compose_f21;
   B_f22['O'] = &compose_f22;
 
