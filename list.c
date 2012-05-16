@@ -65,6 +65,22 @@ D_F2(iota) {
   }
 }
 
+D_F1(identity_of) { del(l); return Err("Identity unknown"); }
+D_F11(reduce) {
+  if (!(ll->t&LIST_t)) { del(l); return ll; }
+  I len=LIST_L(ll);
+  if (len==0) { del(ll); return identity_of_f1(l); }
+  V v=list_at(ll,0);
+  increfn(l, len-2); I i=1; for(;i<len;i++) v=apply2(l,v,list_at(ll,i));
+  del(ll); return v;
+}
+D_F12(reduce) {
+  if (!(ll->t&LIST_t)) { return apply2(l,ll,rr); }
+  I len=LIST_L(ll);
+  increfn(l, len-1); I i=0; for(;i<len;i++) rr=apply2(l,rr,list_at(ll,i));
+  del(ll); return rr;
+}
+
 // EXPORT DEFINITIONS
 EXTERN_BUILTINS;
 void list_init() {
@@ -78,4 +94,7 @@ void list_init() {
 
   B_f1['i'] = &iota_f1;
   B_f2['i'] = &iota_f2;
+
+  B_f11['r'] = &reduce_f11;
+  B_f12['r'] = &reduce_f12;
 }
