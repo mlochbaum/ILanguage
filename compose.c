@@ -1,6 +1,8 @@
 D_F1(left)  { return l; }
 D_F2(left)  { return l; }
 D_F2(right) { return r; }
+D_F11(constant) { del(ll); return l; }
+D_F12(constant) { del(ll); del(rr); return l; }
 
 D_F2(apply) { return apply1(r,l); }
 D_F2(flip)  { return apply1(l,r); }
@@ -14,11 +16,10 @@ D_F12(flip)  { return apply2(l,rr,ll); }
 D_F21(bind)  { return apply2(l,ll,r); }
 D_F21(rbind) { return apply2(r,l,ll); }
 
-// TODO better name
 D_F21(compose) { return apply1(r, apply1(l,ll)); }
 D_F22(compose) { return apply2(r, apply1(l,ll), apply1(cpy(l),rr)); }
 
-// TODO domain
+D_D2(power) { return 2*(!!(r->t&Z_t)) + 1; }
 D_F21(power) {
   I n=getFloorZ(r); del(r); DDO(i,n) ll=apply1(cpy(l),ll);
   del(l); return ll;
@@ -44,6 +45,8 @@ void compose_init() {
   B_f1['['] = B_f1[']'] = &left_f1;
   B_f2['['] = &left_f2;
   B_f2[']'] = &right_f2;
+  B_f11['k'] = &constant_f11;
+  B_f12['k'] = &constant_f12;
 
   B_f2['.'] = &apply_f2;
   B_f2['~'] = &flip_f2;
@@ -59,6 +62,7 @@ void compose_init() {
   B_f21['b'] = &bind_f21;
   B_f21['B'] = &rbind_f21;
 
+  B_d2['p'] = &power_d2;
   B_f21['p'] = &power_f21;
   B_f22['p'] = &power_f22;
 
