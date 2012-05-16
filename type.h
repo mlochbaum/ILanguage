@@ -1,4 +1,4 @@
-typedef int32_t I;
+typedef int I;
 typedef void* Ptr;
 typedef char Char;
 typedef char* Str;
