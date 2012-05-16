@@ -1,5 +1,6 @@
-D_D1(arith) { return !!(l->t&ARITH_t); }
-D_D2(arith) { return (2 * !!(r->t&ARITH_t)) + !!(l->t&ARITH_t); }
+#define IS_ARITH(v) !!((v)->t&ARITH_t)
+D_D1(arith) { return IS_ARITH(l); }
+D_D2(arith) { return 2*IS_ARITH(r) + IS_ARITH(l); }
 
 //Monads
 //TODO: complex case
