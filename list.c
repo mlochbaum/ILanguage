@@ -68,6 +68,8 @@ D_F2(iota) {
   }
 }
 
+D_D11(reduce) { return !!(ll->t&(LIST_t|CONST_t)); }
+D_D12(reduce) { return 2 + !!(ll->t&(LIST_t|CONST_t)); }
 D_F1(identity_of) { del(l); return Err("Identity unknown"); }
 D_F11(reduce) {
   if (!(ll->t&LIST_t)) { del(l); return ll; }
@@ -98,6 +100,8 @@ void list_init() {
   B_f1['i'] = &iota_f1;
   B_f2['i'] = &iota_f2;
 
+  B_d11['r'] = &reduce_d11;
   B_f11['r'] = &reduce_f11;
+  B_d12['r'] = &reduce_d12;
   B_f12['r'] = &reduce_f12;
 }
