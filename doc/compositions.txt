@@ -1,0 +1,37 @@
+Composition   Result
+[ "left identity", ] "right identity"
+l.[           l
+l.]           l
+l[r           l
+l]r           r
+
+k "constant"
+l . f.k       f
+l f.k r       f
+
+. "apply"
+~ "flip"
+l~r           r.l
+l f.~ r       r f l
+
+o "compose"
+l fog r       lfr . g
+l . fog       l.f.g
+l f(u.o)g r   lfr u lgr
+l . f(u.o)g   l.f u l.g
+O "also compose"
+l fOg r       l.f g r.f
+l . fOg       l.f.g
+
+b "bind"
+l . fbr       lfr
+B "backbind"
+r . lbf       lfr
+
+p "power, the iteration one"
+l . fpn       l.f.f...f  (with n f's)
+l fpn r       lfrfr...fr (with n fr's)
+
+w "while"
+l . fwg       Do f to l while l.g returns true.
+l fwg r       Do fbr to l while lgr returns true.

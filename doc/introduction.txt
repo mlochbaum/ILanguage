@@ -35,6 +35,8 @@ Take note: this is opposite from the order of evaluation in most
 languages! Everthing goes left to right in I. It's like telling a story.
 It's fun! Well, it will be fun after you learn it. It will be absolute
 hell for a little while at the beginning.
+NOTE: Sometimes functions of one and two arguments will be called "monads"
+  and "dyads," respectively, to save time.
 
     ORDER OF OPERATIONS
 Order of operations proceeds from left to right.
@@ -133,7 +135,7 @@ as the right argument:
 2 . *b3
 6
 and w , or while, which executes the left argument while the right one is
-true of its operands (so (a . fwg) applies f to a until g returns true.
+true of its operands (so (a . fwg) applies f to a until g returns false.
 Now let's generate the first power of two after 1000:
 1  .  *b2 w <b1000
 1024
