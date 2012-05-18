@@ -7,14 +7,11 @@ Typedefs have capitalized names. I types have single-letter names.
 A lone value of a type will have the same name, but lowercase.
 
 I types are always pointers.
-If the dereferenced type is pertinent, type##v will give that type.
-No type will have size larger than a 64-bit word.
-In particular, a raw struct will never be used, only a pointer to a struct.
-Such structs will never be dereferenced; only -> will be used on them.
+type##v gives the dereferenced type.
+I types which are structs will always be treated as pointers to structs,
+and used with ->.
 
-Native C arrays will not be used; only pointers.
-All pointer values will be either null or malloc'ed.
-Memory for arrays will always be allocated in powers of two.
+Memory for I arrays will always be allocated in powers of two.
 
 Macros will be defined so they can be used with a trailing ;.
 This does not mean, however, that they comprise a single statement.

@@ -1,0 +1,30 @@
+The documents in this folder describe the current C implementation of
+the I language.
+Familiarity with the basic functionality of I is assumed-- read the
+regular documentation before the source documentation.
+
+The goals of this implementation are as follows:
+Simplicity. The source should be small, as well as modular and extensible.
+Correctness. The source should be free of bugs and memory leaks.
+Speed. Execution should be fast for canonical operations with known types.
+
+The console is a simple REPL, implemented in main.c. Evaluation
+consists of several steps:
+  Input (main.c): a string is read from the console.
+  Scanning and parsing (parse.c, scan.c):
+    Verification (verify.c): The string is first verified for matching
+      parentheses and quotes. If these are incorrect, an error is printed
+      immediately.
+    Word formation, parsing, and evaluation take place concurrently.
+      Word formation (scan.c): The word type is determined by first letter.
+        Then the word is scanned until it ends.
+      Parsing (parse.c): The word is turned into an I value.
+      Execution (apply.c): The word is applied to the stack.
+  Execution (apply.c and others):
+    For constants, the constant is immediately returned.
+    Domain finding (dom.c): Get the domain of the function.
+    Mapping (fmap.c): If a variable is outside of the domain, map.
+    Application (apply.c, builtin.c): Apply the function--the method of
+      application depends on the type.
+      Builtins (builtin.c): Functions are linked to functionality by the
+        code imported in builtin.c
