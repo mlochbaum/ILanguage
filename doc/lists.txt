@@ -16,3 +16,14 @@ their domain is everything.
 , monad: flatten into a list with no sublists.
 , dyad: if both arguments are lists, concatenate them. If only the left
   argument is a list, append the right argument. Otherwise, same as ; .
+
+l}r is the r'th element of l.
+
+l.i is the list of nonnegative integers smaller than l.
+lir is r-l.i+l , i.e. the list of l+(nonnegative integers) smaller than r.
+
+r stands for "reduce."
+l . f.r is a "fold" of f across l, for example
+1;2,3,4 . +.r  =  1+2+3+4
+l f.r r is the same fold but starting with r, so that
+1;2,3,4 +.r 7  =  7+1+2+3+4
