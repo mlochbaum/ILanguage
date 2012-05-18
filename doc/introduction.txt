@@ -3,7 +3,7 @@ generalizes the array and functional capabilities of J to deal with a much
 broader variety of data structures.
 
 After building I, you will have a simple (VERY simple) command-line
-interpreter, which accepts on-line-long commands.
+interpreter, which accepts one-line-long commands.
 Commands and their ouputs will be printed here as you would see them on
 the command line--input line, then output line.
 
@@ -29,8 +29,8 @@ That's a shorthand for negative three, which isn't constrained by our
 operator notation. It's useful.
 Note that we just took - as an argument to another operator.
 That's completely ordinary, because everything is an operator. It's not
-really that much different from writing 3.4 , which gives 4 because 4 is
-a constant operator.
+really that much different from writing 3+4 or 3.4 , which gives 4 because
+4 is a constant operator.
 Take note: this is opposite from the order of evaluation in most
 languages! Everthing goes left to right in I. It's like telling a story.
 It's fun! Well, it will be fun after you learn it. It will be absolute
@@ -128,7 +128,7 @@ originally had the arguments sprinkled all over the place to one that has
 arguments only on the left and possibly right. After that, we can either
 assign them or pass them as arguments to other functions. For an example
 of this functionality, we introduce b , or "bind," which fixes its right
-arguments as an operand of its left, to be applied to one more argument
+argument as an operand of its left, to be applied to one more argument
 as the right argument:
 2 . *b3
 6
