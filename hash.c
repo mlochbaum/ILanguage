@@ -49,3 +49,36 @@ UI hash(V v) {
     case L_t: case A_t: return hash_LIST(v->v);
   }
 }
+
+
+#define _SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, L, M) \
+  typedef struct L { K k; V v; struct L* n; } *L;                        \
+  typedef struct { I l; I n; L* v; } *M;                                 \
+  M name##new(I l) { l=next_pow_2(l);                                    \
+    DECL(M, m); m->l=l; m->n=0; m->v=malloc(l*sizeof(m->v)); return m; } \
+  void name##set(M, K, V);                                               \
+  void name##freeL(L l) { freeK(l->k); freeV(l->v); FREE(l); }           \
+  M name##resize(M m, I l) { M mm=name##new(l);                          \
+    DDO(i,l) { L n=m->v[i],nn; while(n){                                 \
+      name##set(mm, n->k, n->v); nn=n; n=n->n; name##freeL(nn);          \
+    } } FREE(m->v); FREE(m); return mm; }                                \
+  void name##set(M m, K k, V v) {                                        \
+    if (m->n==m->l) m=name##resize(m, m->l*2);                           \
+    I i=hash(k)%m->l; L n=m->v[i];                                       \
+    DECL(L, l); l->k=k; l->v=v; l->n=l; m->v[i]=l; }                     \
+  void name##free(M m) { DDO(i,m->l){ L n=m->v[i],nn;                    \
+    while(n){ nn=n; n=n->n; name##freeL(nn); } } FREE(m->v); FREE(m); }  \
+  V name##get(M m, K k) { L n=m->v[hash(k)%m->l];                        \
+    while(n) if(equals(k,n->k))return n->v; return NULL; }               \
+  void name##del(M m, K k) { L p=NULL, n=m->v[hash(k)%m->l];             \
+    while(n) if(equals(k,n->k)){                                         \
+      if(p) p->n=n->n; else m->v[hash(k)%m->l]=n->n; name##freeL(n); } }
+
+
+#define SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name) \
+  _SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, name##_HashLink, name##_HashMap)
+#define SET_HASH_TABLE(K, V, hash, equals, freeK, freeV) \
+  SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, K##V)
+
+V equals_f2(V, V);
+SET_HASH_TABLE(V, V, hash, equals_f2, del, del)
