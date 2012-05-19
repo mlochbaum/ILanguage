@@ -9,6 +9,7 @@
 #include "mem.h"
 #include "util.c"
 #include "mem.c"
+#include "hash.c"
 #include "parse.c"
 #include "builtin.c"
 #include "apply.c"

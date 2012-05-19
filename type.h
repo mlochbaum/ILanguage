@@ -1,4 +1,5 @@
 typedef int I;
+typedef unsigned int UI;
 typedef void* Ptr;
 typedef char Char;
 typedef char* Str;
