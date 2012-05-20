@@ -111,6 +111,8 @@ DECL_OC
 
 void freeV(V v) {
   switch (v->t) {
+    case N_t: FREE(*(N)v->v); break;
+    case Q_t: FREE(*(Q)v->v); break;
     case O_t: FREE(((O)v->v)->x); break;
     case F_t: FREE(((F)v->v)->x); break;
     case L_t: FREE(((L)v->v)->v); break;

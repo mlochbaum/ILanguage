@@ -36,5 +36,6 @@ int main() {
     puts(s = toString(v = scan(in))); del(v); FREE(s);
   }
   FREE(in);
+  StrVfree(names);
   return 0;
 }
