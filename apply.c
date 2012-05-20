@@ -32,7 +32,7 @@ V apply_F(F f, I n, V* x) {
   }
 }
 V apply_N(N m, I n, V* x) {
-  return Err("What's in a name?");
+  V v=cpy(StrVget(names, *m)); return apply(v, n, x);
 }
 V apply_Q(Q q, I n, V* x) {
   return Err("Dude, I have no clue what you're talking about.");
