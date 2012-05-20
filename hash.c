@@ -25,8 +25,8 @@ UI hash_UI(I l, UI* v) {
   else { I i; for (i=0; i*i<l; i++) h = (i+1000003)**(v+h%l) ^ h<<1; }
   return h;
 }
-UI hash_string(Str* v) {
-  return hash_UI(strlen(*v)/sizeof(UI), (UI*)*v);
+UI hash_string(Str v) {
+  return hash_UI(strlen(v)/sizeof(UI), (UI*)v);
 }
 UI hash_LIST(V v) {
   UI h=2184626789L; I l=LIST_L(v);
@@ -38,7 +38,7 @@ UI hash_LIST(V v) {
 UI hash(V v) {
   UI h=2184626789L;
   switch (v->t) {
-    case E_t: case N_t: case Q_t: return hash_string(v->v);
+    case E_t: case N_t: case Q_t: return hash_string(*(Str*)v->v);
     case B_t: case S_t: return h * *(B)v->v;
     case O_t: case F_t: { I l = ((O)v->v)->l+1; UI u[l];
                           DDO(i,l-1) u[i]=hash(((O)v->v)->x[i]);
@@ -80,5 +80,6 @@ UI hash(V v) {
 #define SET_HASH_TABLE(K, V, hash, equals, freeK, freeV) \
   SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, K##V)
 
-V equals_f2(V, V);
-SET_HASH_TABLE(V, V, hash, equals_f2, del, del)
+// TODO complete equality testing
+// I equalsV(V l, V r) { return compare_arith(l,r)==0; }
+// SET_HASH_TABLE(V, V, hash, equalsV, del, del)

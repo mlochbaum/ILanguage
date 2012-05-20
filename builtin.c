@@ -43,6 +43,7 @@ D_D1(true){return 1;}   D_D2(true){return 3;}
 D_D11(true){return 1;}  D_D12(true){return 3;}
 D_D21(true){return 1;}  D_D22(true){return 3;}
 
+#include "name.c"
 #include "compose.c"
 #include "arith.c"
 #include "compare.c"
@@ -52,6 +53,7 @@ void builtin_init() {
   DDO(i,256) { ON_ALL_NUMS(INIT) }
 #undef INIT
 
+  name_init();
   compose_init();
   arith_init();
   compare_init();

@@ -32,10 +32,10 @@ Rv parseDec(Str* s) {
 
 //////////////// parseQuote /////////////////////
 V parseQuote(Str* s) {
-  char q=**s; Str ss;
+  char q=**s;
   I l=0; (*s)++;
   while ((*s)[l]!=q) l++;
-  ss=malloc((l+1)*sizeof(ss)); strncpy(ss, *s, l);
+  Str ss=malloc((l+1)*sizeof(ss)); strncpy(ss, *s, l); ss[l]='\0';
   (*s)+=l+1;
   switch(q) {
     case '`': return newQ(ss);
