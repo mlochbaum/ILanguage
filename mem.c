@@ -50,7 +50,7 @@ V wrapArrayList(T t, I l, Ptr v) {
 }
 Ptr toHomogeneousArray(T t, I l, V* v) {
   I s=t_sizeof(t); char* c=MALLOC(l*s);
-  DDO(i,l) {memcpy(c+i*s, v[i]->v, s); del(v[i]);} return (Ptr) c;
+  DDO(i,l) {valcpy(t, c+i*s, v[i]->v); del(v[i]);} return (Ptr) c;
 }
 V wrapList(I l, V* v) {
   I c=next_pow_2(l);
@@ -126,33 +126,37 @@ void del(V v) { v->r--; onChildren(&del, v); if(!v->r) freeV(v); }
 void incref(V v) { v->r++; onChildren(&incref, v); }
 void increfn(V v, I n) { v->r+=n; onChildrenWithI(&increfn, v, n); }
 
-Str cpyStr(Str s) { DECL_STR(ss, strlen(s)); return strcpy(ss,s); }
-Ptr cpyS(Str* p) { DECL(Str*,pp); *pp=cpyStr(*p); return pp; }
-Ptr cpyval(T t, Ptr v) {
-  Ptr p=malloc(t_sizeof(t));
-  if (t & (E_t+N_t+Q_t)) p=cpyS(v);
-  else memcpy(p, v, t_sizeof(t));
+Ptr arrcpy(Char* aa, I l, I c, I o) {
+  DECL_ARR(Char,a,c);
+  memcpy(a,aa+o,min(c-o,l)); memcpy(a,aa,max(0,l+o-c));
+  return a;
 }
+void valcpy(T t, Ptr p, Ptr pp) { // from pp to p
+  I s=t_sizeof(t);
+  switch (t) {
+    case E_t: case N_t: case Q_t: *(E)p=strdup(*(E)pp); break;
+    case B_t: case S_t: case Z_t: case R_t: case C_t: memcpy(p, pp, s); break;
+    case O_t: { O o=p, oo=pp; o->f=cpy(oo->f); o->l=oo->l;
+                o->x=malloc(sizeof(V)*oo->l);
+                DDO(i,oo->l) o->x[i]=cpy(oo->x[i]); break; }
+    case F_t: { F f=p, ff=pp; f->f=cpy(ff->f); f->l=ff->l;
+                f->x=malloc(sizeof(V)*ff->l);
+                DDO(i,ff->l) f->x[i]=cpy(ff->x[i]); break; }
+    case L_t: { L l=p, ll=pp; l->t=ll->t; l->c=ll->c; l->l=ll->l; l->o=0;
+                l->v=arrcpy((Str)ll->v, ll->l, ll->c, ll->o); break; }
+    case A_t: { A a=p, aa=pp; a->t=aa->t; a->c=aa->c; a->l=aa->l; a->o=0;
+                I s=t_sizeof(aa->t); a->v=malloc(s*aa->c);
+                DDO(i,aa->l) valcpy(aa->t, a->v+i*s, LIST_PTR_AT(aa,i)); break; }
+  }
+}
+Ptr cpyval(T t, Ptr pp) { Ptr p=malloc(t_sizeof(t)); valcpy(t,p,pp); return p; }
 
 V cpy(V v) {
-  if (v->t & COMP_t) {
-    incref(v); return v;
-  } else { // Pass-by-value for small v
-    return makeV(v->t, cpyval(v->t, v->v));
-  }
+  if (v->t & COMP_t) { incref(v); return v; }
+  else return makeV(v->t, cpyval(v->t, v->v));
 }
 
-Ptr arrcpy(Char* aa, I l) { DECL_ARR(Char,a,l); memcpy(a,aa,l); return a; }
 V get(V v) {
   if (v->r==1) return v;
-  else switch (v->t) {
-#define LINE(T, dup) case T##_t: return new##T(dup(*(T)v->v))
-    LINE(E,strdup); LINE(N,strdup); LINE(Q,strdup);
-    LINE(B,); LINE(S,); LINE(Z,); LINE(R,); LINE(C,);
-#undef LINE
-    case O_t: { O o=v->v; return makeO(o->f, o->l, arrcpy((Char*)o->x, o->l*sizeof(V))); }
-    case F_t: { F f=v->v; return makeF(f->f, f->l, arrcpy((Char*)f->x, f->l*sizeof(V))); }
-    case L_t: { L l=v->v; return makeL(l->t, l->c, l->l, l->o, arrcpy((Char*)l->v, l->l*sizeof(V))); }
-    case A_t: { A a=v->v; return makeA(a->t, a->c, a->l, a->o, arrcpy((Char*)a->v, a->l*t_sizeof(a->t))); }
-  }
+  else return makeV(v->t, cpyval(v->t, v->v));
 }

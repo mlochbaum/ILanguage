@@ -12,4 +12,5 @@ void del(V); // Delete this copy of v.
 V cpy(V);    // Return a new copy of v.
 V get(V);    // Ensure that the returned value is safely modifiable.
 
+void valcpy(T, Ptr, Ptr);
 Ptr cpyval(T, Ptr);
