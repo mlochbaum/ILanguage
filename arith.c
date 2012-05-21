@@ -25,7 +25,10 @@ D_F2(divide) OP(/);
 #undef D_L
 #define D_L(type, op) case type##_t: v=new##type(op(get##type(l), get##type(r))); break
 #define MOD(l,r) (l) - (r)*floor((l)/(r))
-D_F2(mod) OP(MOD);
+#define D_L1(type, op) case type##_t: v=new##type(get##type(l)op get##type(r)); break
+// D_F2(mod) OP(MOD);
+D_F2(mod) { V v; switch (max(l->t,r->t)) { D_L1(Z,%); D_L(R,MOD); } del(l);del(r); return v; }
+#undef D_L1
 #undef MOD
 D_F2(min) OP(min);
 D_F2(max) OP(max);
