@@ -10,7 +10,6 @@ I dom_F(F f, I n, V* x) {
     //case Q_t: return apply_FQ(f, n, x);
   }
 }
-// TODO
 I dom_N(N f, I n, V* x) { return dom_true(n); }
 I dom_Q(Q f, I n, V* x) { return dom_true(n); }
 

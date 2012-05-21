@@ -8,7 +8,7 @@ ON_TYPES(NCONST,DECLARE)
 #undef DECLARE
 
 V apply_FB(F, I, V*);
-//V apply_FQ(F, I, V*); TODO
+//V apply_FQ(F, I, V*);
 
 V fmap_LIST(V, I, V*, I, I);
 

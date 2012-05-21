@@ -61,17 +61,17 @@ void builtin_init() {
 }
 
 /////////////// Main definitions ///////////
-V newF(B b, I n, V* x) {
+V FfromB(B b, I n, V* x) {
   DECL_ARR(V,xx,n); DDO(i,n) xx[i]=x[i];
   DECL(B,bb); *bb=*b; return makeF(wrapB(bb),n,xx);
 }
 
 V apply_B1(B b, V* x) {
-  F1 f=B_f1[*b]; if(!f) return newF(b,1,x);
+  F1 f=B_f1[*b]; if(!f) return FfromB(b,1,x);
   else {V v=f(x[0]); return v;}
 }
 V apply_B2(B b, V* x) {
-  F2 f=B_f2[*b]; if(!f) return newF(b,2,x);
+  F2 f=B_f2[*b]; if(!f) return FfromB(b,2,x);
   else {V v=f(x[0],x[1]); return v;}
 }
 V apply_B(B b, I n, V* x) {
@@ -89,19 +89,19 @@ I dom_B(B b, I n, V* x) {
 }
 
 V apply_B11(B b, V* x, V* xx) {
-  F11 f=B_f11[*b]; if(!f) return makeF(newF(b,1,x),1,xx);
+  F11 f=B_f11[*b]; if(!f) return makeF(FfromB(b,1,x),1,xx);
   else {V v=f(cpy(x[0]), xx[0]); return v;}
 }
 V apply_B12(B b, V* x, V* xx) {
-  F12 f=B_f12[*b]; if(!f) return makeF(newF(b,1,x),2,xx);
+  F12 f=B_f12[*b]; if(!f) return makeF(FfromB(b,1,x),2,xx);
   else {V v=f(cpy(x[0]), xx[0], xx[1]); return v;}
 }
 V apply_B21(B b, V* x, V* xx) {
-  F21 f=B_f21[*b]; if(!f) return makeF(newF(b,2,x),1,xx);
+  F21 f=B_f21[*b]; if(!f) return makeF(FfromB(b,2,x),1,xx);
   else {V v=f(cpy(x[0]), cpy(x[1]), xx[0]); return v;}
 }
 V apply_B22(B b, V* x, V* xx) {
-  F22 f=B_f22[*b]; if(!f) return makeF(newF(b,2,x),2,xx);
+  F22 f=B_f22[*b]; if(!f) return makeF(FfromB(b,2,x),2,xx);
   else {V v=f(cpy(x[0]), cpy(x[1]), xx[0], xx[1]); return v;}
 }
 V apply_FB(F f, I n, V* xx) {

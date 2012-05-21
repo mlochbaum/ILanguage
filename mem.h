@@ -8,6 +8,8 @@
 
 V makeV(T, Ptr);
 
-void del(V);
-V cpy(V);
+void del(V); // Delete this copy of v.
+V cpy(V);    // Return a new copy of v.
+V get(V);    // Ensure that the returned value is safely modifiable.
+
 Ptr cpyval(T, Ptr);

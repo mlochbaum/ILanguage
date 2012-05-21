@@ -7,7 +7,7 @@ V makeV(T t , Ptr vv) {
 #define setNew(type) \
   V new##type(type##v dv) { WRAP(type, d, dv); return wrap##type(d); }
 ON_TYPES(ALL, setWrap);    // functions wrapE : E->V, etc.
-ON_TYPES(WRAPPED, setNew); // Define functions wrapE : Ev->V, etc.
+ON_TYPES(ALL, setNew); // Define functions newE : Ev->V, etc.
 
 /*
 NB. make functions created from struct headers using J.
@@ -40,7 +40,7 @@ V makeL(I t , I c , I ll , I o , V * v) {
 }
 V makeA(I t , I c , I l , I o , Ptr v) {
   DECL(A,a); a->t=t; a->c=c; a->l=l; a->o=o; a->v=v; return wrapA(a);
-}  
+}
 
 // Custom make functions
 V wrapArrayList(T t, I l, Ptr v) {
@@ -66,6 +66,7 @@ V Err(Str s) { WRAP(Str*, e, strdup(s)); return wrapE(e); }
 V DErr(Str s) { WRAP(Str*, e, s); return wrapE(e); }
 
 
+/////////////////// Utilities ////////////////////
 #define LINE(T) case T##_t: OC1(T, (T)v->v); break;
 #define LINE_A(T) case T##_t: FOR_EACH(i, a) F(arr_at(a,i)); break;
 #define DECL_OC                                  \
@@ -138,5 +139,20 @@ V cpy(V v) {
     incref(v); return v;
   } else { // Pass-by-value for small v
     return makeV(v->t, cpyval(v->t, v->v));
+  }
+}
+
+Ptr arrcpy(Char* aa, I l) { DECL_ARR(Char,a,l); memcpy(a,aa,l); return a; }
+V get(V v) {
+  if (v->r==1) return v;
+  else switch (v->t) {
+#define LINE(T, dup) case T##_t: return new##T(dup(*(T)v->v))
+    LINE(E,strdup); LINE(N,strdup); LINE(Q,strdup);
+    LINE(B,); LINE(S,); LINE(Z,); LINE(R,); LINE(C,);
+#undef LINE
+    case O_t: { O o=v->v; return makeO(o->f, o->l, arrcpy((Char*)o->x, o->l*sizeof(V))); }
+    case F_t: { F f=v->v; return makeF(f->f, f->l, arrcpy((Char*)f->x, f->l*sizeof(V))); }
+    case L_t: { L l=v->v; return makeL(l->t, l->c, l->l, l->o, arrcpy((Char*)l->v, l->l*sizeof(V))); }
+    case A_t: { A a=v->v; return makeA(a->t, a->c, a->l, a->o, arrcpy((Char*)a->v, a->l*t_sizeof(a->t))); }
   }
 }
