@@ -86,7 +86,21 @@ D_F12(reduce) {
   del(ll); return rr;
 }
 
-// EXPORT DEFINITIONS
+D_F1(reverse) {
+  switch (l->t) {
+    case L_t: { l=get(l); L v=l->v; DDO(i,v->l/2) {
+                V vt=LIST_AT(v,i); LIST_AT(v,i)=LIST_AT(v,v->l-i-1);
+                LIST_AT(v,v->l-i-1)=vt; } return l; }
+#define AT(i) a->v + s*(((i)+a->o)%a->c)
+    case A_t: { l=get(l); A a=l->v; I s=t_sizeof(a->t); Ptr t=malloc(s);
+                DDO(i,a->l/2) { memcpy(t, AT(i), s);
+                memcpy(AT(i), AT(a->l-i-1), s);
+                memcpy(AT(a->l-i-1), t, s); } FREE(t); return l; }
+#undef AT
+  }
+}
+
+
 EXTERN_BUILTINS;
 void list_init() {
   B_f1[';'] = &itemize_f1;
@@ -104,4 +118,6 @@ void list_init() {
   B_f11['r'] = &reduce_f11;
   B_d12['r'] = &reduce_d12;
   B_f12['r'] = &reduce_f12;
+
+  B_f1['z'] = &reverse_f1;
 }
