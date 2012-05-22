@@ -1,6 +1,6 @@
 D_F1(left)  { return l; }
-D_F2(left)  { return l; }
-D_F2(right) { return r; }
+D_F2(left)  { del(r); return l; }
+D_F2(right) { del(l); return r; }
 D_F11(constant) { del(ll); return l; }
 D_F12(constant) { del(ll); del(rr); return l; }
 
