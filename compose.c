@@ -13,8 +13,13 @@ D_F12(compose) { DECL_ARR(V,v,2); v[0]=ll; v[1]=rr; return makeO(l,2,v); }
 D_F11(flip)  { return apply2(l,ll,ll); }
 D_F12(flip)  { return apply2(l,rr,ll); }
 
-D_F21(bind)  { return apply2(l,ll,r); }
-D_F21(rbind) { return apply2(r,l,ll); }
+D_F21(bind)     { return apply2(l,ll,r); }
+D_F21(backbind) { return apply2(r,l,ll); }
+
+D_F21(hook)     { return apply2(r,apply1(l,cpy(ll)),ll); }
+D_F22(hook)     { return apply2(r,apply1(l,ll),rr); }
+D_F21(backhook) { return apply2(l,apply1(r,cpy(ll)),ll); }
+D_F22(backhook) { return apply2(l,apply1(r,rr),ll); }
 
 D_F21(compose) { return apply1(r, apply1(l,ll)); }
 D_F22(compose) { return apply2(r, apply1(l,ll), apply1(cpy(l),rr)); }
@@ -55,12 +60,16 @@ void compose_init() {
   B_f12['o'] = &compose_f12;
   B_f21['O'] = &compose_f21;
   B_f22['O'] = &compose_f22;
+  B_f21['h'] = &hook_f21;
+  B_f22['h'] = &hook_f22;
+  B_f21['H'] = &backhook_f21;
+  B_f22['H'] = &backhook_f22;
 
   B_f11['~'] = &flip_f11;
   B_f12['~'] = &flip_f12;
 
   B_f21['b'] = &bind_f21;
-  B_f21['B'] = &rbind_f21;
+  B_f21['B'] = &backbind_f21;
 
   B_d2['p'] = &power_d2;
   B_f21['p'] = &power_f21;

@@ -23,9 +23,14 @@ O "also compose"
 l fOg r       l.f g r.f
 l . fOg       l.f.g
 
-b "bind"
+h "hook", H "backhook"
+l . fhg       l.f g l
+l fhg r       l.f g r
+l . fHg       l f g~l
+l fHg r       l f g~r
+
+b "bind", B "backbind"
 l . fbr       lfr
-B "backbind"
 r . lbf       lfr
 
 p "power, the iteration one"
