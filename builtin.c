@@ -48,6 +48,7 @@ D_D21(true){return 1;}  D_D22(true){return 3;}
 #include "arith.c"
 #include "compare.c"
 #include "list.c"
+#include "string.c"
 void builtin_init() {
 #define INIT(n) B_d##n[i]=&true_d##n; B_f##n[i]=NULL;
   DDO(i,256) { ON_ALL_NUMS(INIT) }
@@ -58,6 +59,7 @@ void builtin_init() {
   arith_init();
   compare_init();
   list_init();
+  string_init();
 }
 
 /////////////// Main definitions ///////////

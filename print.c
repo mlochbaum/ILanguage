@@ -8,7 +8,7 @@ Str chartostr(char c) {
 Str quote(const char q, Str s) {
   I l = strlen(s);
   DECL_NSTR(r, l+2);
-  strcpy(r+1, s);
+  strcpy(r+1, s); FREE(s);
   r[0]=r[l+1]=q; return r;
 }
 
