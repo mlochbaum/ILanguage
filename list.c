@@ -43,6 +43,15 @@ D_F2(select) {
   V v=list_at(l,i); del(l);del(r);return v;
 }
 
+D_F1(length) { I n; if (l->t&LIST_t) n=LIST_L(l); else n=1;
+    del(l); return newZ(n); }
+D_D2(copy) { return 2*!!(r->t&ARITH_t) + 1; }
+D_F2(copy) {
+  I t=l->t, ll=*(Z)r->v, s=t_sizeof(l->t); del(r);
+  Ptr p=MALLOC(next_pow_2(ll*s)); DDO(i,ll) valcpy(t,p+i*s,l->v);
+  del(l); return wrapArrayList(t, ll, p);
+}
+
 // TODO clean iota
 D_F1(iota) {
   I ll=getCeilZ(l); del(l);
@@ -110,6 +119,10 @@ void list_init() {
 
   B_f2['}'] = &select_f2;
   B_d2['}'] = &select_d2;
+
+  B_f1['#'] = &length_f1;
+  B_d2['#'] = &copy_d2;
+  B_f2['#'] = &copy_f2;
 
   B_f1['i'] = &iota_f1;
   B_f2['i'] = &iota_f2;
