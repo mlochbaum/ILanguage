@@ -48,15 +48,15 @@ V wrapArrayList(T t, I l, Ptr v) {
   v=realloc(v, c*t_sizeof(t));
   return makeA(t, c, l, 0, v);
 }
-Ptr toHomogeneousArray(T t, I l, V* v) {
-  I s=t_sizeof(t); char* c=MALLOC(l*s);
-  DDO(i,l) {valcpy(t, c+i*s, v[i]->v); del(v[i]);} return (Ptr) c;
+Ptr toHomogeneousArray(T t, I c, I l, V* v) {
+  I s=t_sizeof(t); char* p=MALLOC(c*s);
+  DDO(i,l) {valcpy(t, p+i*s, v[i]->v); del(v[i]);} return (Ptr) p;
 }
 V wrapList(I l, V* v) {
   I c=next_pow_2(l);
   T t=0; DDO(i,l)t|=v[i]->t;
   if(!(t&(t-1))){
-    V r=wrapArrayList(t,l,toHomogeneousArray(t,l,v)); FREE(v); return r;
+    V r=wrapArrayList(t,l,toHomogeneousArray(t,c,l,v)); FREE(v); return r;
   }
   v=realloc(v,c*sizeof(v));
   return makeL(t,c,l,0,v);
@@ -146,7 +146,7 @@ void valcpy(T t, Ptr p, Ptr pp) { // from pp to p
                 l->v=arrcpy(ll->v, sizeof(V), ll->l, ll->c, ll->o); break; }
     case A_t: { A a=p, aa=pp; a->t=aa->t; a->c=aa->c; a->l=aa->l; a->o=0;
                 I s=t_sizeof(aa->t); a->v=malloc(s*aa->c);
-                DDO(i,aa->l) valcpy(aa->t, a->v+i*s, aa->v+s*((aa->o+i)%aa->c)); break; }
+                DDO(i,aa->l) valcpy(aa->t, a->v+i*s, ARR_PTR_AT(aa,i)); break; }
   }
 }
 Ptr cpyval(T t, Ptr pp) { Ptr p=malloc(t_sizeof(t)); valcpy(t,p,pp); return p; }
@@ -158,8 +158,5 @@ V cpy(V v) {
 
 V get(V v) {
   if (v->r==1) return v;
-  else {
-    V vv=makeV(v->t, cpyval(v->t, v->v));
-    v->r--; if(!v->r) freeV(v); return vv;
-  }
+  else { V vv=makeV(v->t, cpyval(v->t, v->v)); v->r--; return vv; }
 }
