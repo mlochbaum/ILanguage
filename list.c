@@ -37,10 +37,23 @@ D_F2(concat) {
   }
 }
 
+D_D1(list) { return !!(l->t&LIST_t); }
+D_F1(first) { V v=list_at(l,0); del(l); return v; }
+D_F1(last) { V v=list_at(l,LIST_L(l)-1); del(l); return v; }
 D_D2(select) { return 2*!!(r->t&ARITH_t) + !!(l->t&LIST_t); }
 D_F2(select) {
   I i=*(Z)r->v, ll=LIST_L(l); if (i<0 && i>-ll) i+=ll;
   V v=list_at(l,i); del(l);del(r);return v;
+}
+D_F2(take) {
+  l=get(l); I i=*(Z)r->v, ll=LIST_L(l), c=LIST_C(l), o=LIST_O(l);
+  if (i>=0) LIST_L(l)=i; else { LIST_O(l)=(o+ll+i)%c; LIST_L(l)=-i; }
+  del(r); return l;
+}
+D_F2(drop) {
+  l=get(l); I i=*(Z)r->v, ll=LIST_L(l), c=LIST_C(l), o=LIST_O(l);
+  if (i>=0) { LIST_L(l)-=i; LIST_O(l)=(o+i)%c; } else LIST_L(l)+=i;
+  del(r); return l;
 }
 
 D_F1(length) { I n; if (l->t&LIST_t) n=LIST_L(l); else n=1;
@@ -117,8 +130,13 @@ void list_init() {
 
   B_f2[','] = &concat_f2;
 
+  B_d1['g'] = B_d1['G'] = &list_d1;
+  B_f1['g'] = &first_f1;
+  B_f1['G'] = &last_f1;
+  B_d2['}'] = B_d2['g'] = B_d2['G'] = &select_d2;
   B_f2['}'] = &select_f2;
-  B_d2['}'] = &select_d2;
+  B_f2['g'] = &take_f2;
+  B_f2['G'] = &drop_f2;
 
   B_f1['#'] = &length_f1;
   B_d2['#'] = &copy_d2;
