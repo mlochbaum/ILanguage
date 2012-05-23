@@ -71,7 +71,7 @@ Str Lfmt(L l) {
   return s;
 }
 Str Afmt(A a) {
-#define GETSTRING(st, i) v->v = ((char*)a->v)+size*i; st=toString(v)
+#define GETSTRING(st, i) v->v = ARR_PTR_AT(a,i); st=toString(v)
   I l=a->l; I size=t_sizeof(a->t);
   if (l==0) return strdup("N");
   DECL_STR(s, 1); s[0]=' '; Str st; I len;
@@ -79,7 +79,7 @@ Str Afmt(A a) {
   if (l==1) {
     GETSTRING(st, 0); len=1+strlen(st);
     s=realloc(s,len+4); strcpy(s+1,st); FREE(st);
-    strcpy(s+len,".; "); return s;
+    strcpy(s+len,".; "); FREE(v); return s;
   }
   I e=1; DDO(i, l) {
     GETSTRING(st, i); len=1+strlen(st);
