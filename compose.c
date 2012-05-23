@@ -18,8 +18,8 @@ D_F21(backbind) { return apply2(r,l,ll); }
 
 D_F21(hook)     { return apply2(r,apply1(l,cpy(ll)),ll); }
 D_F22(hook)     { return apply2(r,apply1(l,ll),rr); }
-D_F21(backhook) { return apply2(l,apply1(r,cpy(ll)),ll); }
-D_F22(backhook) { return apply2(l,apply1(r,rr),ll); }
+D_F21(backhook) { return apply2(l,ll,apply1(r,cpy(ll))); }
+D_F22(backhook) { return apply2(l,ll,apply1(r,rr)); }
 
 D_F21(compose) { return apply1(r, apply1(l,ll)); }
 D_F22(compose) { return apply2(r, apply1(l,ll), apply1(cpy(l),rr)); }
