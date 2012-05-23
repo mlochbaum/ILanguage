@@ -1,0 +1,12 @@
+In addition to the implicit mapping provided by I (which should always be
+your first plan of attack), there are several ways to specify your own
+mapping.
+
+D "domain"
+uses r (which should return a boolean) to specify the domain for l.
+If two arguments are given, r should return a list.
+
+f "fmap"
+lfr       maps r over l using the appropriate mapping.
+l . r.f   does the same.
+l g.f r   maps g over l and r using l's mapping type.
