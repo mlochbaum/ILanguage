@@ -98,8 +98,8 @@ Str toString(V v) {
     case B_t: return chartostr(*(B)v->v);
     case F_t: return Ffmt((F)v->v);
     case O_t: return Ofmt((O)v->v);
-    case Q_t: return quote('`', *(Q)v->v);
-    case N_t: return quote('\'', *(N)v->v);
+    case Q_t: return quote('`', strdup(*(Q)v->v));
+    case N_t: return quote('\'', strdup(*(N)v->v));
     case S_t: return quote('"', chartostr(*(S)v->v));
     case Z_t: return Zfmt(*(Z)v->v);
     case R_t: return Rfmt(*(R)v->v);
