@@ -10,7 +10,7 @@ D_F2(compose) { DECL_ARR(V,v,1); v[0]=l; return makeO(r,1,v); }
 D_F11(compose) { DECL_ARR(V,v,1); v[0]=ll; return makeO(l,1,v); }
 D_F12(compose) { DECL_ARR(V,v,2); v[0]=ll; v[1]=rr; return makeO(l,2,v); }
 
-D_F11(flip)  { return apply2(l,ll,ll); }
+D_F11(flip)  { return apply2(l,cpy(ll),ll); }
 D_F12(flip)  { return apply2(l,rr,ll); }
 
 D_F21(bind)     { return apply2(l,ll,r); }
