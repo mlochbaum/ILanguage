@@ -45,6 +45,7 @@ D_D21(true){return 1;}  D_D22(true){return 3;}
 
 #include "name.c"
 #include "compose.c"
+#include "mapping.c"
 #include "arith.c"
 #include "compare.c"
 #include "list.c"
@@ -56,6 +57,7 @@ void builtin_init() {
 
   name_init();
   compose_init();
+  map_init();
   arith_init();
   compare_init();
   list_init();
