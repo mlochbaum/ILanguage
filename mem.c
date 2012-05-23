@@ -126,8 +126,8 @@ void del(V v) { v->r--; onChildren(&del, v); if(!v->r) freeV(v); }
 void incref(V v) { v->r++; onChildren(&incref, v); }
 void increfn(V v, I n) { v->r+=n; onChildrenWithI(&increfn, v, n); }
 
-Ptr arrcpy(Char* aa, I l, I c, I o) {
-  DECL_ARR(Char,a,c);
+Ptr arrcpy(Ptr aa, I s, I l, I c, I o) {
+  l*=s; c*=s; o*=s; DECL_ARR(Char,a,c);
   memcpy(a,aa+o,min(c-o,l)); memcpy(a,aa,max(0,l+o-c));
   return a;
 }
@@ -143,10 +143,10 @@ void valcpy(T t, Ptr p, Ptr pp) { // from pp to p
                 f->x=malloc(sizeof(V)*ff->l);
                 DDO(i,ff->l) f->x[i]=cpy(ff->x[i]); break; }
     case L_t: { L l=p, ll=pp; l->t=ll->t; l->c=ll->c; l->l=ll->l; l->o=0;
-                l->v=arrcpy((Str)ll->v, ll->l, ll->c, ll->o); break; }
+                l->v=arrcpy(ll->v, sizeof(V), ll->l, ll->c, ll->o); break; }
     case A_t: { A a=p, aa=pp; a->t=aa->t; a->c=aa->c; a->l=aa->l; a->o=0;
                 I s=t_sizeof(aa->t); a->v=malloc(s*aa->c);
-                DDO(i,aa->l) valcpy(aa->t, a->v+i*s, LIST_PTR_AT(aa,i)); break; }
+                DDO(i,aa->l) valcpy(aa->t, a->v+i*s, aa->v+s*((aa->o+i)%aa->c)); break; }
   }
 }
 Ptr cpyval(T t, Ptr pp) { Ptr p=malloc(t_sizeof(t)); valcpy(t,p,pp); return p; }
@@ -158,5 +158,8 @@ V cpy(V v) {
 
 V get(V v) {
   if (v->r==1) return v;
-  else return makeV(v->t, cpyval(v->t, v->v));
+  else {
+    V vv=makeV(v->t, cpyval(v->t, v->v));
+    v->r--; if(!v->r) freeV(v); return vv;
+  }
 }
