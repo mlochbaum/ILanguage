@@ -40,10 +40,10 @@ Rv getR(V v) {
 #define LINE(T) case T##_t: return sizeof(T##v);
 I t_sizeof(T t) { switch(t) {ON_TYPES(ALL,LINE)} }
 #undef LINE
-#define ARR_PTR_AT(a, i) (a)->v + t_sizeof((a)->t)*(((i)+(a)->o)%(a)->c)
+Ptr arr_Ptr_at(A a, I i) { return a->v + t_sizeof(a->t)*((i+a->o)%a->c); }
 
 V arr_at(A a, I i) {
-  return makeV(a->t, cpyval(a->t, ARR_PTR_AT(a, i)));
+  return makeV(a->t, cpyval(a->t, arr_Ptr_at(a, i)));
 }
 V list_at(V v, I i) {
   switch (v->t) {

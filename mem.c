@@ -110,17 +110,18 @@ DECL_OC
 #undef LINE_A
 #undef DECL_OC
 
-void freeV(V v) {
-  switch (v->t) {
-    case N_t: FREE(*(N)v->v); break;
-    case Q_t: FREE(*(Q)v->v); break;
-    case O_t: FREE(((O)v->v)->x); break;
-    case F_t: FREE(((F)v->v)->x); break;
-    case L_t: FREE(((L)v->v)->v); break;
-    case A_t: FREE(((A)v->v)->v); break;
+void freePtr(T t, Ptr p) {
+  switch (t) {
+    case N_t: FREE(*(N)p); break;
+    case Q_t: FREE(*(Q)p); break;
+    case O_t: FREE(((O)p)->x); break;
+    case F_t: FREE(((F)p)->x); break;
+    case L_t: FREE(((L)p)->v); break;
+    case A_t: { A a=p; DFOR_EACH(i,a) freePtr(a->t, arr_Ptr_at(a,i));
+                FREE(((A)p)->v); break; }
   }
-  FREE(v->v); FREE(v);
 }
+void freeV(V v) { freePtr(v->t, v->v); FREE(v->v); FREE(v); }
 void del(V v) { v->r--; onChildren(&del, v); if(!v->r) freeV(v); }
 
 void incref(V v) { v->r++; onChildren(&incref, v); }
@@ -146,7 +147,7 @@ void valcpy(T t, Ptr p, Ptr pp) { // from pp to p
                 l->v=arrcpy(ll->v, sizeof(V), ll->l, ll->c, ll->o); break; }
     case A_t: { A a=p, aa=pp; a->t=aa->t; a->c=aa->c; a->l=aa->l; a->o=0;
                 I s=t_sizeof(aa->t); a->v=malloc(s*aa->c);
-                DDO(i,aa->l) valcpy(aa->t, a->v+i*s, ARR_PTR_AT(aa,i)); break; }
+                DDO(i,aa->l) valcpy(aa->t, a->v+i*s, arr_Ptr_at(aa,i)); break; }
   }
 }
 Ptr cpyval(T t, Ptr pp) { Ptr p=malloc(t_sizeof(t)); valcpy(t,p,pp); return p; }

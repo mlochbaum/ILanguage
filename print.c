@@ -71,7 +71,7 @@ Str Lfmt(L l) {
   return s;
 }
 Str Afmt(A a) {
-#define GETSTRING(st, i) v->v = ARR_PTR_AT(a,i); st=toString(v)
+#define GETSTRING(st, i) v->v = arr_Ptr_at(a,i); st=toString(v)
   I l=a->l; I size=t_sizeof(a->t);
   if (l==0) return strdup("N");
   DECL_STR(s, 1); s[0]=' '; Str st; I len;
