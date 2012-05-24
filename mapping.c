@@ -11,7 +11,7 @@ D_D22(dom) {
 }
 D_F22(apply) { del(r); return apply2(l,ll,rr); }
 
-D_F1(type) { return newZ(l->t); }
+D_F1(type) { V v=newZ(l->t); del(l); return v; }
 
 EXTERN_BUILTINS;
 void map_init() {
