@@ -38,7 +38,8 @@ Rv getR(V v) {
 #define LIST_T(l) ((L)l->v)->t
 
 #define LINE(T) case T##_t: return sizeof(T##v);
-I t_sizeof(T t) { switch(t) {ON_TYPES(ALL,LINE)} }
+I t_sizeof(T t) { switch(t) {ON_TYPES(ALL,LINE)
+  default: return sizeof(V); } }
 #undef LINE
 Ptr arr_Ptr_at(A a, I i) { return a->v + t_sizeof(a->t)*((i+a->o)%a->c); }
 
