@@ -14,6 +14,9 @@ I t_sizeof(T);
 I next_pow_2(I);
 #define PURE(t)  !((t)&((t)-1))
 
+#define T(v) (*(v))
+#define REF(v) (**(I**)((v)+1))
+
 V makeO(V, I, V*);
 V makeF(V, I, V*);
 V makeC(R, R);

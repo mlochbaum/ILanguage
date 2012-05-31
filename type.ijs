@@ -53,7 +53,6 @@ typedef I T;
 
 typedef T* V;
 
-#define T(v) (*(v))
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 )
 
