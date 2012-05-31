@@ -202,5 +202,6 @@ void list_init() {
   B_d12['r'] = &reduce_d12;
   B_f12['r'] = &reduce_f12;
 
+  B_d1['z'] = &list_d1;
   B_f1['z'] = &reverse_f1;
 }
