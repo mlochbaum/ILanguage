@@ -7,11 +7,11 @@ D_D21(dom) { return toBool(apply1(cpy(r),cpy(ll))); }
 D_F21(apply) { del(r); return apply1(l,ll); }
 D_D22(dom) {
   V d=apply2(cpy(r), cpy(ll), cpy(rr));
-  I dd=toBool(list_at(d,0)) + 2*toBool(list_at(d,1)); del(d); return dd;
+  I dd=toBool(listV_at(d,0)) + 2*toBool(listV_at(d,1)); del(d); return dd;
 }
 D_F22(apply) { del(r); return apply2(l,ll,rr); }
 
-D_F1(type) { V v=newZ(l->t); del(l); return v; }
+D_F1(type) { V v=newZ(T(l)); del(l); return v; }
 
 EXTERN_BUILTINS;
 void map_init() {

@@ -5,12 +5,12 @@ typedef StrV_HashMap Name;
 
 Name names;
 
-D_D2(set) { return 2 + !!(l->t&N_t); }
-D_F2(set) { StrVset(names, strdup(*(N)l->v), r); return l; }
+D_D2(set) { return 2 + !!((*l)&N_t); }
+D_F2(set) { StrVset(names, strdup(N(l)), r); return l; }
 
-D_D1(name) { return !!(l->t&N_t); }
-D_F1(get) { V v=StrVget(names, *(N)l->v); del(l); return cpy(v); }
-D_F1(del) { StrVdel(names, *(N)l->v); return l; }
+D_D1(name) { return !!((*l)&N_t); }
+D_F1(get) { V v=StrVget(names, N(l)); del(l); return cpy(v); }
+D_F1(del) { StrVdel(names, N(l)); return l; }
 
 EXTERN_BUILTINS;
 void name_init() {

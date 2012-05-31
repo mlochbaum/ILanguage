@@ -7,7 +7,7 @@ This means not all data is necessarily examined, and the hash may show
 poor performance on similar pieces of data.
 
 The algorithm:
-Hashes *v->v recursively according to the type.
+Hashes v recursively according to the type.
 hash_UI casts to UI* and filters as follows:
 If the length is less than 256, hash everything.
 Otherwise, for length-n data, hash n.q bytes, choosing the next byte using
@@ -28,25 +28,25 @@ UI hash_UI(I l, UI* v) {
 UI hash_string(Str v) {
   return hash_UI(strlen(v)/sizeof(UI), (UI*)v);
 }
-UI hash_LIST(V v) {
-  UI h=2184626789L; I l=LIST_L(v);
-  if (l<256) { DDO(i,l) h = (i+1000003)*hash(list_at(v,i)) ^ h<<1; }
-  else { I i; for (i=0; i*i<l; i++) h = (i+1000003)*hash(list_at(v,h%l)) ^ h<<1; }
+UI hash_LIST(L l) {
+  UI h=2184626789L; I n=l.l;
+  if (n<256) { DDO(i,n) h = (i+1000003)*hash(list_at(l,i)) ^ h<<1; }
+  else { I i; for (i=0; i*i<n; i++) h = (i+1000003)*hash(list_at(l,h%n)) ^ h<<1; }
   return h;
 }
 
 UI hash(V v) {
   UI h=2184626789L;
-  switch (v->t) {
-    case E_t: case N_t: case Q_t: return hash_string(*(Str*)v->v);
-    case B_t: case S_t: return h * *(B)v->v;
-    case O_t: case F_t: { I l = ((O)v->v)->l+1; UI u[l];
-                          DDO(i,l-1) u[i]=hash(((O)v->v)->x[i]);
-                          u[l]=hash(((O)v->v)->f); return hash_UI(l, u); }
-#define LINE(T) case T##_t: return hash_UI(sizeof(T##v)/sizeof(UI), v->v);
+  switch (*v) {
+    case E_t: case N_t: case Q_t: return hash_string(E(v));
+    case B_t: case S_t: return h * B(v);
+    case O_t: case F_t: { I l = O(v).l+1; UI u[l];
+                          DDO(i,l-1) u[i]=hash(O(v).x[i]);
+                          u[l]=hash(O(v).f); return hash_UI(l, u); }
+#define LINE(T) case T##_t: return hash_UI(sizeof(T)/sizeof(UI), (UI*)(v+1));
     LINE(Z) LINE(R) LINE(C)
 #undef LINE
-    case L_t: case A_t: return hash_LIST(v->v);
+    case L_t: return hash_LIST(L(v));
   }
 }
 

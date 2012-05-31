@@ -1,7 +1,7 @@
 int compare_arith(V l, V r) {
 #define D_L(type, op) case type##_t: c=op(get##type(l), get##type(r)); break
 #define CMP(l,r) (((l)>(r))-((l)<(r)))
-  I c; switch (max(l->t,r->t)) { D_L(Z,CMP); D_L(R,CMP); }
+  I c; switch (max(T(l),T(r))) { D_L(Z,CMP); D_L(R,CMP); }
   del(l); del(r); return c;
 #undef CMP
 #undef D_L

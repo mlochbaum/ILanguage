@@ -1,3 +1,8 @@
+V constant(V v) {
+  if (T(v)&CONST_t) return v;
+  DECL_V(B,f); B(f)='k'; WRAP(V*,vv,v); return makeF(f,1,vv);
+}
+
 V fmap(V f, I n, V* x, I d) {
   X m={0,NULL};
   DDO(i, n) if (! (d&1<<i)) {
@@ -9,25 +14,23 @@ V fmap(V f, I n, V* x, I d) {
   }
   switch (m.t) {
     case CONST_X: DO(i,n)del(x[i]); return Err("Domain error");
-    case FUNC_X:  return makeO(f, n, (V*)cpy_Ptr((Ptr*)x,n));
+    case FUNC_X:  { DECL_ARR(V,xx,n); DDO(i,n) {
+                    if (d&1<<i) xx[i]=constant(x[i]); else xx[i]=x[i];
+                  } return makeO(f,n,xx); }
     case LIST_X:  return fmap_LIST(f, n, x, d, *(I*)m.v);
   }
 }
 
 V fmap_LIST(V f, I n, V* x, I d, I l) {
   DECL_ARR(V, v, l); I i[n], c[n]; V xi[n];
-  increfn(f,l-1);
-  DDO(j, n) {
-    if (d&1<<j) { increfn(x[j], l); xi[j]=x[j]; }
-    else { i[j]=LIST_O(x[j]); c[j]=LIST_C(x[j]); }
-  }
+  DDO(j, n) if (!(d&1<<j)) { i[j]=L(x[j]).o; c[j]=L(x[j]).c; }
   DDO(k, l) {
-    DO(j,n) if (!(d&1<<j)) {
-      xi[j]=list_at(x[j],i[j]);
-      i[j]++; if(i[j]==c[j]) i[j]=0;
+    DO(j,n) {
+      if (d&1<<j) { xi[j]=cpy(x[j]); }
+      else { xi[j]=listV_at(x[j],i[j]); i[j]++; if(i[j]==c[j]) i[j]=0; }
     }
-    v[k] = apply(f, n, xi);
+    v[k] = apply(cpy(f), n, xi);
   }
-  DO(j, n) del(x[j]);
+  DO(j, n) del(x[j]); del(f);
   return wrapList(l, v);
 }

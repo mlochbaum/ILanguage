@@ -4,17 +4,17 @@
 #include <limits.h>
 
 /*
-   Verify the given string, checking that nesting symbols ()'`"
-   are correct. If they are, return NULL; otherwise, return
-   a string with an error message.
+Verify the given string, checking that nesting symbols ()'`"
+are correct. If they are, return NULL; otherwise, return
+a string with an error message.
 
-   Rules:
-     `"' must be paired with themselves, and between them all other
-     characters have no special meaning.
-     "" between quotes indicates a literal quote character. This does
-     not change the verification algorithm.
-     () must be paired, and characters between them retain their meanings.
-    */
+Rules:
+  `"' must be paired with themselves, and between them all other
+  characters have no special meaning.
+  "" between quotes indicates a literal quote character. This does
+  not change the verification algorithm.
+  () must be paired, and characters between them retain their meanings.
+*/
 SET_STACK(char);
 
 I isquote(char c) {
@@ -53,10 +53,10 @@ Str verify(Str s) {
 }
 
 /*
-   ************* Scanning **************
-   At this point we know that quotes and parentheses are balanced,
-   so we can ignore all kinds of testing.
-   */
+************* Scanning **************
+At this point we know that quotes and parentheses are balanced,
+so we can ignore all kinds of testing.
+*/
 typedef struct { V v; I p; } *W; // p is precedence
 W newW(V v, I p) {
   DECL(W, w); w->p=p; w->v=v; return w;

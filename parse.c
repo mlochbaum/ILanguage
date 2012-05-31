@@ -6,10 +6,10 @@ V parseChar(Str* s) { return newB(*(*s)++); }
 /////////////// parseNum ///////////////////
 I isDigit(char c) { return '0'<=c && c<='9'; }
 I parseDig(char c) { return (I)c - (I)'0'; }
-Rv parseDec(Str* s);
+R parseDec(Str* s);
 // **s is a digit or underscore
 V parseNum(Str* s) {
-  Zv i=0;
+  Z i=0;
   I mult=1;
   if (**s=='_') { mult=-1; (*s)++; }
   while (isDigit(**s)) {
@@ -20,8 +20,8 @@ V parseNum(Str* s) {
   }
   else return newZ(mult*i);
 }
-Rv parseDec(Str* s) {
-  Rv d=0; Str st;
+R parseDec(Str* s) {
+  R d=0; Str st;
   while (isDigit(**s)) (*s)++;
   st = *s-1;
   while (*st!='.') {

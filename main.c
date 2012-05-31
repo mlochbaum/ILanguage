@@ -3,12 +3,12 @@
 #include <string.h>
 
 #include "type.h"
-#include "mapclass.c"
-#include "apply.h"
-#include "stack.h"
 #include "mem.h"
 #include "util.c"
 #include "mem.c"
+#include "mapclass.c"
+#include "apply.h"
+#include "stack.h"
 #include "hash.c"
 #include "parse.c"
 #include "builtin.c"
