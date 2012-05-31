@@ -1,20 +1,32 @@
-#define DECL_V(type, v) V v=MALLOC(sizeof(T)+sizeof(type)); *v=type##_t
+// Find next power of two for length: or with
+// all down bitshifts, then add one.
+I next_pow_2(I l) {
+  I c=l-1; I i=32; while (i) { c |= c>>i; i>>=1; } return c+1;
+}
+#define LINE(T) case T##_t: return sizeof(T);
+I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
+#undef LINE
+
+
 V makeO(V f, I l, V* x) {
-  DECL_V(O,v); O* oo=(O*)(v+1); oo->r=MALLOC(sizeof(I)); *oo->r=1; oo->f=f; oo->l=l; oo->x=x; return v;
+  DECL_V(O,v); O* oo=(O*)(v+1); oo->r=MALLOC(sizeof(I));
+  *oo->r=1; oo->f=f; oo->l=l; oo->x=x; return v;
 }
 V makeF(V f, I l, V* x) {
-  DECL_V(F,v); F* ff=(F*)(v+1); ff->r=MALLOC(sizeof(I)); *ff->r=1; ff->f=f; ff->l=l; ff->x=x; return v;
+  DECL_V(F,v); F* ff=(F*)(v+1); ff->r=MALLOC(sizeof(I));
+  *ff->r=1; ff->f=f; ff->l=l; ff->x=x; return v;
 }
 V makeC(R a, R b) {
   DECL_V(C,v); C* cc=(C*)(v+1); cc->a=a; cc->b=b; return v;
 }
 V makeL(T t, I c, I l, I o, Ptr p) {
-  DECL_V(L,v); L* ll=(L*)(v+1); ll->r=MALLOC(sizeof(I)); *ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return v;
+  DECL_V(L,v); L* ll=(L*)(v+1); ll->r=MALLOC(sizeof(I));
+  *ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return v;
 }
 
-#define setNew(type) \
-  V new##type(type vv) { DECL_V(type,v); type(v)=vv; return v; }
-ON_TYPES(ALL, setNew);    // functions new##T : T->V
+#define SET_NEW(T) V new##T(T vv) { DECL_V(T,v); T(v)=vv; return v; }
+ON_TYPES(ALL, SET_NEW);    // functions new##T : T->V
+#undef SET_NEW
 
 // Custom make functions
 V wrapArray(T t, I l, Ptr p) {
@@ -91,3 +103,25 @@ V get(V v) { //TODO
 
 void deln(I n, V* v) { DDO(i,n) del(v[i]); FREE(v); }
 V* cpyn(I n, V* v) {DECL_ARR(V,vv,n); DDO(i,n)vv[i]=cpy(v[i]); return vv;}
+
+
+// Numbers
+// TODO: complex case
+Z getZ(V v) { return Z(v); }
+R getR(V v) {
+  switch (*v) {
+    case Z_t: return (R)Z(v);
+    case R_t: return R(v);
+  }
+}
+
+// List properties
+V arr_at(L l, I i) {
+  V v=MALLOC(sizeof(T)+t_sizeof(l.t)); *v=l.t;
+  valcpy(v+1, LIST_PTR_AT(l,i), l.t); return v;
+}
+V list_at(L l, I i) {
+  if (PURE(l.t)) return arr_at(l, i);
+  else return cpy(LIST_AT(l, i));
+}
+V listV_at(V v, I i) { return list_at(L(v), i); }
