@@ -93,14 +93,14 @@ V* cpyn(I n, V* v) {DECL_ARR(V,vv,n); DDO(i,n)vv[i]=cpy(v[i]); return vv;}
 
 V get(V v) {
   if (!(*v&COMP_t) || REF(v)==1) return v;
-  else { REF(v)--; switch (T(v)) {
+  else { REF(v)--; V r; switch (T(v)) {
     case O_t: case F_t:
-      { O o=O(v); return makeO(cpy(o.f), o.l, cpyn(o.l, o.x)); }
+      { O o=O(v); r=makeO(cpy(o.f), o.l, cpyn(o.l, o.x)); FREE(v); }
     case L_t:
       { L l=L(v); I s=t_sizeof(l.t); Ptr p=MALLOC(s*l.c);
         DDO(i,l.l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l.t);
-        return makeL(l.t, l.c, l.l, 0, p); }
-  } }
+        r=makeL(l.t, l.c, l.l, 0, p); FREE(v); }
+  } return r; }
 }
 
 
