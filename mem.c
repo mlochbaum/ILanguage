@@ -88,21 +88,20 @@ V cpy(V v) {
   valcpy(vv+1,v+1,*v); return vv;
 }
 
-V get(V v) { //TODO
-  if (!(*v&COMP_t) || *v==1) return v;
-  else { V vv=cpy(v); del(v); return vv; }
-}
-/*
-    case O_t: case F_t: { O *o=(O*)p, oo=*(O*)pp; o->f=cpy(oo.f); o->l=oo.l;
-                          o->x=malloc(sizeof(V)*oo.l);
-                          DDO(i,oo.l) o->x[i]=cpy(oo.x[i]); break; }
-    case L_t: { L *l=(L*)p, ll=*(L*)pp; l->t=ll.t; l->c=ll.c; l->l=ll.l; l->o=0;
-                I s=t_sizeof(ll.t); l->p=malloc(s*ll.c);
-                DDO(i,ll.l) valcpy(l->p+i*s, LIST_PTR_AT(ll,i), ll.t); break; }
-                */
-
 void deln(I n, V* v) { DDO(i,n) del(v[i]); FREE(v); }
 V* cpyn(I n, V* v) {DECL_ARR(V,vv,n); DDO(i,n)vv[i]=cpy(v[i]); return vv;}
+
+V get(V v) {
+  if (!(*v&COMP_t) || REF(v)==1) return v;
+  else { REF(v)--; switch (T(v)) {
+    case O_t: case F_t:
+      { O o=O(v); return makeO(cpy(o.f), o.l, cpyn(o.l, o.x)); }
+    case L_t:
+      { L l=L(v); I s=t_sizeof(l.t); Ptr p=MALLOC(s*l.c);
+        DDO(i,l.l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l.t);
+        return makeL(l.t, l.c, l.l, 0, p); }
+  } }
+}
 
 
 // Numbers
