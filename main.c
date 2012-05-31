@@ -4,11 +4,9 @@
 
 #include "type.h"
 #include "mem.h"
-#include "util.c"
-#include "mem.c"
-#include "mapclass.c"
 #include "apply.h"
 #include "stack.h"
+#include "mem.c"
 #include "hash.c"
 #include "parse.c"
 #include "builtin.c"
