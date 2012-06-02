@@ -1,6 +1,7 @@
-This is I, a language which generalizes constructs from J.
+This is I, Version -1.0.
 
-See doc/ for documentation.
+I is a language which generalizes constructs from J.
+See doc/introduction.txt for documentation.
 
 To build,
 gcc main.c -o I
