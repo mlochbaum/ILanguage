@@ -1,8 +1,9 @@
-I dom(V f, I n, V* x) {
-#define LINE(T) case T##_t: return dom_##T(T(f),n,x);
-  switch (T(f)) {LINE(B) LINE(F) LINE(N) LINE(Q)}
+I dom_Ptr(T t, Ptr p, I n, V* x) {
+#define LINE(T) case T##_t: return dom_##T(*(T*)p,n,x);
+  switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
 #undef LINE
 }
+I dom(V f, I n, V* x) { return dom_Ptr(*f, f+1, n, x); }
 
 I dom_F(F f, I n, V* x) {
   switch (T(f.f)) {

@@ -72,12 +72,13 @@ V FfromB(B b, I n, V* x) {
 
 V apply_B1(B b, V* x) {
   F1 f=B_f1[b]; if(!f) return FfromB(b,1,x);
-  else {V v=f(x[0]); return v;}
+  else return f(x[0]);
 }
 V apply_B2(B b, V* x) {
   F2 f=B_f2[b]; if(!f) return FfromB(b,2,x);
-  else {V v=f(x[0],x[1]); return v;}
+  else return f(x[0],x[1]);
 }
+
 V apply_B(B b, I n, V* x) {
   switch (n) {
     case 1: return apply_B1(b,x);
@@ -92,26 +93,21 @@ I dom_B(B b, I n, V* x) {
   }
 }
 
-V apply_B11(B b, V* x, V* xx) {
-  F11 f=B_f11[b]; if(!f) return makeF(FfromB(b,1,x),1,xx);
-  else {V v=f(cpy(x[0]), xx[0]); return v;}
-}
-V apply_B12(B b, V* x, V* xx) {
-  F12 f=B_f12[b]; if(!f) return makeF(FfromB(b,1,x),2,xx);
-  else {V v=f(cpy(x[0]), xx[0], xx[1]); return v;}
-}
-V apply_B21(B b, V* x, V* xx) {
-  F21 f=B_f21[b]; if(!f) return makeF(FfromB(b,2,x),1,xx);
-  else {V v=f(cpy(x[0]), cpy(x[1]), xx[0]); return v;}
-}
-V apply_B22(B b, V* x, V* xx) {
-  F22 f=B_f22[b]; if(!f) return makeF(FfromB(b,2,x),2,xx);
-  else {V v=f(cpy(x[0]), cpy(x[1]), xx[0], xx[1]); return v;}
-}
+V apply_F11(F11 f, V* x, V* xx) { return f(x[0], xx[0]); }
+V apply_F12(F12 f, V* x, V* xx) { return f(x[0], xx[0], xx[1]); }
+V apply_F21(F21 f, V* x, V* xx) { return f(x[0], x[1], xx[0]); }
+V apply_F22(F22 f, V* x, V* xx) { return f(x[0], x[1], xx[0], xx[1]); }
+
 V apply_FB(F f, I n, V* xx) {
-#define LINE(n) case n: return apply_B##n(B(f.f), f.x, xx);
-  switch (10*f.l + n) { LINE(11) LINE(12) LINE(21) LINE(22) }
+#define LINE1(y,z,yz) case (2*y+z): { \
+  B b=B(f.f); del(f.f); F##yz ff=B_f##yz[b]; \
+  if(!ff) { DDO(i,y)del(f.x[i]); DO(i,z)del(xx[i]); \
+    return Err("Unknown builtin"); } \
+  return apply_F##yz(ff, f.x, xx); }
+#define LINE(a,b) LINE1(a,b,a##b)
+  switch (2*f.l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
 #undef LINE
+#undef LINE1
 }
 
 I dom_FB(F f, I n, V* xx) {

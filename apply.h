@@ -8,6 +8,11 @@ I dom      (V, I, V*);
 X mapclass (V);
 V fmap     (V, I, V*, I);
 
+V apply_Ptr    (T, Ptr, I, V*);
+I dom_Ptr      (T, Ptr, I, V*);
+X mapclass_Ptr (T, Ptr);
+V fmap_Ptr     (T, Ptr, I, V*, I);
+
 // apply.c
 #define DECLARE_APPLY(T) V apply_##T(T, I, V*);
 ON_TYPES(NCONST,DECLARE_APPLY)

@@ -17,6 +17,8 @@ I next_pow_2(I);
 #define T(v) (*(v))
 #define REF(v) (**(I**)((v)+1))
 
+V wrapPtr(T, Ptr);
+
 V makeO(V, I, V*);
 V makeF(V, I, V*);
 V makeC(R, R);
@@ -31,13 +33,14 @@ V wrapList(I, V*);
 V makeStr(Str);
 V DErr(Str); V Err(Str);
 
-void delPtr(T, Ptr);
-void del(V); // Delete this copy of v.
+void delPtr(T, Ptr);  void del(V); // Delete this copy of v.
+void freePtr(T, Ptr); void freeV(V);
 void valcpy(Ptr, Ptr, T);
 V cpy(V);    // Return a new copy of v.
 V get(V);    // Ensure that the returned value is safely modifiable.
 
 
+// util
 #define DO(var, max) for(var=0; var<max; var++)
 #define DDO(var, max) I var; DO(var, max)
 
