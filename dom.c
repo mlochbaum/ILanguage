@@ -3,10 +3,10 @@ I dom_Ptr(T t, Ptr p, I n, V* x) {
   switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
 #undef LINE
 }
-I dom(V f, I n, V* x) { return dom_Ptr(*f, f+1, n, x); }
+I dom(V f, I n, V* x) { return dom_Ptr(T(f), V(f), n, x); }
 
 I dom_F(F f, I n, V* x) {
-  switch (T(f.f)) {
+  switch (T(f->f)) {
     case B_t: return dom_FB(f, n, x);
     //case Q_t: return apply_FQ(f, n, x);
   }

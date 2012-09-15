@@ -1,4 +1,5 @@
 #define ON_ALL_NUMS(F) F(1) F(2) F(11) F(12) F(21) F(22)
+#undef V // TODO
 
 #define D_D1(func) I func##_d1(V l)
 #define D_D2(func) I func##_d2(V l, V r)
@@ -38,6 +39,7 @@ typedef V (*F22)(V,V,V,V);  F22 B_f22[256];
   extern F12 B_f12[256]; \
   extern F21 B_f21[256]; \
   extern F22 B_f22[256]
+#define V(vv) ((vv).v)
 
 D_D1(true){return 1;}   D_D2(true){return 3;}
 D_D11(true){return 1;}  D_D12(true){return 3;}
@@ -100,19 +102,19 @@ V apply_F22(F22 f, V* x, V* xx) { return f(x[0], x[1], xx[0], xx[1]); }
 
 V apply_FB(F f, I n, V* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
-  B b=B(f.f); del(f.f); F##yz ff=B_f##yz[b]; \
-  if(!ff) { DDO(i,y)del(f.x[i]); DO(i,z)del(xx[i]); \
+  B b=B(f->f); del(f->f); F##yz ff=B_f##yz[b]; \
+  if(!ff) { DDO(i,y)del(f->x[i]); DO(i,z)del(xx[i]); \
     return Err("Unknown builtin"); } \
-  return apply_F##yz(ff, f.x, xx); }
+  return apply_F##yz(ff, f->x, xx); }
 #define LINE(a,b) LINE1(a,b,a##b)
-  switch (2*f.l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
+  switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
 #undef LINE
 #undef LINE1
 }
 
 I dom_FB(F f, I n, V* xx) {
-  B b=B(f.f); V* x=f.x;
-  switch (10*f.l + n) {
+  B b=B(f->f); V* x=f->x;
+  switch (10*f->l + n) {
     case 11: return B_d11[b](x[0], xx[0]);
     case 12: return B_d12[b](x[0], xx[0], xx[1]);
     case 21: return B_d21[b](x[0], x[1], xx[0]);

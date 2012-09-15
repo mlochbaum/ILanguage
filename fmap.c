@@ -3,12 +3,12 @@ X mapclass_Ptr(T t, Ptr p) {
 #define CASE(T) case T##_t:
     ON_TYPES(CONST, CASE) x.t=CONST_X; break;
     ON_TYPES(FUNC , CASE) x.t=FUNC_X; break;
-    case L_t: x.t=LIST_X; x.v=&(((L*)p)->l); break;
+    case L_t: x.t=LIST_X; x.v=&((*(L*)p)->l); break;
 #undef CASE
   }
   return x;
 }
-X mapclass(V v) { return mapclass_Ptr(*v, v+1); }
+X mapclass(V v) { return mapclass_Ptr(T(v), V(v)); }
 
 I mapclasseq(X x, X y) {
   return x.t==y.t && (x.t!=LIST_X || *((I*)x.v)==*((I*)y.v));
@@ -56,7 +56,7 @@ V fmap(V f, I n, V* x, I d) {
 
 V fmap_LIST(V f, I n, V* x, I d, I l) {
   DECL_ARR(V, v, l); I i[n], c[n]; V xi[n];
-  DDO(j, n) if (!(d&1<<j)) { i[j]=L(x[j]).o; c[j]=L(x[j]).c; }
+  DDO(j, n) if (!(d&1<<j)) { i[j]=L(x[j])->o; c[j]=L(x[j])->c; }
   DDO(k, l) {
     DO(j,n) {
       if (d&1<<j) { xi[j]=cpy(x[j]); }

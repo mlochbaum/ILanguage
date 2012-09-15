@@ -6,21 +6,21 @@ typedef unsigned int UI;
 
 typedef I T;
 
-typedef T* V;
+typedef struct { T t; Ptr v; } V;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 
 typedef Str E;
 typedef Char B;
-typedef struct { I* r; V f; I l; V* x; } O;
-typedef struct { I* r; V f; I l; V* x; } F;
+typedef struct { I r; V f; I l; V* x; } * O;
+typedef struct { I r; V f; I l; V* x; } * F;
 typedef Str N;
 typedef Str Q;
 typedef Char S;
 typedef int64_t Z;
 typedef double R;
 typedef struct { R a; R b; } C;
-typedef struct { I* r; T t; I c; I l; I o; Ptr p; } L;
+typedef struct { I r; T t; I c; I l; I o; Ptr p; } * L;
 
 #define E_t           1 //Error
 #define B_t           2 //Builtin
@@ -38,17 +38,17 @@ typedef struct {T t; O o;} *VO;
 typedef struct {T t; F f;} *VF;
 typedef struct {T t; L l;} *VL;
 
-#define E(v) (*(E*)((v)+1))
-#define B(v) (*(B*)((v)+1))
-#define O(v) (*(O*)((v)+1))
-#define F(v) (*(F*)((v)+1))
-#define N(v) (*(N*)((v)+1))
-#define Q(v) (*(Q*)((v)+1))
-#define S(v) (*(S*)((v)+1))
-#define Z(v) (*(Z*)((v)+1))
-#define R(v) (*(R*)((v)+1))
-#define C(v) (*(C*)((v)+1))
-#define L(v) (*(L*)((v)+1))
+#define E(vv) (*(E*)((vv).v))
+#define B(vv) (*(B*)((vv).v))
+#define O(vv) (*(O*)((vv).v))
+#define F(vv) (*(F*)((vv).v))
+#define N(vv) (*(N*)((vv).v))
+#define Q(vv) (*(Q*)((vv).v))
+#define S(vv) (*(S*)((vv).v))
+#define Z(vv) (*(Z*)((vv).v))
+#define R(vv) (*(R*)((vv).v))
+#define C(vv) (*(C*)((vv).v))
+#define L(vv) (*(L*)((vv).v))
 
 #define LOWER_E e
 #define LOWER_B b

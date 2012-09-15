@@ -24,7 +24,7 @@ D_F22(backhook) { return apply2(l,ll,apply1(r,rr)); }
 D_F21(compose) { return apply1(r, apply1(l,ll)); }
 D_F22(compose) { return apply2(r, apply1(l,ll), apply1(cpy(l),rr)); }
 
-D_D2(power) { return 2*(!!(*r&Z_t)) + 1; }
+D_D2(power) { return 2*(!!(T(r)&Z_t)) + 1; }
 D_F21(power) {
   I n=getFloorZ(r); del(r); DDO(i,n) ll=apply1(cpy(l),ll);
   del(l); return ll;
@@ -34,7 +34,7 @@ D_F22(power) {
   del(l); del(rr); return ll;
 }
 
-I toBool(V v) { I r = (*v!=Z_t || Z(v)); del(v); return r; }
+I toBool(V v) { I r = (T(v)!=Z_t || Z(v)); del(v); return r; }
 D_F21(while) {
   while(toBool(apply1(cpy(r), cpy(ll)))) ll=apply1(cpy(l),ll);
   del(l); del(r); return ll;

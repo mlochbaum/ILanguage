@@ -29,7 +29,7 @@ UI hash_string(Str v) {
   return hash_UI(strlen(v)/sizeof(UI), (UI*)v);
 }
 UI hash_LIST(L l) {
-  UI h=2184626789L; I n=l.l;
+  UI h=2184626789L; I n=l->l;
   if (n<256) { DDO(i,n) h = (i+1000003)*hash(list_at(l,i)) ^ h<<1; }
   else { I i; for (i=0; i*i<n; i++) h = (i+1000003)*hash(list_at(l,h%n)) ^ h<<1; }
   return h;
@@ -37,13 +37,13 @@ UI hash_LIST(L l) {
 
 UI hash(V v) {
   UI h=2184626789L;
-  switch (*v) {
+  switch (T(v)) {
     case E_t: case N_t: case Q_t: return hash_string(E(v));
     case B_t: case S_t: return h * B(v);
-    case O_t: case F_t: { I l = O(v).l+1; UI u[l];
-                          DDO(i,l-1) u[i]=hash(O(v).x[i]);
-                          u[l]=hash(O(v).f); return hash_UI(l, u); }
-#define LINE(T) case T##_t: return hash_UI(sizeof(T)/sizeof(UI), (UI*)(v+1));
+    case O_t: case F_t: { O o=O(v); I l = o->l+1; UI u[l];
+                          DDO(i,l-1) u[i]=hash(o->x[i]);
+                          u[l]=hash(o->f); return hash_UI(l, u); }
+#define LINE(T) case T##_t: return hash_UI(sizeof(T)/sizeof(UI), (UI*)V(v));
     LINE(Z) LINE(R) LINE(C)
 #undef LINE
     case L_t: return hash_LIST(L(v));
@@ -70,7 +70,7 @@ UI hash(V v) {
   void name##free(M m) { DDO(i,m->l){ L n=m->v[i],nn;                    \
     while(n){ nn=n; n=n->n; name##freeL(nn); } } FREE(m->v); FREE(m); }  \
   V name##get(M m, K k) { L n=m->v[hash(k)%m->l];                        \
-    while(n){if(equals(k,n->k))return n->v; else n=n->n;} return NULL; } \
+    while(n){if(equals(k,n->k))return n->v; else n=n->n;} return DErr(""); /* TODO */} \
   void name##del(M m, K k) {                                             \
     L p=NULL, n=m->v[hash(k)%m->l]; while(n) { if (equals(k,n->k)) {     \
       if(p) p->n=n->n; else m->v[hash(k)%m->l]=n->n;                     \

@@ -4,18 +4,19 @@
 #define FREE(ptr) free(ptr)
 
 #define DECL(t, v) t v = MALLOC(sizeof(*v))
-#define DECL_ARR(t, v, l) t *v = MALLOC(sizeof(v)*(l))
-#define DECL_STR(v, l) Str v = MALLOC(sizeof(v)*((l)+1))
+#define DECL_ARR(t, v, l) t *v = MALLOC(sizeof(t)*(l))
+#define DECL_STR(v, l) Str v = MALLOC((l)+1)
 #define DECL_NSTR(v, l) DECL_STR(v, l); v[l]='\0'
-#define DECL_V(type, v) V v=MALLOC(sizeof(T)+sizeof(type)); *v=type##_t
+#define DECL_V(type, v) V v; T(v)=type##_t; V(v)=MALLOC(sizeof(type))
 #define WRAP(type, d, dv) DECL(type,d); *d=dv
 
 I t_sizeof(T);
 I next_pow_2(I);
 #define PURE(t)  !((t)&((t)-1))
 
-#define T(v) (*(v))
-#define REF(v) (**(I**)((v)+1))
+#define T(v) ((v).t)
+#define V(vv) ((vv).v)
+#define REF(vv) (**(I**)((vv).v))
 
 V wrapPtr(T, Ptr);
 
@@ -53,14 +54,14 @@ V get(V);    // Ensure that the returned value is safely modifiable.
 // numbers
 Z getZ(V);
 R getR(V);
-#define getOPZ(vv, OP) ((*(vv))==Z_t ? Z(vv) : OP(R(vv)))
+#define getOPZ(vv, OP) ((T(vv))==Z_t ? Z(vv) : OP(R(vv)))
 #define getFloorZ(v) getOPZ(v, floor)
 #define getCeilZ(v) getOPZ(v,ceiling)
 
 // lists
-#define LIST_AT(l, i) ((V*)(l).p)[((i)+(l).o)%(l).c]
-#define LIST_PTR_AT(l, i) (l).p+t_sizeof((l).t)*(((i)+(l).o)%(l).c)
-#define LIST_PTR_ATS(l, i, s) (l).p+(s)*(((i)+(l).o)%(l).c)
+#define LIST_AT(l, i) ((V*)(l)->p)[((i)+(l)->o)%(l)->c]
+#define LIST_PTR_AT(l, i) (l)->p+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c)
+#define LIST_PTR_ATS(l, i, s) (l)->p+(s)*(((i)+(l)->o)%(l)->c)
 V arr_at(L, I);
 V list_at(L, I);
 V listV_at(V, I);

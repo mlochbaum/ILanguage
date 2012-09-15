@@ -16,12 +16,12 @@ T apply_T(V f, I n, T* x) {
 }
 
 T apply_O_T(O o, I n, T* x) {
-  T t[o.l];
-  DDO(j, o.l) { t[j]=apply_T(o.x[j], n, x); }
-  return apply_T(o.f, o.l, t);
+  T t[o->l];
+  DDO(j, o->l) { t[j]=apply_T(o->x[j], n, x); }
+  return apply_T(o->f, o->l, t);
 }
 T apply_F_T(F f, I n, T* x) {
-  switch (T(f.f)) {
+  switch (T(f->f)) {
     case B_t: return apply_T_FB(f, n, x);
     //case Q_t: return apply_T_FQ(f, n, x);
   }
@@ -34,12 +34,12 @@ T apply_L_T(L l, I n, T* x) { return L_t; }
 /* dom */
 I dom_T(V f, I n, T* x) {
 #define LINE(T) case T##_t: return dom_T_##T(T(f),n,x);
-  switch (*f) {LINE(B) LINE(F) LINE(N) LINE(Q)}
+  switch (T(f)) {LINE(B) LINE(F) LINE(N) LINE(Q)}
 #undef LINE
 }
 
 I dom_T_F(F f, I n, T* x) {
-  switch (T(f.f)) {
+  switch (T(f->f)) {
     case B_t: return dom_T_FB(f, n, x);
     //case Q_t: return apply_FQ(f, n, x);
   }
