@@ -7,7 +7,10 @@ I next_pow_2(I l) {
 I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
 #undef LINE
 
-V wrapPtr(T t, Ptr p) { V v; T(v)=t; V(v)=p; return v; }
+V wrapPtr(T t, Ptr p) {
+  if (!PURE(t)) { V v=*(V*)p; FREE(p); return v; }
+  else { V v; T(v)=t; V(v)=p; return v; }
+}
 
 
 V makeO(V f, I l, V* x) {
