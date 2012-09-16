@@ -3,7 +3,6 @@ I dom_Ptr(T t, Ptr p, I n, V* x) {
   switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
 #undef LINE
 }
-I dom(V f, I n, V* x) { return dom_Ptr(T(f), V(f), n, x); }
 
 I dom_F(F f, I n, V* x) {
   switch (T(f->f)) {

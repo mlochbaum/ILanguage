@@ -4,7 +4,6 @@ typedef struct {T t; Ptr v;} X;
 #define LIST_X   4 //LA
 
 V apply    (V, I, V*);
-I dom      (V, I, V*);
 X mapclass (V);
 V fmap     (V, I, V*, I);
 
@@ -24,7 +23,6 @@ V apply1(V, V);
 V apply2(V, V, V);
 
 // mapclass.c
-X mapclass(V);
 I mapclasseq(X, X);
 
 // dom.c

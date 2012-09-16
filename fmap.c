@@ -36,23 +36,7 @@ V fmap_Ptr(T t, Ptr p, I n, V* x, I d) {
     case LIST_X:  return fmap_LIST(wrapPtr(t,p), n, x, d, *(I*)m.v);
   }
 }
-V fmap(V f, I n, V* x, I d) {
-  X m={0,NULL};
-  DDO(i, n) if (! (d&1<<i)) {
-    X mt=mapclass(x[i]);
-    if (!m.t) m=mt;
-    else if (!mapclasseq(m,mt)) {
-      DDO(j,n)del(x[j]); return Err("Incompatible mapclasses");
-    }
-  }
-  switch (m.t) {
-    case CONST_X: DO(i,n)del(x[i]); return Err("Domain error");
-    case FUNC_X:  { DECL_ARR(V,xx,n); DDO(i,n) {
-                    if (d&1<<i) xx[i]=constant(x[i]); else xx[i]=x[i];
-                  } return makeO(f,n,xx); }
-    case LIST_X:  return fmap_LIST(f, n, x, d, *(I*)m.v);
-  }
-}
+V fmap(V f, I n, V* x, I d) { return fmap_Ptr(T(f), V(f), n, x, d); }
 
 V fmap_LIST(V f, I n, V* x, I d, I l) {
   DECL_ARR(V, v, l); I i[n], c[n]; V xi[n];
