@@ -16,21 +16,12 @@ V apply_Ptr(T t, Ptr p, I n, V* x) {
     if ((d+1)==1<<n) switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
     else return fmap_Ptr(t,p,n,x,d);
   }
+  freePtr(t, p); FREE(p); return v;
 #undef LINE
 }
 
 V apply(V f, I n, V* x) {
-#define LINE(T) case T##_t: v=apply_##T(T(f),n,x); break;
-  if (T(f) & CONST_t) { DDO(i,n) del(x[i]); return f; }
-  f=get(f); V v; if (T(f) & (O_t+L_t)) {
-    switch (T(f)) {LINE(O) LINE(L)}
-  } else {
-    I d = dom(f,n,x);
-    if ((d+1)==1<<n) switch (T(f)) {LINE(B) LINE(F) LINE(N) LINE(Q)}
-    else return fmap(f,n,x,d);
-  }
-  freeV(f); return v;
-#undef LINE
+  f=get(f); return apply_Ptr(T(f), V(f), n, x);
 }
 
 V apply_O(O o, I n, V* x) {
