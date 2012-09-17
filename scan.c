@@ -65,7 +65,7 @@ SET_STACK(W);
 
 void stackApplyStep(WStack stack) {
   W r=Wpop(stack), f=Wpop(stack), l=Wpop(stack);
-  V v = apply2(f->v, l->v, r->v);
+  V v = apply2d(f->v, l->v, r->v);
   Wpush(stack, newW(v, max(l->p, r->p)));
   FREE(f); FREE(l); FREE(r);
 }

@@ -102,7 +102,7 @@ V apply_F22(F22 f, V* x, V* xx) { return f(x[0], x[1], xx[0], xx[1]); }
 
 V apply_FB(F f, I n, V* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
-  B b=B(f->f); del(f->f); F##yz ff=B_f##yz[b]; \
+  B b=B(f->f); F##yz ff=B_f##yz[b]; \
   if(!ff) { DDO(i,y)del(f->x[i]); DO(i,z)del(xx[i]); \
     return Err("Unknown builtin"); } \
   return apply_F##yz(ff, f->x, xx); }

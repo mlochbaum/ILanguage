@@ -8,8 +8,8 @@ I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
 #undef LINE
 
 V wrapPtr(T t, Ptr p) {
-  if (!PURE(t)) { V v=*(V*)p; FREE(p); return v; }
-  else { V v; T(v)=t; V(v)=p; return v; }
+  if (!PURE(t)) { V v=*(V*)p; FREE(p); return cpy(v); }
+  else { V v; T(v)=t; V(v)=p; return cpy(v); }
 }
 
 

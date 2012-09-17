@@ -140,18 +140,18 @@ D_D11(reduce) { return !!(T(ll)&(L_t|CONST_t)); }
 D_D12(reduce) { return 2 + !!(T(ll)&(L_t|CONST_t)); }
 D_F1(identity_of) { del(l); return Err("Identity unknown"); }
 D_F11(reduce) {
-  if (!(T(ll)&L_t)) { del(l); return ll; }
+  if (!(T(ll)&L_t)) { l; return ll; }
   I len=L(ll)->l;
   if (len==0) { del(ll); return identity_of_f1(l); }
   V v=listV_at(ll,0);
-  I i=1; for(;i<len;i++) v=apply2(cpy(l),v,listV_at(ll,i));
-  del(l); del(ll); return v;
+  I i=1; for(;i<len;i++) v=apply2(l,v,listV_at(ll,i));
+  del(ll); return v;
 }
 D_F12(reduce) {
   if (!(T(ll)&L_t)) { return apply2(l,ll,rr); }
   I len=L(ll)->l;
-  DDO(i,len) rr=apply2(cpy(l),rr,listV_at(ll,i));
-  del(l); del(ll); return rr;
+  DDO(i,len) rr=apply2(l,rr,listV_at(ll,i));
+  del(ll); return rr;
 }
 
 D_F1(reverse) {

@@ -5,8 +5,11 @@ V apply2(V f, V l, V r) {
   V x[2]; x[0]=l; x[1]=r; V v=apply(f,2,x); return v;
 }
 
+V apply1d(V f, V l) { V v=apply1(f, l); del(f); return v; }
+V apply2d(V f, V l, V r) { V v=apply2(f, l, r); del(f); return v; }
+
 V apply_Ptr(T t, Ptr p, I n, V* x) {
-#define LINE(T) case T##_t: v=apply_##T(*(T*)p,n,x); break;
+#define LINE(T) case T##_t: return apply_##T(*(T*)p,n,x); break;
   if (!PURE(t)) return apply(*(V*)p, n, x);
   if (t & CONST_t) { DDO(i,n) del(x[i]); return wrapPtr(t,p); }
   V v; if (t & (O_t+L_t)) {
@@ -16,12 +19,11 @@ V apply_Ptr(T t, Ptr p, I n, V* x) {
     if ((d+1)==1<<n) switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
     else return fmap_Ptr(t,p,n,x,d);
   }
-  freePtr(t, p); FREE(p); return v;
 #undef LINE
 }
 
 V apply(V f, I n, V* x) {
-  f=get(f); return apply_Ptr(T(f), V(f), n, x);
+  return apply_Ptr(T(f), V(f), n, x);
 }
 
 V apply_O(O o, I n, V* x) {
@@ -37,7 +39,7 @@ V apply_F(F f, I n, V* x) {
   }
 }
 V apply_N(N m, I n, V* x) {
-  V v=cpy(StrVget(names, m)); return apply(v, n, x);
+  return apply(StrVget(names, m), n, x);
 }
 V apply_Q(Q q, I n, V* x) {
   return Err("Dude, I have no clue what you're talking about.");

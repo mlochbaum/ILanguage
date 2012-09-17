@@ -21,6 +21,8 @@ V apply_FB(F, I, V*);
 
 V apply1(V, V);
 V apply2(V, V, V);
+V apply1d(V, V);
+V apply2d(V, V, V);
 
 // mapclass.c
 I mapclasseq(X, X);
@@ -33,4 +35,4 @@ DECLARE_DOM(B) DECLARE_DOM(F) DECLARE_DOM(N) DECLARE_DOM(Q)
 I dom_true(I);
 
 // fmap.c
-V fmap_LIST(V, I, V*, I, I);
+V fmap_LIST_Ptr(T, Ptr, I, V*, I, I);

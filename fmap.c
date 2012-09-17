@@ -33,12 +33,12 @@ V fmap_Ptr(T t, Ptr p, I n, V* x, I d) {
     case FUNC_X:  { DECL_ARR(V,xx,n); DDO(i,n) {
                     if (d&1<<i) xx[i]=constant(x[i]); else xx[i]=x[i];
                   } return makeO(wrapPtr(t,p),n,xx); }
-    case LIST_X:  return fmap_LIST(wrapPtr(t,p), n, x, d, *(I*)m.v);
+    case LIST_X:  return fmap_LIST_Ptr(t, p, n, x, d, *(I*)m.v);
   }
 }
 V fmap(V f, I n, V* x, I d) { return fmap_Ptr(T(f), V(f), n, x, d); }
 
-V fmap_LIST(V f, I n, V* x, I d, I l) {
+V fmap_LIST_Ptr(T t, Ptr p, I n, V* x, I d, I l) {
   DECL_ARR(V, v, l); I i[n], c[n]; V xi[n];
   DDO(j, n) if (!(d&1<<j)) { i[j]=L(x[j])->o; c[j]=L(x[j])->c; }
   DDO(k, l) {
@@ -46,8 +46,8 @@ V fmap_LIST(V f, I n, V* x, I d, I l) {
       if (d&1<<j) { xi[j]=cpy(x[j]); }
       else { xi[j]=listV_at(x[j],i[j]); i[j]++; if(i[j]==c[j]) i[j]=0; }
     }
-    v[k] = apply(cpy(f), n, xi);
+    v[k] = apply_Ptr(t, p, n, xi);
   }
-  DO(j, n) del(x[j]); del(f);
+  DO(j, n) del(x[j]);
   return wrapList(l, v);
 }
