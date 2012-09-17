@@ -21,7 +21,7 @@
 V scan(Str);
 Str toString(V v);
 
-int main() {
+int main(int argc, char** argv) {
   builtin_init();
   size_t c=1<<7;
   DECL_STR(in, c);
@@ -31,8 +31,6 @@ int main() {
     if (getline(&in, &c, stdin) == -1) { break; }
     I l = strlen(in);
     if (l <= 1) break;
-    //Temporary measure because '\n' is not treated as whitespace
-    if (in[l-1]=='\n') in[l-1]='\0';
     puts(s = toString(v = scan(in))); del(v); FREE(s);
   }
   FREE(in);

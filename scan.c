@@ -29,6 +29,7 @@ Str verify(Str s) {
   charStack stack = charnew();
   charpush(stack, '\0');
   while (*s) {
+    if (*s == '\t') { charfree(stack); return "Tab in input"; }
     char last=charpeek(stack);
     if (isquote(last)) {
       if (last==*s) charpop(stack);
@@ -36,7 +37,7 @@ Str verify(Str s) {
       if (isquote(*s) || *s=='(') charpush(stack,*s);
       if (*s==')') {
         if (last=='(') { charpop(stack); last=charpeek(stack); }
-        else { FREE(stack); return "Closed quote with no open quote"; }
+        else { charfree(stack); return "Closed quote with no open quote"; }
       }
     }
     s++;
@@ -81,9 +82,12 @@ void push(WStack stack, W w) {
 }
 
 W next(Str* s, I* lp) {
-  I rp=0;
+  I rp=0; I lf=0;
   V v = parseVal(s); W w;
-  while (**s==' ') { rp++; (*s)++; }
+  while (**s==' ' || **s=='\n') {
+    rp++; if (**s=='\n') { lf++; rp=0; } (*s)++;
+  }
+  if (lf) { rp = lf*(1<<25) - rp; }
   w = newW(v, max(*lp,rp));
   *lp=rp;
   return w;
