@@ -5,7 +5,6 @@
 #include "type.h"
 #include "mem.h"
 #include "apply.h"
-//#include "softtype.h"
 #include "stack.h"
 #include "mem.c"
 #include "hash.c"
@@ -14,7 +13,6 @@
 #include "apply.c"
 #include "dom.c"
 #include "fmap.c"
-//#include "softtype.c"
 #include "scan.c"
 #include "print.c"
 

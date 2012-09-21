@@ -13,6 +13,9 @@ V wrapP(T t, P p) {
 }
 
 
+O wrapO(V f, I l, V* x) {
+  DECL(O,oo); oo->r=1; oo->f=f; oo->l=l; oo->x=x; return oo;
+}
 V makeO(V f, I l, V* x) {
   DECL_V(O,v); DECL(O,oo); O(v) = oo;
   oo->r=1; oo->f=f; oo->l=l; oo->x=x; return v;
@@ -53,6 +56,7 @@ V wrapList(I l, V* v) {
 V makeStr(Str s) { return wrapArray(S_t, strlen(s), s); }
 V DErr(Str s) { DECL_V(E, v); E(v)=s; return v; }
 V Err(Str s) { return DErr(strdup(s)); }
+void Err_T(E* p, Str s) { *p = strdup(s); return; }
 
 
 /////////////////// Utilities ////////////////////
