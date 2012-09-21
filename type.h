@@ -1,12 +1,12 @@
 typedef int I;
-typedef void* Ptr;
+typedef void* P;
 typedef char Char;
 typedef char* Str;
 typedef unsigned int UI;
 
 typedef I T;
 
-typedef struct { T t; Ptr v; } V;
+typedef struct { T t; P v; } V;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 
@@ -20,7 +20,7 @@ typedef Char S;
 typedef int64_t Z;
 typedef double R;
 typedef struct { R a; R b; } C;
-typedef struct { I r; T t; I c; I l; I o; Ptr p; } * L;
+typedef struct { I r; T t; I c; I l; I o; P p; } * L;
 
 #define E_t           1 //Error
 #define B_t           2 //Builtin

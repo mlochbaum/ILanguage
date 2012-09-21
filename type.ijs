@@ -30,7 +30,7 @@ S Char
 Z int64_t
 R double
 C struct { R a; R b; }
-L struct { I r; T t; I c; I l; I o; Ptr p; } *
+L struct { I r; T t; I c; I l; I o; P p; } *
 )
 
 classes =:      'wrapped const arith func  comp'
@@ -44,14 +44,14 @@ echo^:(all-.@-:{.@>typedefs) 'Error: typedefs don''t match types'
 NB. type.h
 preamble =: 0 :0
 typedef int I;
-typedef void* Ptr;
+typedef void* P;
 typedef char Char;
 typedef char* Str;
 typedef unsigned int UI;
 
 typedef I T;
 
-typedef struct { T t; Ptr v; } V;
+typedef struct { T t; P v; } V;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 )

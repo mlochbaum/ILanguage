@@ -1,4 +1,4 @@
-typedef struct {T t; Ptr v;} X;
+typedef struct {T t; P v;} X;
 #define CONST_X  1 //ESZRC
 #define FUNC_X   2 //BOFNQ
 #define LIST_X   4 //LA
@@ -7,10 +7,10 @@ V apply    (V, I, V*);
 X mapclass (V);
 V fmap     (V, I, V*, I);
 
-V apply_Ptr    (T, Ptr, I, V*);
-I dom_Ptr      (T, Ptr, I, V*);
-X mapclass_Ptr (T, Ptr);
-V fmap_Ptr     (T, Ptr, I, V*, I);
+V apply_P    (T, P, I, V*);
+I dom_P      (T, P, I, V*);
+X mapclass_P (T, P);
+V fmap_P     (T, P, I, V*, I);
 
 // apply.c
 #define DECLARE_APPLY(T) V apply_##T(T, I, V*);
@@ -35,4 +35,4 @@ DECLARE_DOM(B) DECLARE_DOM(F) DECLARE_DOM(N) DECLARE_DOM(Q)
 I dom_true(I);
 
 // fmap.c
-V fmap_LIST_Ptr(T, Ptr, I, V*, I, I);
+V fmap_LIST_P(T, P, I, V*, I, I);

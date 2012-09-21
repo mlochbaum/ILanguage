@@ -13,9 +13,9 @@ T apply1_T     (V, T);
 T apply2_T     (V, T, T);
 
 V getS(V, I, T*);
-Ptr applyS(V, I, Ptr*);
+P applyS(V, I, P*);
 
 V getS1(V, T);
 V getS2(V, T, T);
-Ptr applyS1(V, Ptr, Ptr);
-Ptr applyS2(V, Ptr, Ptr);
+P applyS1(V, P, P);
+P applyS2(V, P, P);

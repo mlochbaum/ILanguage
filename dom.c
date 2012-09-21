@@ -1,4 +1,4 @@
-I dom_Ptr(T t, Ptr p, I n, V* x) {
+I dom_P(T t, P p, I n, V* x) {
 #define LINE(T) case T##_t: return dom_##T(*(T*)p,n,x);
   switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
 #undef LINE

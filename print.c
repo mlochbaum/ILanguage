@@ -1,6 +1,6 @@
 #include <string.h>
 
-Str PtrToString(T t, Ptr p);
+Str PToString(T t, P p);
 Str toString(V v);
 
 Str chartostr(char c) {
@@ -58,12 +58,12 @@ Str Lfmt(L l) {
   if (ll==0) return strdup("N");
   DECL_STR(s, 1); s[0]=' '; Str st; I len;
   if (ll==1) {
-    st=PtrToString(l->t, LIST_PTR_AT(l,0)); len=1+strlen(st);
+    st=PToString(l->t, LIST_PTR_AT(l,0)); len=1+strlen(st);
     s=realloc(s,len+3); strcpy(s+1,st); FREE(st);
     strcpy(s+len,".; "); return s;
   }
   I e=1; DDO(i, ll) {
-    st=PtrToString(l->t, LIST_PTR_AT(l,i)); len=1+strlen(st);
+    st=PToString(l->t, LIST_PTR_AT(l,i)); len=1+strlen(st);
     s=realloc(s,e+len+(i==ll-1)); strcpy(s+e,st); FREE(st); e+=len;
     if(i==0) s[e-1]=';';
     else if(i==ll-1) {s[e-1]=' '; s[e]='\0';}
@@ -72,7 +72,7 @@ Str Lfmt(L l) {
   return s;
 }
 
-Str PtrToString(T t, Ptr p) {
+Str PToString(T t, P p) {
   switch (t) {
     case E_t: return *(E*)p;
     case B_t: return chartostr(*(B*)p);
@@ -88,4 +88,4 @@ Str PtrToString(T t, Ptr p) {
     default: return toString(*(V*)p);
   }
 }
-Str toString(V v) { return PtrToString(T(v), V(v)); }
+Str toString(V v) { return PToString(T(v), V(v)); }

@@ -8,22 +8,22 @@ V apply2(V f, V l, V r) {
 V apply1d(V f, V l) { V v=apply1(f, l); del(f); return v; }
 V apply2d(V f, V l, V r) { V v=apply2(f, l, r); del(f); return v; }
 
-V apply_Ptr(T t, Ptr p, I n, V* x) {
+V apply_P(T t, P p, I n, V* x) {
 #define LINE(T) case T##_t: return apply_##T(*(T*)p,n,x); break;
   if (!PURE(t)) return apply(*(V*)p, n, x);
-  if (t & CONST_t) { DDO(i,n) del(x[i]); return wrapPtr(t,p); }
+  if (t & CONST_t) { DDO(i,n) del(x[i]); return wrapP(t,p); }
   V v; if (t & (O_t+L_t)) {
     switch (t) {LINE(O) LINE(L)}
   } else {
-    I d = dom_Ptr(t,p,n,x);
+    I d = dom_P(t,p,n,x);
     if ((d+1)==1<<n) switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
-    else return fmap_Ptr(t,p,n,x,d);
+    else return fmap_P(t,p,n,x,d);
   }
 #undef LINE
 }
 
 V apply(V f, I n, V* x) {
-  return apply_Ptr(T(f), V(f), n, x);
+  return apply_P(T(f), V(f), n, x);
 }
 
 V apply_O(O o, I n, V* x) {
@@ -48,7 +48,7 @@ V apply_L(L l, I n, V* x) {
   if (!(l->t & (NCONST_t))) { DDO(i,n) del(x[i]); return newL(l); }
   V xt[n]; DECL_ARR(V, v, l->c);
   DDO(i, l->l-1) {
-    DDO(j,n)xt[j]=cpy(x[j]); v[i] = apply_Ptr(l->t,LIST_PTR_AT(l,i), n, xt);
-  } v[l->l-1]=apply_Ptr(l->t, LIST_PTR_AT(l,l->l-1), n, x);
+    DDO(j,n)xt[j]=cpy(x[j]); v[i] = apply_P(l->t,LIST_PTR_AT(l,i), n, xt);
+  } v[l->l-1]=apply_P(l->t, LIST_PTR_AT(l,l->l-1), n, x);
   return wrapList(l->l, v);
 }

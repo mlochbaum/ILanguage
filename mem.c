@@ -7,7 +7,7 @@ I next_pow_2(I l) {
 I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
 #undef LINE
 
-V wrapPtr(T t, Ptr p) {
+V wrapP(T t, P p) {
   if (!PURE(t)) { V v=*(V*)p; FREE(p); return cpy(v); }
   else { V v; T(v)=t; V(v)=p; return cpy(v); }
 }
@@ -24,7 +24,7 @@ V makeF(V f, I l, V* x) {
 V makeC(R a, R b) {
   DECL_V(C,v); C* cc=V(v); cc->a=a; cc->b=b; return v;
 }
-V makeL(T t, I c, I l, I o, Ptr p) {
+V makeL(T t, I c, I l, I o, P p) {
   DECL_V(L,v); DECL(L,ll); L(v) = ll;
   ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return v;
 }
@@ -34,7 +34,7 @@ ON_TYPES(ALL, SET_NEW);    // functions new##T : T->V
 #undef SET_NEW
 
 // Custom make functions
-V wrapArray(T t, I l, Ptr p) {
+V wrapArray(T t, I l, P p) {
   I c=next_pow_2(l);
   p=realloc(p, c*t_sizeof(t));
   return makeL(t,c,l,0,p);
@@ -43,7 +43,7 @@ V wrapList(I l, V* v) {
   I c=next_pow_2(l);
   T t=0; DDO(i,l)t|=T(v[i]);
   if(PURE(t)){
-    I s=t_sizeof(t); Ptr p=MALLOC(c*s);
+    I s=t_sizeof(t); P p=MALLOC(c*s);
     DO(i,l) { memcpy(p+i*s, V(v[i]), s); FREE(V(v[i])); }
     V r=makeL(t,c,l,0,p); FREE(v); return r;
   } else {
@@ -56,7 +56,7 @@ V Err(Str s) { return DErr(strdup(s)); }
 
 
 /////////////////// Utilities ////////////////////
-void delPtr(T t, Ptr p) {
+void delP(T t, P p) {
   if (PURE(t)) switch (t) {
     case N_t: FREE(*(N*)p); break;
     case Q_t: FREE(*(Q*)p); break;
@@ -65,15 +65,15 @@ void delPtr(T t, Ptr p) {
                           FREE(o); break; }
     case L_t: { L l=*(L*)p; if (--l->r) break;
                 if (!PURE(l->t)) { DDO(i,l->l) del(LIST_AT(l,i)); }
-                else { DDO(i,l->l) delPtr(l->t, LIST_PTR_AT(l,i)); }
+                else { DDO(i,l->l) delP(l->t, LIST_PTR_AT(l,i)); }
                 FREE(l->p); FREE(l); break; }
   } else {
     del(*(V*)p);
   }
 }
-void del(V v) { delPtr(T(v), V(v)); FREE(V(v)); }
+void del(V v) { delP(T(v), V(v)); FREE(V(v)); }
 
-void freePtr(T t, Ptr p) {
+void freeP(T t, P p) {
   if (PURE(t)) switch (t) {
     case N_t: FREE(*(N*)p); break;
     case Q_t: FREE(*(Q*)p); break;
@@ -85,14 +85,14 @@ void freePtr(T t, Ptr p) {
     freeV(*(V*)p);
   }
 }
-void freeV(V v) { freePtr(T(v), V(v)); FREE(V(v)); }
+void freeV(V v) { freeP(T(v), V(v)); FREE(V(v)); }
 
-Ptr arrcpy(Ptr aa, I s, I l, I c, I o) {
-  l*=s; c*=s; o*=s; Ptr a=MALLOC(c);
+P arrcpy(P aa, I s, I l, I c, I o) {
+  l*=s; c*=s; o*=s; P a=MALLOC(c);
   memcpy(a,aa+o,min(c-o,l)); memcpy(a,aa,max(0,l+o-c));
   return a;
 }
-void valcpy(Ptr p, Ptr pp, T t) { // from pp to p
+void valcpy(P p, P pp, T t) { // from pp to p
   I s=t_sizeof(t);
   if (PURE(t)) switch (t) {
     case E_t: case N_t: case Q_t: *(E*)p=strdup(*(E*)pp); break;
@@ -118,7 +118,7 @@ V get(V v) {
     case F_t:
       { F f=F(v); r=makeF(cpy(f->f), f->l, cpyn(f->l, f->x)); break;}
     case L_t:
-      { L l=L(v); I s=t_sizeof(l->t); Ptr p=MALLOC(s*l->c);
+      { L l=L(v); I s=t_sizeof(l->t); P p=MALLOC(s*l->c);
         DDO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
         r=makeL(l->t, l->c, l->l, 0, p); break; }
   } FREE(V(v)); return r; }

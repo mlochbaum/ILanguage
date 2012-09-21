@@ -24,7 +24,7 @@ D_F2(concat) {
             rv->l=ll; rv->o=(rv->o-lv->l+rv->c)%rv->c; del(l); return r;
           }
         } else {
-          Ptr v=malloc(s*c);
+          P v=malloc(s*c);
           DDO(i,lv->l) valcpy(v+s*i, AT(lv,i), t);
           DO(i,rv->l) valcpy(v+s*(i+lv->l), AT(rv,i), t);
           del(l); del(r); return makeL(t, c, ll, 0, v);
@@ -60,7 +60,7 @@ D_F2(concat) {
           resize(lv,s,c); valcpy(AT(lv,lv->l), V(r), t);
           del(r); lv->l++; return l;
         } else {
-          Ptr v=malloc(s*c);
+          P v=malloc(s*c);
           DDO(i,lv->l) valcpy(v+s*i, AT(lv,i), t);
           valcpy(v+s*lv->l, V(r), t);
           del(r); return makeL(t, c, ll, 0, v);
@@ -107,7 +107,7 @@ D_F1(length) { I n; if (T(l)&L_t) n=L(l)->l; else n=1;
 D_D2(copy) { return 2*!!(T(r)&ARITH_t) + 1; }
 D_F2(copy) {
   I t=T(l), ll=Z(r), s=t_sizeof(T(l)); del(r);
-  Ptr p=MALLOC(next_pow_2(ll*s)); DDO(i,ll) valcpy(p+i*s,V(l),t);
+  P p=MALLOC(next_pow_2(ll*s)); DDO(i,ll) valcpy(p+i*s,V(l),t);
   del(l); return wrapArray(t, ll, p);
 }
 
@@ -163,7 +163,7 @@ D_F1(reverse) {
     }
   } else {
 #define AT(i) v->p + s*(((i)+v->o)%v->c)
-    I s=t_sizeof(t); Ptr p=MALLOC(s);
+    I s=t_sizeof(t); P p=MALLOC(s);
     DDO(i,n/2) {
       memcpy(p, AT(i), s); memcpy(AT(i), AT(n-i-1), s);
       memcpy(AT(n-i-1), p, s);
