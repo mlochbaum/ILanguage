@@ -51,7 +51,7 @@ typedef unsigned int UI;
 
 typedef I T;
 
-typedef struct { T t; P v; } V;
+typedef struct { T t; P p; } V;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 )
@@ -65,7 +65,7 @@ fmte =: (&fmt)e
 types =: unlines ('typedef ',2&}.,' ',{.,';'"_)e typedefs
 val =: unlines comments ((def,]),' //',[)e all,e '_t'<@,"1]_12{."1":,.2^i.n
 ctypes =: unlines 'typedef struct {T t; %T %t;} *V%T;'fmte comp
-get =: unlines '#define %T(vv) (*(%T*)((vv).v))'fmte all
+get =: unlines '#define %T(v) (*(%T*)((v).p))'fmte all
 lower =: unlines '#define LOWER_%T %t'fmte all
 typeclasses =: unlines ((18{.def,toupper,'_t '"_),typesum@:".)e ;:classes
 fs=: [: ' 'join/ ('f(',],')'"_)"0

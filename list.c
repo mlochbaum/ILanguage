@@ -57,12 +57,12 @@ D_F2(concat) {
       if (PURE(t)) {
 #define AT(a,i) a->p + s*((a->o+i)%a->c)
         if (lv->r==1) {
-          resize(lv,s,c); valcpy(AT(lv,lv->l), V(r), t);
+          resize(lv,s,c); valcpy(AT(lv,lv->l), P(r), t);
           del(r); lv->l++; return l;
         } else {
           P v=malloc(s*c);
           DDO(i,lv->l) valcpy(v+s*i, AT(lv,i), t);
-          valcpy(v+s*lv->l, V(r), t);
+          valcpy(v+s*lv->l, P(r), t);
           del(r); return makeL(t, c, ll, 0, v);
         }
 #undef AT
@@ -107,7 +107,7 @@ D_F1(length) { I n; if (T(l)&L_t) n=L(l)->l; else n=1;
 D_D2(copy) { return 2*!!(T(r)&ARITH_t) + 1; }
 D_F2(copy) {
   I t=T(l), ll=Z(r), s=t_sizeof(T(l)); del(r);
-  P p=MALLOC(next_pow_2(ll*s)); DDO(i,ll) valcpy(p+i*s,V(l),t);
+  P p=MALLOC(next_pow_2(ll*s)); DDO(i,ll) valcpy(p+i*s,P(l),t);
   del(l); return wrapArray(t, ll, p);
 }
 

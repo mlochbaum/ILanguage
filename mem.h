@@ -7,7 +7,7 @@
 #define DECL_ARR(t, v, l) t *v = MALLOC(sizeof(t)*(l))
 #define DECL_STR(v, l) Str v = MALLOC((l)+1)
 #define DECL_NSTR(v, l) DECL_STR(v, l); v[l]='\0'
-#define DECL_V(type, v) V v; T(v)=type##_t; V(v)=MALLOC(sizeof(type))
+#define DECL_V(type, v) V v; T(v)=type##_t; P(v)=MALLOC(sizeof(type))
 #define WRAP(type, d, dv) DECL(type,d); *d=dv
 
 I t_sizeof(T);
@@ -15,8 +15,8 @@ I next_pow_2(I);
 #define PURE(t)  !((t)&((t)-1))
 
 #define T(v) ((v).t)
-#define V(vv) ((vv).v)
-#define REF(vv) (**(I**)((vv).v))
+#define P(v) ((v).p)
+#define REF(v) (**(I**)P(v))
 
 V wrapP(T, P);
 

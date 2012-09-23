@@ -43,7 +43,7 @@ UI hash(V v) {
     case O_t: case F_t: { O o=O(v); I l = o->l+1; UI u[l];
                           DDO(i,l-1) u[i]=hash(o->x[i]);
                           u[l]=hash(o->f); return hash_UI(l, u); }
-#define LINE(T) case T##_t: return hash_UI(sizeof(T)/sizeof(UI), (UI*)V(v));
+#define LINE(T) case T##_t: return hash_UI(sizeof(T)/sizeof(UI), (UI*)P(v));
     LINE(Z) LINE(R) LINE(C)
 #undef LINE
     case L_t: return hash_LIST(L(v));

@@ -30,8 +30,8 @@ V constant(V v) {
 
 V fmap(V f, I n, V* x, I d) {
   T t[n]; DDO(i,n) t[i]=T(x[i]);
-  V v; T(v)=fmap_T(f,n,t,d); V(v)=MALLOC(t_sizeof(T(v)));
-  fmap_P(V(v),f,n,x,d); return v;
+  V v; T(v)=fmap_T(f,n,t,d); P(v)=MALLOC(t_sizeof(T(v)));
+  fmap_P(P(v),f,n,x,d); return v;
 }
 T fmap_T(V f, I n, T* x, I d) {
   T t=~0;
@@ -46,7 +46,7 @@ T fmap_T(V f, I n, T* x, I d) {
   }
 }
 void fmap_P(P v, V f, I n, V* x, I d) {
-  T t=T(f); P p=V(f);
+  T t=T(f); P p=P(f);
   X m={0,NULL};
   DDO(i, n) if (! (d&1<<i)) {
     X mt=mapclass(x[i]);

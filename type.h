@@ -6,7 +6,7 @@ typedef unsigned int UI;
 
 typedef I T;
 
-typedef struct { T t; P v; } V;
+typedef struct { T t; P p; } V;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 
@@ -38,17 +38,17 @@ typedef struct {T t; O o;} *VO;
 typedef struct {T t; F f;} *VF;
 typedef struct {T t; L l;} *VL;
 
-#define E(vv) (*(E*)((vv).v))
-#define B(vv) (*(B*)((vv).v))
-#define O(vv) (*(O*)((vv).v))
-#define F(vv) (*(F*)((vv).v))
-#define N(vv) (*(N*)((vv).v))
-#define Q(vv) (*(Q*)((vv).v))
-#define S(vv) (*(S*)((vv).v))
-#define Z(vv) (*(Z*)((vv).v))
-#define R(vv) (*(R*)((vv).v))
-#define C(vv) (*(C*)((vv).v))
-#define L(vv) (*(L*)((vv).v))
+#define E(v) (*(E*)((v).p))
+#define B(v) (*(B*)((v).p))
+#define O(v) (*(O*)((v).p))
+#define F(v) (*(F*)((v).p))
+#define N(v) (*(N*)((v).p))
+#define Q(v) (*(Q*)((v).p))
+#define S(v) (*(S*)((v).p))
+#define Z(v) (*(Z*)((v).p))
+#define R(v) (*(R*)((v).p))
+#define C(v) (*(C*)((v).p))
+#define L(v) (*(L*)((v).p))
 
 #define LOWER_E e
 #define LOWER_B b

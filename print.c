@@ -88,4 +88,4 @@ Str PToString(T t, P p) {
     default: return toString(*(V*)p);
   }
 }
-Str toString(V v) { return PToString(T(v), V(v)); }
+Str toString(V v) { return PToString(T(v), P(v)); }

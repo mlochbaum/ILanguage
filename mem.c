@@ -9,7 +9,7 @@ I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
 
 V wrapP(T t, P p) {
   if (!PURE(t)) { V v=*(V*)p; FREE(p); return cpy(v); }
-  else { V v; T(v)=t; V(v)=p; return cpy(v); }
+  else { V v; T(v)=t; P(v)=p; return cpy(v); }
 }
 
 
@@ -25,7 +25,7 @@ V makeF(V f, I l, V* x) {
   ff->r=1; ff->f=f; ff->l=l; ff->x=x; return v;
 }
 V makeC(R a, R b) {
-  DECL_V(C,v); C* cc=V(v); cc->a=a; cc->b=b; return v;
+  DECL_V(C,v); C* cc=P(v); cc->a=a; cc->b=b; return v;
 }
 V makeL(T t, I c, I l, I o, P p) {
   DECL_V(L,v); DECL(L,ll); L(v) = ll;
@@ -47,7 +47,7 @@ V wrapList(I l, V* v) {
   T t=0; DDO(i,l)t|=T(v[i]);
   if(PURE(t)){
     I s=t_sizeof(t); P p=MALLOC(c*s);
-    DO(i,l) { memcpy(p+i*s, V(v[i]), s); FREE(V(v[i])); }
+    DO(i,l) { memcpy(p+i*s, P(v[i]), s); FREE(P(v[i])); }
     V r=makeL(t,c,l,0,p); FREE(v); return r;
   } else {
     v=realloc(v,c*sizeof(V)); return makeL(t,c,l,0,v);
@@ -75,7 +75,7 @@ void delP(T t, P p) {
     del(*(V*)p);
   }
 }
-void del(V v) { delP(T(v), V(v)); FREE(V(v)); }
+void del(V v) { delP(T(v), P(v)); FREE(P(v)); }
 
 void freeP(T t, P p) {
   if (PURE(t)) switch (t) {
@@ -89,7 +89,7 @@ void freeP(T t, P p) {
     freeV(*(V*)p);
   }
 }
-void freeV(V v) { freeP(T(v), V(v)); FREE(V(v)); }
+void freeV(V v) { freeP(T(v), P(v)); FREE(P(v)); }
 
 P arrcpy(P aa, I s, I l, I c, I o) {
   l*=s; c*=s; o*=s; P a=MALLOC(c);
@@ -107,8 +107,8 @@ void valcpy(P p, P pp, T t) { // from pp to p
 }
 
 V cpy(V v) {
-  V vv; T(vv)=T(v); V(vv)=MALLOC(t_sizeof(T(v)));
-  valcpy(V(vv),V(v),T(v)); return vv;
+  V vv; T(vv)=T(v); P(vv)=MALLOC(t_sizeof(T(v)));
+  valcpy(P(vv),P(v),T(v)); return vv;
 }
 
 void deln(I n, V* v) { DDO(i,n) del(v[i]); FREE(v); }
@@ -125,7 +125,7 @@ V get(V v) {
       { L l=L(v); I s=t_sizeof(l->t); P p=MALLOC(s*l->c);
         DDO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
         r=makeL(l->t, l->c, l->l, 0, p); break; }
-  } FREE(V(v)); return r; }
+  } FREE(P(v)); return r; }
 }
 
 
@@ -141,8 +141,8 @@ R getR(V v) {
 
 // List properties
 V arr_at(L l, I i) {
-  V v; T(v)=l->t; V(v)=MALLOC(t_sizeof(l->t));
-  valcpy(V(v), LIST_PTR_AT(l,i), l->t); return v;
+  V v; T(v)=l->t; P(v)=MALLOC(t_sizeof(l->t));
+  valcpy(P(v), LIST_PTR_AT(l,i), l->t); return v;
 }
 V list_at(L l, I i) {
   if (PURE(l->t)) return arr_at(l, i);

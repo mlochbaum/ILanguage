@@ -1,5 +1,4 @@
 #define ON_ALL_NUMS(F) F(1) F(2) F(11) F(12) F(21) F(22)
-#undef V // TODO
 
 #define D_D1(func) I func##_d1(V l)
 #define D_D2(func) I func##_d2(V l, V r)
@@ -39,7 +38,6 @@ typedef V (*F22)(V,V,V,V);  F22 B_f22[256];
   extern F12 B_f12[256]; \
   extern F21 B_f21[256]; \
   extern F22 B_f22[256]
-#define V(vv) ((vv).v)
 
 D_D1(true){return 1;}   D_D2(true){return 3;}
 D_D11(true){return 1;}  D_D12(true){return 3;}
