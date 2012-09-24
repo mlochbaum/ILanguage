@@ -1,8 +1,8 @@
 #define IS_ARITH(v) !!(v&ARITH_t)
-D_S1(arith) { return IS_ARITH(l); }
-D_S2(arith) { return 2*IS_ARITH(r) + IS_ARITH(l); }
-D_D1(arith) { return arith_s1(T(l)); }
-D_D2(arith) { return arith_s2(T(l),T(r)); }
+D_L1(arith) { return IS_ARITH(l); }
+D_L2(arith) { return 2*IS_ARITH(r) + IS_ARITH(l); }
+D_D1(arith) { return arith_l1(T(l)); }
+D_D2(arith) { return arith_l2(T(l),T(r)); }
 
 D_T2(arith) { return max(l,r); }
 
@@ -20,29 +20,29 @@ D_P1(ceiling) OP(ceiling);
 #undef OP
 
 //Dyads
-#define OP(op) { switch (max(T(l),T(r))) { D_L(Z,op); D_L(R,op); } del(l);del(r); }
-#define D_L(T, op) case T##_t: *(T*)p = get##T(l)op get##T(r); break
+#define OP(op) { switch (max(T(l),T(r))) { DL(Z,op); DL(R,op); } del(l);del(r); }
+#define DL(T, op) case T##_t: *(T*)p = get##T(l)op get##T(r); break
 D_P2(plus) OP(+);
 D_P2(minus) OP(-);
 D_P2(times) OP(*);
 D_P2(divide) OP(/);
-#undef D_L
-#define D_L(T, op) case T##_t: *(T*)p = op(get##T(l), get##T(r)); break
+#undef DL
+#define DL(T, op) case T##_t: *(T*)p = op(get##T(l), get##T(r)); break
 #define MOD(l,r) (l) - (r)*floor((l)/(r))
-#define D_L1(T, op) case T##_t: *(T*)p = get##T(l)op get##T(r); break
+#define DL1(T, op) case T##_t: *(T*)p = get##T(l)op get##T(r); break
 // D_P2(mod) OP(MOD);
-D_P2(mod) { switch (max(T(l),T(r))) { D_L1(Z,%); D_L(R,MOD); } del(l);del(r); }
-#undef D_L1
+D_P2(mod) { switch (max(T(l),T(r))) { DL1(Z,%); DL(R,MOD); } del(l);del(r); }
+#undef DL1
 #undef MOD
 D_P2(min) OP(min);
 D_P2(max) OP(max);
-#undef D_L
+#undef DL
 #undef OP
 
 // EXPORT DEFINITIONS
 EXTERN_BUILTINS;
 void arith_init() {
-#define SET(c, f) B_s1[c] = &arith_s1; B_t1[c] = &id##_t1; \
+#define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
                   B_d1[c] = &arith_d1; B_p1[c] = &f##_p1
   SET('-', negate);
   SET('/', reciprocal);
@@ -50,7 +50,7 @@ void arith_init() {
   SET('M', ceiling);
 #undef SET
 
-#define SET(c, f) B_s2[c] = &arith_s2; B_t2[c] = &arith##_t2; \
+#define SET(c, f) B_l2[c] = B_u2[c] = &arith_l2; B_t2[c] = &arith##_t2; \
                   B_d2[c] = &arith_d2; B_p2[c] = &f##_p2
   SET('+', plus);
   SET('-', minus);

@@ -6,22 +6,35 @@ D_D1(true){return 1;}   D_D2(true){return 3;}
 D_D11(true){return 1;}  D_D12(true){return 3;}
 D_D21(true){return 1;}  D_D22(true){return 3;}
 
-D_S1(true){return 1;}   D_S2(true){return 3;}
-D_S11(true){return 1;}  D_S12(true){return 3;}
-D_S21(true){return 1;}  D_S22(true){return 3;}
+D_L1(true){return 1;}   D_L2(true){return 3;}
+D_L11(true){return 1;}  D_L12(true){return 3;}
+D_L21(true){return 1;}  D_L22(true){return 3;}
 
-D_S1(false){return 0;}   D_S2(false){return 0;}
-D_S11(false){return 0;}  D_S12(false){return 0;}
-D_S21(false){return 0;}  D_S22(false){return 0;}
+D_L1(false){return 0;}   D_L2(false){return 0;}
+D_L11(false){return 0;}  D_L12(false){return 0;}
+D_L21(false){return 0;}  D_L22(false){return 0;}
 
-#define DEF(n) D_T##n(v){return ALL_t;}
+#define DEF(n) D_T##n(V){return ALL_t;}
 ON_ALL_NUMS(DEF)
 #undef DEF
+#define DEF(T,n) D_T##n(T){return T##_t;}
+#define DEFO(n) DEF(O,n)
+ON_ALL_NUMS(DEFO)
+#undef DEFO
+#undef DEF
 
-D_T1(id){return l;}  D_T2(l){return l;}  D_T2(r){return r;}
+D_T1(l){return l;}   D_T2(l){return l;}
+D_T11(l){return T(l);}  D_T12(l){return T(l);}
+D_T21(l){return T(l);}  D_T22(l){return T(l);}
+D_T2(r){return r;}   D_T21(r){return T(r);}  D_T22(r){return T(r);}
+D_T11(ll){return ll;}  D_T12(ll){return ll;}
+D_T21(ll){return ll;}  D_T22(ll){return ll;}
+D_T12(rr){return rr;}  D_T22(rr){return rr;}
+
+#define DB(s,c,n) (B_##s[c]=&n##_##s)
 
 #include "name.c"
-// #include "compose.c"
+#include "compose.c"
 // #include "mapping.c"
 #include "arith.c"
 // #include "compare.c"
@@ -29,13 +42,13 @@ D_T1(id){return l;}  D_T2(l){return l;}  D_T2(r){return r;}
 // #include "string.c"
 void builtin_init() {
 #define INIT(n) \
-  B_s##n[i]=&true_s##n; B_t##n[i]=NULL; \
+  B_l##n[i]=B_u##n[i]=&true_l##n; B_t##n[i]=NULL; \
   B_d##n[i]=&true_d##n; B_p##n[i]=NULL;
   DDO(i,256) { ON_ALL_NUMS(INIT) }
 #undef INIT
 
   name_init();
-  //compose_init();
+  compose_init();
   //map_init();
   arith_init();
   //compare_init();
@@ -86,10 +99,16 @@ T apply_T_B(B b, I n, T* x) {
   }
 }
 
-I dom_T_B(B b, I n, T* x) {
+I domu_T_B(B b, I n, T* x) {
   switch (n) {
-    case 1: return B_s1[b](x[0]);
-    case 2: return B_s2[b](x[0],x[1]);
+    case 1: return B_u1[b](x[0]);
+    case 2: return B_u2[b](x[0],x[1]);
+  }
+}
+I doml_T_B(B b, I n, T* x) {
+  switch (n) {
+    case 1: return B_l1[b](x[0]);
+    case 2: return B_l2[b](x[0],x[1]);
   }
 }
 
@@ -110,10 +129,10 @@ void apply_P_FB(P p, F f, I n, V* xx) {
 #undef LINE1
 }
 
-T apply_T11(T11 f, V* x, T* xx) { return f(T(x[0]), xx[0]); }
-T apply_T12(T12 f, V* x, T* xx) { return f(T(x[0]), xx[0], xx[1]); }
-T apply_T21(T21 f, V* x, T* xx) { return f(T(x[0]), T(x[1]), xx[0]); }
-T apply_T22(T22 f, V* x, T* xx) { return f(T(x[0]), T(x[1]), xx[0], xx[1]); }
+T apply_T11(T11 f, V* x, T* xx) { return f(x[0], xx[0]); }
+T apply_T12(T12 f, V* x, T* xx) { return f(x[0], xx[0], xx[1]); }
+T apply_T21(T21 f, V* x, T* xx) { return f(x[0], x[1], xx[0]); }
+T apply_T22(T22 f, V* x, T* xx) { return f(x[0], x[1], xx[0], xx[1]); }
 
 T apply_T_FB(F f, I n, T* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
@@ -136,12 +155,21 @@ I dom_FB(F f, I n, V* xx) {
   }
 }
 
-I dom_T_FB(F f, I n, T* xx) {
+I doml_T_FB(F f, I n, T* xx) {
   B b=B(f->f); V* x=f->x;
   switch (10*f->l + n) {
-    case 11: return B_s11[b](T(x[0]), xx[0]);
-    case 12: return B_s12[b](T(x[0]), xx[0], xx[1]);
-    case 21: return B_s21[b](T(x[0]), T(x[1]), xx[0]);
-    case 22: return B_s22[b](T(x[0]), T(x[1]), xx[0], xx[1]);
+    case 11: return B_l11[b](x[0], xx[0]);
+    case 12: return B_l12[b](x[0], xx[0], xx[1]);
+    case 21: return B_l21[b](x[0], x[1], xx[0]);
+    case 22: return B_l22[b](x[0], x[1], xx[0], xx[1]);
+  }
+}
+I domu_T_FB(F f, I n, T* xx) {
+  B b=B(f->f); V* x=f->x;
+  switch (10*f->l + n) {
+    case 11: return B_u11[b](x[0], xx[0]);
+    case 12: return B_u12[b](x[0], xx[0], xx[1]);
+    case 21: return B_u21[b](x[0], x[1], xx[0]);
+    case 22: return B_u22[b](x[0], x[1], xx[0], xx[1]);
   }
 }

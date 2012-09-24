@@ -1,15 +1,13 @@
-V apply1(V f, V l) {
-  V x[1]; x[0]=l; V v=apply(f,1,x); return v;
-}
-V apply2(V f, V l, V r) {
-  V x[2]; x[0]=l; x[1]=r; V v=apply(f,2,x); return v;
-}
+V apply1(V f, V l) { V x[1]; x[0]=l; return apply(f,1,x); }
+V apply2(V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply(f,2,x); }
 
 V apply1d(V f, V l) { V v=apply1(f, l); del(f); return v; }
 V apply2d(V f, V l, V r) { V v=apply2(f, l, r); del(f); return v; }
 
 T apply1_T(V f, T l) { T x[1]; x[0]=l; return apply_T(f,1,x); }
 T apply2_T(V f, T l, T r) { T x[2]; x[0]=l; x[1]=r; return apply_T(f,2,x); }
+void apply1_P(P p, V f, V l) { V x[1]; x[0]=l; return apply_P(p,f,1,x); }
+void apply2_P(P p, V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply_P(p,f,2,x); }
 
 T apply_T(V f, I n, T* x) {
 #define LINE(T) case T##_t: t|=apply_T_##T(T(f),n,x); break;
@@ -18,9 +16,9 @@ T apply_T(V f, I n, T* x) {
   T t=0; if (tf & (O_t+L_t)) {
     switch (tf) {LINE(O) LINE(L)} return t;
   } else {
-    I d = dom_T(f,n,x);
-    switch (tf) {LINE(B) LINE(F) LINE(N) LINE(Q)}
-    if ((d+1)!=1<<n) t|=fmap_T(f,n,x,d);
+    I dl = doml_T(f,n,x), du = domu_T(f,n,x);
+    if ((dl+1)==1<<n) switch (tf) {LINE(B) LINE(F) LINE(N) LINE(Q)}
+    if ((du+1)!=1<<n) t|=fmap_T(f,n,x,dl,du);
     return t;
   }
 #undef LINE

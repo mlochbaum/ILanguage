@@ -9,9 +9,10 @@ X mapclass (V);
 V fmap     (V, I, V*, I);
 
 T apply_T    (V, I, T*);
-I dom_T      (V, I, T*);
+I doml_T     (V, I, T*);
+I domu_T     (V, I, T*);
 T mapclass_T (T);
-T fmap_T     (V, I, T*, I);
+T fmap_T     (V, I, T*, I, I);
 
 void apply_P (P, V, I, V*);
 void fmap_P  (P, V, I, V*, I);
@@ -35,6 +36,8 @@ T apply1_T(V, T);
 T apply2_T(V, T, T);
 void apply1_P(P, V, V);
 void apply2_P(P, V, V, V);
+void apply1d_P(P, V, V);
+void apply2d_P(P, V, V, V);
 
 // mapclass.c
 I mapclasseq(X, X);

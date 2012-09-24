@@ -99,6 +99,7 @@ P arrcpy(P aa, I s, I l, I c, I o) {
   memcpy(a,aa+o,min(c-o,l)); memcpy(a,aa,max(0,l+o-c));
   return a;
 }
+void mv_P(P p, V v) { memcpy(p, P(v), t_sizeof(T(v))); }
 void valcpy(P p, P pp, T t) { // from pp to p
   I s=t_sizeof(t);
   if (PURE(t)) switch (t) {
