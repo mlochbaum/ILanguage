@@ -23,6 +23,7 @@ V wrapP(T, P);
 V makeO(V, I, V*);
 O wrapO(V, I, V*);
 V makeF(V, I, V*);
+F wrapF(V, I, V*);
 V makeC(R, R);
 V makeL(T, I c, I l, I o, P);
 

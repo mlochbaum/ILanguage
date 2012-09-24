@@ -5,6 +5,7 @@ typedef char* Str;
 typedef unsigned int UI;
 
 typedef I T;
+typedef I TT;
 
 typedef struct { T t; P p; } V;
 

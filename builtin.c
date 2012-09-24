@@ -1,88 +1,61 @@
+#include "builtin.h"
+
 #define ON_ALL_NUMS(F) F(1) F(2) F(11) F(12) F(21) F(22)
-
-#define D_D1(func) I func##_d1(V l)
-#define D_D2(func) I func##_d2(V l, V r)
-#define D_F1(func) V func##_f1(V l)
-#define D_F2(func) V func##_f2(V l, V r)
-typedef I (*D1)(V);     D1 B_d1[256];
-typedef I (*D2)(V, V);  D2 B_d2[256];
-typedef V (*F1)(V);     F1 B_f1[256];
-typedef V (*F2)(V, V);  F2 B_f2[256];
-
-#define D_D11(func) I func##_d11(V l, V ll)
-#define D_D12(func) I func##_d12(V l, V ll, V rr)
-#define D_D21(func) I func##_d21(V l, V r, V ll)
-#define D_D22(func) I func##_d22(V l, V r, V ll, V rr)
-#define D_F11(func) V func##_f11(V l, V ll)
-#define D_F12(func) V func##_f12(V l, V ll, V rr)
-#define D_F21(func) V func##_f21(V l, V r, V ll)
-#define D_F22(func) V func##_f22(V l, V r, V ll, V rr)
-typedef I (*D11)(V,V);      D11 B_d11[256];
-typedef I (*D12)(V,V,V);    D12 B_d12[256];
-typedef I (*D21)(V,V,V);    D21 B_d21[256];
-typedef I (*D22)(V,V,V,V);  D22 B_d22[256];
-typedef V (*F11)(V,V);      F11 B_f11[256];
-typedef V (*F12)(V,V,V);    F12 B_f12[256];
-typedef V (*F21)(V,V,V);    F21 B_f21[256];
-typedef V (*F22)(V,V,V,V);  F22 B_f22[256];
-#define EXTERN_BUILTINS  \
-  extern F1 B_f1[256];   \
-  extern F2 B_f2[256];   \
-  extern D1 B_d1[256];   \
-  extern D2 B_d2[256];   \
-  extern D11 B_d11[256]; \
-  extern D12 B_d12[256]; \
-  extern D21 B_d21[256]; \
-  extern D22 B_d22[256]; \
-  extern F11 B_f11[256]; \
-  extern F12 B_f12[256]; \
-  extern F21 B_f21[256]; \
-  extern F22 B_f22[256]
 
 D_D1(true){return 1;}   D_D2(true){return 3;}
 D_D11(true){return 1;}  D_D12(true){return 3;}
 D_D21(true){return 1;}  D_D22(true){return 3;}
 
+D_S1(false){return 0;}   D_S2(false){return 0;}
+D_S11(false){return 0;}  D_S12(false){return 0;}
+D_S21(false){return 0;}  D_S22(false){return 0;}
+
+#define DEF(n) D_T##n(v){return ALL_t;}
+ON_ALL_NUMS(DEF)
+#undef DEF
+
 #include "name.c"
-#include "compose.c"
-#include "mapping.c"
-#include "arith.c"
-#include "compare.c"
-#include "list.c"
-#include "string.c"
+// #include "compose.c"
+// #include "mapping.c"
+// #include "arith.c"
+// #include "compare.c"
+// #include "list.c"
+// #include "string.c"
 void builtin_init() {
-#define INIT(n) B_d##n[i]=&true_d##n; B_f##n[i]=NULL;
+#define INIT(n) \
+  B_s##n[i]=&false_s##n; B_t##n[i]=NULL; \
+  B_d##n[i]= &true_d##n; B_p##n[i]=NULL;
   DDO(i,256) { ON_ALL_NUMS(INIT) }
 #undef INIT
 
   name_init();
-  compose_init();
-  map_init();
-  arith_init();
-  compare_init();
-  list_init();
-  string_init();
+  //compose_init();
+  //map_init();
+  //arith_init();
+  //compare_init();
+  //list_init();
+  //string_init();
 }
 
 /////////////// Main definitions ///////////
-V FfromB(B b, I n, V* x) {
+void FfromB_P(P p, B b, I n, V* x) {
   DECL_ARR(V,xx,n); DDO(i,n) xx[i]=x[i];
-  DECL_V(B,f); B(f)=b; return makeF(f,n,xx);
+  DECL_V(B,f); B(f)=b;
+  *(F*)p=wrapF(f,n,xx);
 }
 
-V apply_B1(B b, V* x) {
-  F1 f=B_f1[b]; if(!f) return FfromB(b,1,x);
-  else return f(x[0]);
+void apply_P_B1(P p, B b, V* x) {
+  P1 f=B_p1[b]; if(!f) return FfromB_P(p,b,1,x);
+  else return f(p,x[0]);
 }
-V apply_B2(B b, V* x) {
-  F2 f=B_f2[b]; if(!f) return FfromB(b,2,x);
-  else return f(x[0],x[1]);
+void apply_P_B2(P p, B b, V* x) {
+  P2 f=B_p2[b]; if(!f) return FfromB_P(p,b,2,x);
+  else return f(p,x[0],x[1]);
 }
-
-V apply_B(B b, I n, V* x) {
+void apply_P_B(P p, B b, I n, V* x) {
   switch (n) {
-    case 1: return apply_B1(b,x);
-    case 2: return apply_B2(b,x);
+    case 1: return apply_P_B1(p,b,x);
+    case 2: return apply_P_B2(p,b,x);
   }
 }
 
@@ -93,17 +66,54 @@ I dom_B(B b, I n, V* x) {
   }
 }
 
-V apply_F11(F11 f, V* x, V* xx) { return f(x[0], xx[0]); }
-V apply_F12(F12 f, V* x, V* xx) { return f(x[0], xx[0], xx[1]); }
-V apply_F21(F21 f, V* x, V* xx) { return f(x[0], x[1], xx[0]); }
-V apply_F22(F22 f, V* x, V* xx) { return f(x[0], x[1], xx[0], xx[1]); }
 
-V apply_FB(F f, I n, V* xx) {
+T apply_T_B1(B b, T* x) {
+  T1 f=B_t1[b]; if(!f) return F_t; else return f(x[0]);
+}
+T apply_T_B2(B b, T* x) {
+  T2 f=B_t2[b]; if(!f) return F_t; else return f(x[0],x[1]);
+}
+T apply_T_B(B b, I n, T* x) {
+  switch (n) {
+    case 1: return apply_T_B1(b,x);
+    case 2: return apply_T_B2(b,x);
+  }
+}
+
+I dom_T_B(B b, I n, T* x) {
+  switch (n) {
+    case 1: return B_s1[b](x[0]);
+    case 2: return B_s2[b](x[0],x[1]);
+  }
+}
+
+
+void apply_P11(P p, P11 f, V* x, V* xx) { return f(p, x[0], xx[0]); }
+void apply_P12(P p, P12 f, V* x, V* xx) { return f(p, x[0], xx[0], xx[1]); }
+void apply_P21(P p, P21 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0]); }
+void apply_P22(P p, P22 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0], xx[1]); }
+
+void apply_P_FB(P p, F f, I n, V* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
-  B b=B(f->f); F##yz ff=B_f##yz[b]; \
-  if(!ff) { DDO(i,y)del(f->x[i]); DO(i,z)del(xx[i]); \
-    return Err("Unknown builtin"); } \
-  return apply_F##yz(ff, f->x, xx); }
+  B b=B(f->f); P##yz ff=B_p##yz[b]; \
+  if(!ff) { DDO(i,z)del(xx[i]); *(E*)p = "Unknown builtin"; } \
+  return apply_P##yz(p, ff, f->x, xx); }
+#define LINE(a,b) LINE1(a,b,a##b)
+  switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
+#undef LINE
+#undef LINE1
+}
+
+T apply_T11(T11 f, V* x, T* xx) { return f(T(x[0]), xx[0]); }
+T apply_T12(T12 f, V* x, T* xx) { return f(T(x[0]), xx[0], xx[1]); }
+T apply_T21(T21 f, V* x, T* xx) { return f(T(x[0]), T(x[1]), xx[0]); }
+T apply_T22(T22 f, V* x, T* xx) { return f(T(x[0]), T(x[1]), xx[0], xx[1]); }
+
+T apply_T_FB(F f, I n, T* xx) {
+#define LINE1(y,z,yz) case (2*y+z): { \
+  B b=B(f->f); T##yz ff=B_t##yz[b]; \
+  if(!ff) return E_t; \
+  return apply_T##yz(ff, f->x, xx); }
 #define LINE(a,b) LINE1(a,b,a##b)
   switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
 #undef LINE
@@ -117,5 +127,15 @@ I dom_FB(F f, I n, V* xx) {
     case 12: return B_d12[b](x[0], xx[0], xx[1]);
     case 21: return B_d21[b](x[0], x[1], xx[0]);
     case 22: return B_d22[b](x[0], x[1], xx[0], xx[1]);
+  }
+}
+
+I dom_T_FB(F f, I n, T* xx) {
+  B b=B(f->f); V* x=f->x;
+  switch (10*f->l + n) {
+    case 11: return B_s11[b](T(x[0]), xx[0]);
+    case 12: return B_s12[b](T(x[0]), xx[0], xx[1]);
+    case 21: return B_s21[b](T(x[0]), T(x[1]), xx[0]);
+    case 22: return B_s22[b](T(x[0]), T(x[1]), xx[0], xx[1]);
   }
 }

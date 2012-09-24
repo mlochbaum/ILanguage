@@ -20,6 +20,9 @@ V makeO(V f, I l, V* x) {
   DECL_V(O,v); DECL(O,oo); O(v) = oo;
   oo->r=1; oo->f=f; oo->l=l; oo->x=x; return v;
 }
+F wrapF(V f, I l, V* x) {
+  DECL(F,ff); ff->r=1; ff->f=f; ff->l=l; ff->x=x; return ff;
+}
 V makeF(V f, I l, V* x) {
   DECL_V(F,v); DECL(F,ff); F(v) = ff;
   ff->r=1; ff->f=f; ff->l=l; ff->x=x; return v;
