@@ -12,15 +12,16 @@ T apply1_T(V f, T l) { T x[1]; x[0]=l; return apply_T(f,1,x); }
 T apply2_T(V f, T l, T r) { T x[2]; x[0]=l; x[1]=r; return apply_T(f,2,x); }
 
 T apply_T(V f, I n, T* x) {
-#define LINE(T) case T##_t: t+=apply_T_##T(T(f),n,x); break;
-  T t=T(f);
-  if (t & CONST_t) return t;
-  if (t & (O_t+L_t)) {
-    switch (t) {LINE(O) LINE(L)} return t;
+#define LINE(T) case T##_t: t|=apply_T_##T(T(f),n,x); break;
+  T tf=T(f);
+  if (tf & CONST_t) return tf;
+  T t=0; if (tf & (O_t+L_t)) {
+    switch (tf) {LINE(O) LINE(L)} return t;
   } else {
     I d = dom_T(f,n,x);
-    if ((d+1)==1<<n) switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
-    else return fmap_T(f,n,x,d);
+    switch (tf) {LINE(B) LINE(F) LINE(N) LINE(Q)}
+    if ((d+1)!=1<<n) t|=fmap_T(f,n,x,d);
+    return t;
   }
 #undef LINE
 }
