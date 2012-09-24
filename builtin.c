@@ -6,6 +6,10 @@ D_D1(true){return 1;}   D_D2(true){return 3;}
 D_D11(true){return 1;}  D_D12(true){return 3;}
 D_D21(true){return 1;}  D_D22(true){return 3;}
 
+D_S1(true){return 1;}   D_S2(true){return 3;}
+D_S11(true){return 1;}  D_S12(true){return 3;}
+D_S21(true){return 1;}  D_S22(true){return 3;}
+
 D_S1(false){return 0;}   D_S2(false){return 0;}
 D_S11(false){return 0;}  D_S12(false){return 0;}
 D_S21(false){return 0;}  D_S22(false){return 0;}
@@ -25,8 +29,8 @@ D_T1(id){return l;}  D_T2(l){return l;}  D_T2(r){return r;}
 // #include "string.c"
 void builtin_init() {
 #define INIT(n) \
-  B_s##n[i]=&false_s##n; B_t##n[i]=NULL; \
-  B_d##n[i]= &true_d##n; B_p##n[i]=NULL;
+  B_s##n[i]=&true_s##n; B_t##n[i]=NULL; \
+  B_d##n[i]=&true_d##n; B_p##n[i]=NULL;
   DDO(i,256) { ON_ALL_NUMS(INIT) }
 #undef INIT
 
