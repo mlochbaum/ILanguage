@@ -14,10 +14,12 @@ D_S21(false){return 0;}  D_S22(false){return 0;}
 ON_ALL_NUMS(DEF)
 #undef DEF
 
+D_T1(id){return l;}  D_T2(l){return l;}  D_T2(r){return r;}
+
 #include "name.c"
 // #include "compose.c"
 // #include "mapping.c"
-// #include "arith.c"
+#include "arith.c"
 // #include "compare.c"
 // #include "list.c"
 // #include "string.c"
@@ -31,7 +33,7 @@ void builtin_init() {
   name_init();
   //compose_init();
   //map_init();
-  //arith_init();
+  arith_init();
   //compare_init();
   //list_init();
   //string_init();
