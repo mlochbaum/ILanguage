@@ -40,7 +40,7 @@ D_T12(rr){return rr;}  D_T22(rr){return rr;}
 #include "compose.c"
 #include "mapping.c"
 #include "arith.c"
-// #include "compare.c"
+#include "compare.c"
 // #include "list.c"
 // #include "string.c"
 void builtin_init() {
@@ -54,7 +54,7 @@ void builtin_init() {
   compose_init();
   map_init();
   arith_init();
-  //compare_init();
+  compare_init();
   //list_init();
   //string_init();
 }
