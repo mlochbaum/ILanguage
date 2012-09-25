@@ -37,6 +37,7 @@ D_P21(compose) { apply1_P(p, r, apply1(l,ll)); }
 D_T22(compose) { return apply2_T(r, apply1_T(l,ll), apply1_T(l,rr)); }
 D_P22(compose) { apply2_P(p, r, apply1(l,ll), apply1(l,rr)); }
 
+I toBool(V v) { I r = (T(v)!=Z_t || Z(v)); del(v); return r; }
 /* TODO
 D_L2(power) { return 2*(!!(r&Z_t)) + 1; }
 D_D2(power) { return power_l2(T(l), T(r)); }
@@ -54,7 +55,6 @@ D_F22(power) {
   del(rr); return ll;
 }
 
-I toBool(V v) { I r = (T(v)!=Z_t || Z(v)); del(v); return r; }
 D_F21(while) {
   while(toBool(apply1(r, cpy(ll)))) ll=apply1(l,ll);
   return ll;
@@ -98,4 +98,5 @@ void compose_init() {
 
   B_f21['w'] = &while_f21;
   B_f22['w'] = &while_f22;*/
+#undef D
 }

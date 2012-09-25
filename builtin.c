@@ -21,6 +21,9 @@ ON_ALL_NUMS(DEF)
 #define DEFO(n) DEF(O,n)
 ON_ALL_NUMS(DEFO)
 #undef DEFO
+#define DEFZ(n) DEF(Z,n)
+ON_ALL_NUMS(DEFZ)
+#undef DEFZ
 #undef DEF
 
 D_T1(l){return l;}   D_T2(l){return l;}
@@ -35,7 +38,7 @@ D_T12(rr){return rr;}  D_T22(rr){return rr;}
 
 #include "name.c"
 #include "compose.c"
-// #include "mapping.c"
+#include "mapping.c"
 #include "arith.c"
 // #include "compare.c"
 // #include "list.c"
@@ -49,7 +52,7 @@ void builtin_init() {
 
   name_init();
   compose_init();
-  //map_init();
+  map_init();
   arith_init();
   //compare_init();
   //list_init();

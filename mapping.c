@@ -1,28 +1,33 @@
-D_F2(map) { V x[1]; x[0]=l; V v=fmap(r, 1, x, 0); del(r); return v; }
-D_F11(map) { return map_f2(ll,cpy(l)); }
-D_F12(map) { V x[2]; x[0]=ll; x[1]=rr;
-  return fmap(l,2,x,2*(!mapclasseq(mapclass(rr),mapclass(ll)))); }
+D_T2(map) { T x[1]; x[0]=l; return fmap_TT(r,1,x,0,0); }
+D_P2(map) { V x[1]; x[0]=l; fmap_P(p,r,1,x,0); del(r); }
+D_T11(map) { return map_t2(ll,T(l)); }
+D_P11(map) { return map_p2(p,ll,cpy(l)); }
+D_T12(map) { T x[2]; x[0]=ll; x[1]=rr;
+  return fmap_T(l,2,x,0,2*(mapclass_T(rr)!=mapclass_T(ll))); }
+D_P12(map) { V x[2]; x[0]=ll; x[1]=rr;
+  return fmap_P(p,l,2,x,2*(!mapclasseq(mapclass(rr),mapclass(ll)))); }
 
 D_D21(dom) { return toBool(apply1(r,cpy(ll))); }
-D_F21(apply) { return apply1(l,ll); }
+D_T21(apply) { return apply1_T(l,ll); }
+D_P21(apply) { apply1_P(p,l,ll); }
+
 D_D22(dom) {
   V d=apply2(r, cpy(ll), cpy(rr));
   I dd=toBool(listV_at(d,0)) + 2*toBool(listV_at(d,1)); del(d); return dd;
 }
-D_F22(apply) { r; return apply2(l,ll,rr); }
+D_T22(apply) { return apply2_T(l,ll,rr); }
+D_P22(apply) { apply2_P(p,l,ll,rr); }
 
-D_F1(type) { V v=newZ(T(l)); del(l); return v; }
+D_P1(type) { *(Z*)p=T(l); del(l); }
 
 EXTERN_BUILTINS;
 void map_init() {
-  B_f2['f']=&map_f2;
-  B_f11['f']=&map_f11;
-  B_f12['f']=&map_f12;
+#define D(n,c,f) DB(t##n,c,f); DB(p##n,c,f)
+  D(2,'f',map); D(11,'f',map); D(12,'f',map);
 
-  B_d21['D']=&dom_d21;
-  B_f21['D']=&apply_f21;
-  B_d22['D']=&dom_d22;
-  B_f22['D']=&apply_f22;
+  DB(d21,'D',dom); DB(t21,'D',apply); DB(p21,'D',apply);
+  DB(d22,'D',dom); DB(t22,'D',apply); DB(p22,'D',apply);
 
-  B_f1['t']=&type_f1;
+  DB(t1,'t',Z); DB(p1,'t',type);
+#undef D
 }

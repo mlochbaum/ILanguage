@@ -33,7 +33,8 @@ V fmap(V f, I n, V* x, I d) {
   V v; T(v)=fmap_T(f,n,t,d,d); P(v)=MALLOC(t_sizeof(T(v)));
   fmap_P(P(v),f,n,x,d); return v;
 }
-T fmap_T(V f, I n, T* x, I dl, I du) {
+T fmap_T(V f, I n, T* x, I dl, I du) { return fmap_TT(T(f),n,x,dl,du); }
+T fmap_TT(T f, I n, T* x, I dl, I du) {
   T tl=~0, tu=~0;
   DDO(i, n) {
     if (! (dl&1<<i)) { tl &= mapclass_T(x[i]);

@@ -13,6 +13,7 @@ I doml_T     (V, I, T*);
 I domu_T     (V, I, T*);
 T mapclass_T (T);
 T fmap_T     (V, I, T*, I, I);
+T fmap_TT    (T, I, T*, I, I);
 
 void apply_P (P, V, I, V*);
 void fmap_P  (P, V, I, V*, I);
