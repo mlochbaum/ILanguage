@@ -31,7 +31,7 @@ V makeL(T, I c, I l, I o, P);
 ON_TYPES(ALL, NEW);
 #undef NEW
 
-V wrapArray(T, I, P);
+L wrapArray(T, I, P);
 V wrapList(I, V*);
 V makeStr(Str);
 V DErr(Str); V Err(Str);

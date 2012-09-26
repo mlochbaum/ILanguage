@@ -24,6 +24,9 @@ ON_ALL_NUMS(DEFO)
 #define DEFZ(n) DEF(Z,n)
 ON_ALL_NUMS(DEFZ)
 #undef DEFZ
+#define DEFL(n) DEF(L,n)
+ON_ALL_NUMS(DEFL)
+#undef DEFL
 #undef DEF
 
 D_T1(l){return l;}   D_T2(l){return l;}
@@ -41,7 +44,7 @@ D_T12(rr){return rr;}  D_T22(rr){return rr;}
 #include "mapping.c"
 #include "arith.c"
 #include "compare.c"
-// #include "list.c"
+#include "list.c"
 // #include "string.c"
 void builtin_init() {
 #define INIT(n) \
@@ -55,7 +58,7 @@ void builtin_init() {
   map_init();
   arith_init();
   compare_init();
-  //list_init();
+  list_init();
   //string_init();
 }
 

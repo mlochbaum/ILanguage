@@ -30,6 +30,9 @@ V makeF(V f, I l, V* x) {
 V makeC(R a, R b) {
   DECL_V(C,v); C* cc=P(v); cc->a=a; cc->b=b; return v;
 }
+L wrapL(T t, I c, I l, I o, P p) {
+  DECL(L,ll); ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return ll;
+}
 V makeL(T t, I c, I l, I o, P p) {
   DECL_V(L,v); DECL(L,ll); L(v) = ll;
   ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return v;
@@ -40,10 +43,10 @@ ON_TYPES(ALL, SET_NEW);    // functions new##T : T->V
 #undef SET_NEW
 
 // Custom make functions
-V wrapArray(T t, I l, P p) {
+L wrapArray(T t, I l, P p) {
   I c=next_pow_2(l);
   p=realloc(p, c*t_sizeof(t));
-  return makeL(t,c,l,0,p);
+  return wrapL(t,c,l,0,p);
 }
 V wrapList(I l, V* v) {
   I c=next_pow_2(l);
@@ -56,7 +59,7 @@ V wrapList(I l, V* v) {
     v=realloc(v,c*sizeof(V)); return makeL(t,c,l,0,v);
   }
 }
-V makeStr(Str s) { return wrapArray(S_t, strlen(s), s); }
+V makeStr(Str s) { return wrapP(L_t,wrapArray(S_t, strlen(s), s)); }
 V DErr(Str s) { DECL_V(E, v); E(v)=s; return v; }
 V Err(Str s) { return DErr(strdup(s)); }
 void Err_T(E* p, Str s) { *p = strdup(s); return; }
