@@ -5,7 +5,7 @@ typedef char* Str;
 typedef unsigned int UI;
 
 typedef I T;
-typedef I TT;
+typedef T TT;
 
 typedef struct { T t; P p; } V;
 
@@ -50,6 +50,7 @@ typedef struct {T t; L l;} *VL;
 #define R(v) (*(R*)((v).p))
 #define C(v) (*(C*)((v).p))
 #define L(v) (*(L*)((v).p))
+#define V(v) (*(V*)((v).p))
 
 #define LOWER_E e
 #define LOWER_B b

@@ -31,10 +31,10 @@ typedef void (*P9)(protP); P9 B_p9[256];
 )
 nums =: -.&' '&.> nums
 fprot =: rplc&(;:'T V')&.> fprotT
-fprotP =: ('P p, '&,)&.> fprot
-prot =: (#~ e.&'PVT,')&.> fprot
-protT=: (#~ e.&'PVT,')&.> fprotT
-protP=: (#~ e.&'PVT,')&.> fprotP
+fprotP =: ('V p, '&,)&.> fprot
+prot =: (#~ e.&'VT,')&.> fprot
+protT=: (#~ e.&'VT,')&.> fprotT
+protP=: (#~ e.&'VT,')&.> fprotP
 
 changes =: (<'9'),.nums,. ,./ (<,.".)@>;:'fprotT fprotP fprot protT protP prot'
 

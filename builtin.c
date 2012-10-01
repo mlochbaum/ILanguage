@@ -63,21 +63,21 @@ void builtin_init() {
 }
 
 /////////////// Main definitions ///////////
-void FfromB_P(P p, B b, I n, V* x) {
+void FfromB_P(V p, B b, I n, V* x) {
   DECL_ARR(V,xx,n); DDO(i,n) xx[i]=x[i];
   DECL_V(B,f); B(f)=b;
-  *(F*)p=wrapF(f,n,xx);
+  F(p)=wrapF(f,n,xx);
 }
 
-void apply_P_B1(P p, B b, V* x) {
+void apply_P_B1(V p, B b, V* x) {
   P1 f=B_p1[b]; if(!f) return FfromB_P(p,b,1,x);
   else return f(p,x[0]);
 }
-void apply_P_B2(P p, B b, V* x) {
+void apply_P_B2(V p, B b, V* x) {
   P2 f=B_p2[b]; if(!f) return FfromB_P(p,b,2,x);
   else return f(p,x[0],x[1]);
 }
-void apply_P_B(P p, B b, I n, V* x) {
+void apply_P_B(V p, B b, I n, V* x) {
   switch (n) {
     case 1: return apply_P_B1(p,b,x);
     case 2: return apply_P_B2(p,b,x);
@@ -119,15 +119,15 @@ I doml_T_B(B b, I n, T* x) {
 }
 
 
-void apply_P11(P p, P11 f, V* x, V* xx) { return f(p, x[0], xx[0]); }
-void apply_P12(P p, P12 f, V* x, V* xx) { return f(p, x[0], xx[0], xx[1]); }
-void apply_P21(P p, P21 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0]); }
-void apply_P22(P p, P22 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0], xx[1]); }
+void apply_P11(V p, P11 f, V* x, V* xx) { return f(p, x[0], xx[0]); }
+void apply_P12(V p, P12 f, V* x, V* xx) { return f(p, x[0], xx[0], xx[1]); }
+void apply_P21(V p, P21 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0]); }
+void apply_P22(V p, P22 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0], xx[1]); }
 
-void apply_P_FB(P p, F f, I n, V* xx) {
+void apply_P_FB(V p, F f, I n, V* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
   B b=B(f->f); P##yz ff=B_p##yz[b]; \
-  if(!ff) { DDO(i,z)del(xx[i]); *(E*)p = "Unknown builtin"; } \
+  if(!ff) { DDO(i,z)del(xx[i]); E(p) = "Unknown builtin"; } \
   return apply_P##yz(p, ff, f->x, xx); }
 #define LINE(a,b) LINE1(a,b,a##b)
   switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }

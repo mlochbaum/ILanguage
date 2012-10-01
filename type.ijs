@@ -50,6 +50,7 @@ typedef char* Str;
 typedef unsigned int UI;
 
 typedef I T;
+typedef I TT;
 
 typedef struct { T t; P p; } V;
 
@@ -65,7 +66,7 @@ fmte =: (&fmt)e
 types =: unlines ('typedef ',2&}.,' ',{.,';'"_)e typedefs
 val =: unlines comments ((def,]),' //',[)e all,e '_t'<@,"1]_12{."1":,.2^i.n
 ctypes =: unlines 'typedef struct {T t; %T %t;} *V%T;'fmte comp
-get =: unlines '#define %T(v) (*(%T*)((v).p))'fmte all
+get =: unlines '#define %T(v) (*(%T*)((v).p))'fmte all,'V'
 lower =: unlines '#define LOWER_%T %t'fmte all
 typeclasses =: unlines ((18{.def,toupper,'_t '"_),typesum@:".)e ;:classes
 fs=: [: ' 'join/ ('f(',],')'"_)"0

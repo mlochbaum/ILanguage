@@ -6,11 +6,11 @@ I compare_arith(V l, V r) {
 #undef CMP
 #undef D_L
 }
-D_P2(equals) { *(Z*)p = compare_arith(l,r)==0; }
-D_P2(less_than) { *(Z*)p = compare_arith(l,r)<0; }
-D_P2(greater_than) { *(Z*)p = compare_arith(l,r)>0; }
-D_P2(less_than_or_eq) { *(Z*)p = compare_arith(l,r)<=0; }
-D_P2(greater_than_or_eq) { *(Z*)p = compare_arith(l,r)>=0; }
+D_P2(equals) { Z(p) = compare_arith(l,r)==0; }
+D_P2(less_than) { Z(p) = compare_arith(l,r)<0; }
+D_P2(greater_than) { Z(p) = compare_arith(l,r)>0; }
+D_P2(less_than_or_eq) { Z(p) = compare_arith(l,r)<=0; }
+D_P2(greater_than_or_eq) { Z(p) = compare_arith(l,r)>=0; }
 
 EXTERN_BUILTINS;
 void compare_init() {

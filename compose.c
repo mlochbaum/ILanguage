@@ -7,11 +7,11 @@ D_P2(right) { del(l); RE(r); }
 D_P11(constant) { del(ll); RE(l); }
 D_P12(constant) { del(ll); del(rr); RE(l); }
 
-D_P2(apply) { *(V*)p = apply1d(r,l); }
-D_P2(flip)  { *(V*)p = apply1d(l,r); }
-D_P2(compose) { DECL_ARR(V,v,1); v[0]=l; *(O*)p = wrapO(r,1,v); }
-D_P11(compose) { DECL_ARR(V,v,1); v[0]=ll; *(O*)p = wrapO(cpy(l),1,v); }
-D_P12(compose) { DECL_ARR(V,v,2); v[0]=ll; v[1]=rr; *(O*)p = wrapO(cpy(l),2,v); }
+D_P2(apply) { V(p) = apply1d(r,l); }
+D_P2(flip)  { V(p) = apply1d(l,r); }
+D_P2(compose) { DECL_ARR(V,v,1); v[0]=l; O(p) = wrapO(r,1,v); }
+D_P11(compose) { DECL_ARR(V,v,1); v[0]=ll; O(p) = wrapO(cpy(l),1,v); }
+D_P12(compose) { DECL_ARR(V,v,2); v[0]=ll; v[1]=rr; O(p) = wrapO(cpy(l),2,v); }
 
 D_T11(flip)  { return apply2_T(l,ll,ll); }
 D_P11(flip)  { apply2_P(p,l,cpy(ll),ll); }
