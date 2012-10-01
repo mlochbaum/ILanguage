@@ -20,19 +20,16 @@ I next_pow_2(I);
 
 V wrapP(T, P);
 
-V makeO(V, I, V*);
 O wrapO(V, I, V*);
-V makeF(V, I, V*);
 F wrapF(V, I, V*);
-V makeC(R, R);
-V makeL(T, I c, I l, I o, P);
+L wrapL(T, I c, I l, I o, P);
 
 #define NEW(T) V new##T(T);
 ON_TYPES(ALL, NEW);
 #undef NEW
 
 L wrapArray(T, I, P);
-V wrapList(I, V*);
+L wrapList(I, V*);
 V makeStr(Str);
 V DErr(Str); V Err(Str);
 

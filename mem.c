@@ -16,47 +16,32 @@ V wrapP(T t, P p) {
 O wrapO(V f, I l, V* x) {
   DECL(O,oo); oo->r=1; oo->f=f; oo->l=l; oo->x=x; return oo;
 }
-V makeO(V f, I l, V* x) {
-  DECL_V(O,v); DECL(O,oo); O(v) = oo;
-  oo->r=1; oo->f=f; oo->l=l; oo->x=x; return v;
-}
 F wrapF(V f, I l, V* x) {
   DECL(F,ff); ff->r=1; ff->f=f; ff->l=l; ff->x=x; return ff;
 }
-V makeF(V f, I l, V* x) {
-  DECL_V(F,v); DECL(F,ff); F(v) = ff;
-  ff->r=1; ff->f=f; ff->l=l; ff->x=x; return v;
-}
-V makeC(R a, R b) {
-  DECL_V(C,v); C* cc=P(v); cc->a=a; cc->b=b; return v;
-}
 L wrapL(T t, I c, I l, I o, P p) {
   DECL(L,ll); ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return ll;
-}
-V makeL(T t, I c, I l, I o, P p) {
-  DECL_V(L,v); DECL(L,ll); L(v) = ll;
-  ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return v;
 }
 
 #define SET_NEW(T) V new##T(T vv) { DECL_V(T,v); T(v)=vv; return v; }
 ON_TYPES(ALL, SET_NEW);    // functions new##T : T->V
 #undef SET_NEW
 
-// Custom make functions
+// Custom wrap functions
 L wrapArray(T t, I l, P p) {
   I c=next_pow_2(l);
   p=realloc(p, c*t_sizeof(t));
   return wrapL(t,c,l,0,p);
 }
-V wrapList(I l, V* v) {
+L wrapList(I l, V* v) {
   I c=next_pow_2(l);
   T t=0; DDO(i,l)t|=T(v[i]);
   if(PURE(t)){
     I s=t_sizeof(t); P p=MALLOC(c*s);
     DO(i,l) { memcpy(p+i*s, P(v[i]), s); FREE(P(v[i])); }
-    V r=makeL(t,c,l,0,p); FREE(v); return r;
+    L r=wrapL(t,c,l,0,p); FREE(v); return r;
   } else {
-    v=realloc(v,c*sizeof(V)); return makeL(t,c,l,0,v);
+    v=realloc(v,c*sizeof(V)); return wrapL(t,c,l,0,v);
   }
 }
 V makeStr(Str s) { return wrapP(L_t,wrapArray(S_t, strlen(s), s)); }
@@ -125,13 +110,13 @@ V get(V v) {
   if (!(T(v)&COMP_t) || REF(v)==1) return v;
   else { REF(v)--; V r; switch (T(v)) {
     case O_t:
-      { O o=O(v); r=makeO(cpy(o->f), o->l, cpyn(o->l, o->x)); break;}
+      { O o=O(v); r=wrapP(O_t,wrapO(cpy(o->f), o->l, cpyn(o->l, o->x))); break;}
     case F_t:
-      { F f=F(v); r=makeF(cpy(f->f), f->l, cpyn(f->l, f->x)); break;}
+      { F f=F(v); r=wrapP(F_t,wrapF(cpy(f->f), f->l, cpyn(f->l, f->x))); break;}
     case L_t:
       { L l=L(v); I s=t_sizeof(l->t); P p=MALLOC(s*l->c);
         DDO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
-        r=makeL(l->t, l->c, l->l, 0, p); break; }
+        r=wrapP(L_t,wrapL(l->t, l->c, l->l, 0, p)); break; }
   } FREE(P(v)); return r; }
 }
 

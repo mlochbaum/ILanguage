@@ -25,7 +25,7 @@ I mapclasseq(X x, X y) {
 // TODO move/simplify
 V constant(V v) {
   if (T(v)&CONST_t) return v;
-  DECL_V(B,f); B(f)='k'; WRAP(V*,vv,v); return makeF(f,1,vv);
+  DECL_V(B,f); B(f)='k'; WRAP(V*,vv,v); return wrapP(F_t,wrapF(f,1,vv));
 }
 
 V fmap(V f, I n, V* x, I d) {
