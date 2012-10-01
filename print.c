@@ -59,7 +59,7 @@ Str Lfmt(L l) {
   DECL_STR(s, 1); s[0]=' '; Str st; I len;
   if (ll==1) {
     st=PToString(l->t, LIST_PTR_AT(l,0)); len=1+strlen(st);
-    s=realloc(s,len+3); strcpy(s+1,st); FREE(st);
+    s=realloc(s,len+4); strcpy(s+1,st); FREE(st);
     strcpy(s+len,".; "); return s;
   }
   I e=1; DDO(i, ll) {

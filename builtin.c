@@ -45,7 +45,7 @@ D_T12(rr){return rr;}  D_T22(rr){return rr;}
 #include "arith.c"
 #include "compare.c"
 #include "list.c"
-// #include "string.c"
+#include "string.c"
 void builtin_init() {
 #define INIT(n) \
   B_l##n[i]=B_u##n[i]=&true_l##n; B_t##n[i]=NULL; \
@@ -59,7 +59,7 @@ void builtin_init() {
   arith_init();
   compare_init();
   list_init();
-  //string_init();
+  string_init();
 }
 
 /////////////// Main definitions ///////////

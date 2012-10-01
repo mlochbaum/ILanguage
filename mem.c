@@ -44,7 +44,8 @@ L wrapList(I l, V* v) {
     v=realloc(v,c*sizeof(V)); return wrapL(t,c,l,0,v);
   }
 }
-V makeStr(Str s) { return wrapP(L_t,wrapArray(S_t, strlen(s), s)); }
+L wrapStr(Str s) { return wrapArray(S_t, strlen(s), s); }
+V makeStr(Str s) { L l=wrapStr(s); return wrapP(L_t,&l); }
 V DErr(Str s) { DECL_V(E, v); E(v)=s; return v; }
 V Err(Str s) { return DErr(strdup(s)); }
 void Err_T(E* p, Str s) { *p = strdup(s); return; }
