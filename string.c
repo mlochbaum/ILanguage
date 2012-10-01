@@ -1,6 +1,6 @@
 Str toString(V);
 V scan(Str);
-D_P1(print) { L(p)=wrapStr(toString(l)); del(l); }
+D_P1(print) { setL(p, wrapStr(toString(l))); del(l); }
 
 D_L1(string) { return 0; }
 D_U1(string) { return !!(l&L_t); }

@@ -66,7 +66,7 @@ void builtin_init() {
 void FfromB_P(V p, B b, I n, V* x) {
   DECL_ARR(V,xx,n); DDO(i,n) xx[i]=x[i];
   DECL_V(B,f); B(f)=b;
-  F(p)=wrapF(f,n,xx);
+  setF(p, wrapF(f,n,xx));
 }
 
 void apply_P_B1(V p, B b, V* x) {
@@ -127,7 +127,7 @@ void apply_P22(V p, P22 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0], xx[1]);
 void apply_P_FB(V p, F f, I n, V* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
   B b=B(f->f); P##yz ff=B_p##yz[b]; \
-  if(!ff) { DDO(i,z)del(xx[i]); E(p) = "Unknown builtin"; } \
+  if(!ff) { DDO(i,z)del(xx[i]); setE(p, "Unknown builtin"); } \
   return apply_P##yz(p, ff, f->x, xx); }
 #define LINE(a,b) LINE1(a,b,a##b)
   switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }

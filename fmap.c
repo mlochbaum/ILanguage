@@ -62,7 +62,7 @@ void fmap_P(V v, V f, I n, V* x, I d) {
     case CONST_X: DO(i,n)del(x[i]); Err_T(P(v), "Domain error");
     case FUNC_X:  { DECL_ARR(V,xx,n); DDO(i,n) {
                     if (d&1<<i) xx[i]=constant(x[i]); else xx[i]=x[i];
-                  } O(v) = wrapO(cpy(f),n,xx); return; }
+                  } setO(v, wrapO(cpy(f),n,xx)); return; }
     case LIST_X:  return fmap_LIST_P(v, f, n, x, d, *(I*)m.v);
   }
 }
@@ -71,7 +71,8 @@ void fmap_P(V v, V f, I n, V* x, I d) {
 void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   T ts[n]; { DDO(i,n) ts[i]=L(x[i])->t; } T t = apply_T(f, n, ts);
   I s=t_sizeof(t);
-  DECL(L, ll); L(v) = ll; ll->p = MALLOC(l*s); ll->t=t;
+  DECL(L, ll); setL(v, ll); ll->l=l; ll->c=next_pow_2(l); ll->o=0; ll->r=1;
+  ll->p = MALLOC(l*s); ll->t=t;
   I i[n], c[n]; V xi[n];
   DDO(j, n) if (!(d&1<<j)) { i[j]=L(x[j])->o; c[j]=L(x[j])->c; }
   DDO(k, l) {
@@ -79,7 +80,7 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
       if (d&1<<j) { xi[j]=cpy(x[j]); }
       else { xi[j]=listV_at(x[j],i[j]); i[j]++; if(i[j]==c[j]) i[j]=0; }
     }
-    apply_P(wrapP(ll->t,LIST_PTR_ATS(ll,k,s)), f, n, xi);
+    V vv; T(vv)=ll->t; P(vv)=LIST_PTR_ATS(ll,k,s); apply_P(vv, f, n, xi);
   }
   DO(j, n) del(x[j]);
 }

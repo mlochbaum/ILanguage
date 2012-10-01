@@ -9,11 +9,11 @@ D_T2(arith) { return max(l,r); }
 //Monads
 //TODO: complex case
 #define OP(op) { switch (T(l)) { M_L(Z,op); M_L(R,op); } del(l); }
-#define M_L(T, op) case T##_t: T(p)=op T(l); break
+#define M_L(T, op) case T##_t: set##T(p, op T(l)); break
 D_P1(negate) OP(-);
 D_P1(reciprocal) OP(1/);
 #undef M_L
-#define M_L(T, op) case T##_t: T(p)=op(T(l)); break
+#define M_L(T, op) case T##_t: set##T(p, op(T(l))); break
 D_P1(floor) OP(floor);
 D_P1(ceiling) OP(ceiling);
 #undef M_L
@@ -21,15 +21,15 @@ D_P1(ceiling) OP(ceiling);
 
 //Dyads
 #define OP(op) { switch (max(T(l),T(r))) { DL(Z,op); DL(R,op); } del(l);del(r); }
-#define DL(T, op) case T##_t: T(p) = get##T(l)op get##T(r); break
+#define DL(T, op) case T##_t: set##T(p, get##T(l)op get##T(r)); break
 D_P2(plus) OP(+);
 D_P2(minus) OP(-);
 D_P2(times) OP(*);
 D_P2(divide) OP(/);
 #undef DL
-#define DL(T, op) case T##_t: T(p) = op(get##T(l), get##T(r)); break
+#define DL(T, op) case T##_t: set##T(p, op(get##T(l), get##T(r))); break
 #define MOD(l,r) (l) - (r)*floor((l)/(r))
-#define DL1(T, op) case T##_t: T(p) = get##T(l)op get##T(r); break
+#define DL1(T, op) case T##_t: set##T(p, get##T(l)op get##T(r)); break
 // D_P2(mod) OP(MOD);
 D_P2(mod) { switch (max(T(l),T(r))) { DL1(Z,%); DL(R,MOD); } del(l);del(r); }
 #undef DL1

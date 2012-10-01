@@ -18,7 +18,7 @@ D_D22(dom) {
 D_T22(apply) { return apply2_T(l,ll,rr); }
 D_P22(apply) { apply2_P(p,l,ll,rr); }
 
-D_P1(type) { Z(p)=T(l); del(l); }
+D_P1(type) { setZ(p,T(l)); del(l); }
 
 EXTERN_BUILTINS;
 void map_init() {

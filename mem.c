@@ -22,7 +22,8 @@ L wrapL(T t, I c, I l, I o, P p) {
   DECL(L,ll); ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return ll;
 }
 
-#define SET_NEW(T) V new##T(T vv) { DECL_V(T,v); T(v)=vv; return v; }
+#define SET_NEW(T) V new##T(T vv) { DECL_V(T,v); T(v)=vv; return v; } \
+  void set##T(V v,T t) { if (!PURE(v.t)) V(v)=new##T(t); else T(v)=t; }
 ON_TYPES(ALL, SET_NEW);    // functions new##T : T->V
 #undef SET_NEW
 
@@ -73,7 +74,12 @@ P arrcpy(P aa, I s, I l, I c, I o) {
   memcpy(a,aa+o,min(c-o,l)); memcpy(a,aa,max(0,l+o-c));
   return a;
 }
-void mv_P(V p, V v) { memcpy(P(p), P(v), t_sizeof(T(v))); FREE(P(v)); }
+void mv_P(V p, V v) {
+  if (!PURE(T(p))) V(p)=v;
+  else if (T(p)==T(v)) {
+    memcpy(P(p), P(v), t_sizeof(T(v))); FREE(P(v));
+  } else printf("Internal error: type mismatch in mv_P");
+}
 void valcpy(P p, P pp, T t) { // from pp to p
   I s=t_sizeof(t);
   if (PURE(t)) switch (t) {
@@ -118,12 +124,10 @@ R getR(V v) {
 }
 
 // List properties
-V arr_at(L l, I i) {
-  V v; T(v)=l->t; P(v)=MALLOC(t_sizeof(l->t));
-  valcpy(P(v), LIST_PTR_AT(l,i), l->t); return v;
-}
 V list_at(L l, I i) {
-  if (PURE(l->t)) return arr_at(l, i);
-  else return cpy(LIST_AT(l, i));
+  if (PURE(l->t)) {
+    V v; T(v)=l->t; P(v)=MALLOC(t_sizeof(l->t));
+    valcpy(P(v), LIST_PTR_AT(l,i), l->t); return v;
+  } else return cpy(LIST_AT(l, i));
 }
 V listV_at(V v, I i) { return list_at(L(v), i); }

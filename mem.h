@@ -24,7 +24,7 @@ O wrapO(V, I, V*);
 F wrapF(V, I, V*);
 L wrapL(T, I c, I l, I o, P);
 
-#define NEW(T) V new##T(T);
+#define NEW(T) V new##T(T); void set##T(V,T);
 ON_TYPES(ALL, NEW);
 #undef NEW
 
@@ -61,6 +61,5 @@ R getR(V);
 #define LIST_AT(l, i) ((V*)(l)->p)[((i)+(l)->o)%(l)->c]
 #define LIST_PTR_AT(l, i) (l)->p+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c)
 #define LIST_PTR_ATS(l, i, s) (l)->p+(s)*(((i)+(l)->o)%(l)->c)
-V arr_at(L, I);
 V list_at(L, I);
 V listV_at(V, I);
