@@ -12,7 +12,6 @@ V wrapP(T t, P p) {
   else { V v; T(v)=t; P(v)=p; return cpy(v); }
 }
 
-
 O wrapO(V f, I l, V* x) {
   DECL(O,oo); oo->r=1; oo->f=f; oo->l=l; oo->x=x; return oo;
 }
@@ -45,7 +44,7 @@ L wrapList(I l, V* v) {
   }
 }
 L wrapStr(Str s) { return wrapArray(S_t, strlen(s), s); }
-V makeStr(Str s) { L l=wrapStr(s); return wrapP(L_t,&l); }
+V makeStr(Str s) { L l=wrapStr(s); return newL(l); }
 V DErr(Str s) { DECL_V(E, v); E(v)=s; return v; }
 V Err(Str s) { return DErr(strdup(s)); }
 void Err_T(E* p, Str s) { *p = strdup(s); return; }
@@ -68,20 +67,6 @@ void delP(T t, P p) {
   }
 }
 void del(V v) { delP(T(v), P(v)); FREE(P(v)); }
-
-void freeP(T t, P p) {
-  if (PURE(t)) switch (t) {
-    case N_t: FREE(*(N*)p); break;
-    case Q_t: FREE(*(Q*)p); break;
-    case O_t: case F_t: { O o=*(O*)p;
-                          if(!(--o->r)) { FREE(o->x); FREE(o); }
-                          break; }
-    case L_t: { L l=*(L*)p; if(!(--l->r)) { FREE(l->p); FREE(l); } break; }
-  } else {
-    freeV(*(V*)p);
-  }
-}
-void freeV(V v) { freeP(T(v), P(v)); FREE(P(v)); }
 
 P arrcpy(P aa, I s, I l, I c, I o) {
   l*=s; c*=s; o*=s; P a=MALLOC(c);
@@ -111,13 +96,13 @@ V get(V v) {
   if (!(T(v)&COMP_t) || REF(v)==1) return v;
   else { REF(v)--; V r; switch (T(v)) {
     case O_t:
-      { O o=O(v); r=wrapP(O_t,wrapO(cpy(o->f), o->l, cpyn(o->l, o->x))); break;}
+      { O o=O(v); r=newO(wrapO(cpy(o->f), o->l, cpyn(o->l, o->x))); break;}
     case F_t:
-      { F f=F(v); r=wrapP(F_t,wrapF(cpy(f->f), f->l, cpyn(f->l, f->x))); break;}
+      { F f=F(v); r=newF(wrapF(cpy(f->f), f->l, cpyn(f->l, f->x))); break;}
     case L_t:
       { L l=L(v); I s=t_sizeof(l->t); P p=MALLOC(s*l->c);
         DDO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
-        r=wrapP(L_t,wrapL(l->t, l->c, l->l, 0, p)); break; }
+        r=newL(wrapL(l->t, l->c, l->l, 0, p)); break; }
   } FREE(P(v)); return r; }
 }
 
