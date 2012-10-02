@@ -41,7 +41,9 @@ void apply_P(V v, V f, I n, V* x) {
 V apply(V f, I n, V* x) {
   T t[n]; DDO(i,n) t[i]=T(x[i]);
   V v; T(v)=apply_T(f, n, t); P(v)=MALLOC(t_sizeof(T(v)));
-  apply_P(v, f, n, x); return v;
+  apply_P(v, f, n, x);
+  while (!PURE(T(v))) { V vt=V(v); FREE(P(v)); v=vt; }
+  return v;
 }
 
 

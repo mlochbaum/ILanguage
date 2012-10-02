@@ -150,9 +150,8 @@ D_P11(reduce) {
   if (!(T(ll)&L_t)) { V(p)=ll; }
   I len=L(ll)->l;
   if (len==0) { del(ll); identity_of_p1(p,l); }
-  ll=get(ll); V lv; T(lv)=L(ll)->t; I s=t_sizeof(T(lv)); P(lv)=MALLOC(s);
-  V v=listV_at(ll,0); I i=1;
-  for(;i<len;i++) { memcpy(P(lv),LIST_PTR_AT(L(ll),i),s); v=apply2(l,v,lv); }
+  ll=get(ll); V lv; V v=listV_at(ll,0); I i=1;
+  for(;i<len;i++) { v=apply2(l,v,list_at(L(ll),i)); }
   FREE(L(ll)->p); FREE(L(ll)); FREE(P(ll)); V(p)=v;
 }
 D_P12(reduce) {

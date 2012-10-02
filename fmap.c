@@ -1,11 +1,6 @@
 T mapclass_T(T t) {
-  switch (t) {
-#define CASE(T) case T##_t:
-    ON_TYPES(CONST, CASE) return CONST_X;
-    ON_TYPES(FUNC , CASE) return FUNC_X;
-    case L_t: return LIST_X;
-#undef CASE
-  }
+  return ((t&CONST_t)?CONST_X:0) | ((t&FUNC_t)?FUNC_X:0)
+    | ((t&L_t)?LIST_X:0);
 }
 X mapclass(V v) {
   X x; switch (T(v)) {
@@ -40,7 +35,7 @@ T fmap_TT(T f, I n, T* x, I dl, I du) {
     if (! (dl&1<<i)) { tl &= mapclass_T(x[i]);
       if (! (du&1<<i)) tu &= mapclass_T(x[i]); }
   }
-  if ((!tu) || (!PURE(tl))) return E_t;
+  if (!tu) return E_t;
   T t=0; if (!PURE(tu)) t|=E_t;
   if (tu & CONST_X) t |= E_t;
   if (tu & FUNC_X ) t |= O_t;
@@ -69,8 +64,8 @@ void fmap_P(V v, V f, I n, V* x, I d) {
 
 
 void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
-  T ts[n]; { DDO(i,n) ts[i]=L(x[i])->t; } T t = apply_T(f, n, ts);
-  I s=t_sizeof(t);
+  T ts[n]; { DDO(i,n) ts[i]=(d&1<<i)?(T(x[i])):(L(x[i])->t); }
+  T t = apply_T(f, n, ts); I s=t_sizeof(t);
   DECL(L, ll); setL(v, ll); ll->l=l; ll->c=next_pow_2(l); ll->o=0; ll->r=1;
   ll->p = MALLOC(l*s); ll->t=t;
   I i[n], c[n]; V xi[n];
