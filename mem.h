@@ -33,8 +33,7 @@ L wrapList(I, V*);
 V makeStr(Str);
 V DErr(Str); V Err(Str);
 
-void delP(T, P);  void del(V); // Delete this copy of v.
-void freeP(T, P); void freeV(V);
+void delP(T, P);  void del(V);   void ddel(V); // Delete this copy of v.
 void valcpy(P, P, T);
 V cpy(V);    // Return a new copy of v.
 V get(V);    // Ensure that the returned value is safely modifiable.

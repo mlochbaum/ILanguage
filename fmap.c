@@ -49,8 +49,7 @@ void fmap_P(V v, V f, I n, V* x, I d) {
     X mt=mapclass(x[i]);
     if (!m.t) m=mt;
     else if (!mapclasseq(m,mt)) {
-      // TODO p might not have type V
-      DDO(j,n)del(x[j]); V(v) = Err("Incompatible mapclasses");
+      DDO(j,n)del(x[j]); return setE(v, strdup("Incompatible mapclasses"));
     }
   }
   switch (m.t) {
@@ -72,7 +71,7 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   DDO(j, n) if (!(d&1<<j)) { i[j]=L(x[j])->o; c[j]=L(x[j])->c; }
   DDO(k, l) {
     DO(j,n) {
-      if (d&1<<j) { xi[j]=cpy(x[j]); }
+      if (d&1<<j) { xi[j]=x[j]; }
       else { xi[j]=listV_at(x[j],i[j]); i[j]++; if(i[j]==c[j]) i[j]=0; }
     }
     V vv; T(vv)=ll->t; P(vv)=LIST_PTR_ATS(ll,k,s); apply_P(vv, f, n, xi);

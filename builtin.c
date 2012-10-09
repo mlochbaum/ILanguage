@@ -64,9 +64,8 @@ void builtin_init() {
 
 /////////////// Main definitions ///////////
 void FfromB_P(V p, B b, I n, V* x) {
-  DECL_ARR(V,xx,n); DDO(i,n) xx[i]=x[i];
-  DECL_V(B,f); B(f)=b;
-  setF(p, wrapF(f,n,xx));
+  DECL_ARR(V,xx,n); DDO(i,n) xx[i]=cpy1(x[i]);
+  setF(p, wrapF(newB(b),n,xx));
 }
 
 void apply_P_B1(V p, B b, V* x) {

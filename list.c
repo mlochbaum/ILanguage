@@ -1,7 +1,7 @@
 D_P1(itemize) { setL(p, wrapL(T(l),1,1,0,P(l))); }
 D_P2(cross) {
   T tl=T(l), tr=T(r), t=tl|tr; I s=t_sizeof(t); P v=MALLOC(2*s);
-  if (PURE(t)) { memcpy(v,P(l),s); memcpy(v+s,P(r),s); FREE(P(l)); FREE(P(r)); }
+  if (PURE(t)) { memcpy(v,P(l),s); memcpy(v+s,P(r),s); }
   else { ((V*)v)[0]=l; ((V*)v)[1]=r; }
   setL(p, wrapL(t,2,2,0,v));
 }
@@ -11,6 +11,9 @@ void resize(L l, I s, I c) { // Assume resizing up
   if (l->l+l->o > l->c) memcpy(l->p+s*l->c, l->p, s*(l->l+l->o-l->c));
   l->c=c;
 }
+
+#define REL(v) return setL(p,v);
+#define RELL(v) return setL(p,L(v));
 D_P2(concat) {
   if (T(l)==L_t) { L lv=L(l);
     if (T(r)==L_t) { L rv=L(r);
@@ -22,17 +25,17 @@ D_P2(concat) {
           if ((lv->r==1)*lv->l >= (rv->r==1)*rv->l) { // Copy to left
             resize(lv,s,c);
             DDO(i,rv->l) valcpy(AT(lv,lv->l+i),AT(rv,i),t);
-            del(r); lv->l=ll; RE(l);
+            del(r); lv->l=ll; RELL(l);
           } else { // Copy to right
             resize(rv,s,c);
             DDO(i,lv->l) valcpy(AT(rv,i-lv->l+rv->c),AT(lv,i),t);
-            rv->l=ll; rv->o=(rv->o-lv->l+rv->c)%rv->c; del(l); RE(r);
+            rv->l=ll; rv->o=(rv->o-lv->l+rv->c)%rv->c; del(l); RELL(r);
           }
         } else {
           P v=malloc(s*c);
           DDO(i,lv->l) valcpy(v+s*i, AT(lv,i), t);
           DO(i,rv->l) valcpy(v+s*(i+lv->l), AT(rv,i), t);
-          del(l); del(r); setL(p, wrapL(t, c, ll, 0, v));
+          del(l); del(r); REL(wrapL(t, c, ll, 0, v));
         }
 #undef AT
       } else {
@@ -42,17 +45,17 @@ D_P2(concat) {
           if (le*lv->l >= re*rv->l) { // Copy to left
             resize(lv,s,c);
             DDO(i,rv->l) AT(lv,lv->l+i)=cpy(AT(rv,i));
-            del(r); lv->l=ll; RE(l);
+            del(r); lv->l=ll; RELL(l);
           } else { // Copy to right
             resize(rv,s,c);
             DDO(i,lv->l) AT(rv,i-lv->l+rv->c)=cpy(AT(lv,i));
-            rv->l=ll; rv->o=(rv->o-lv->l+rv->c)%rv->c; del(l); RE(r);
+            rv->l=ll; rv->o=(rv->o-lv->l+rv->c)%rv->c; del(l); RELL(r);
           }
         } else {
           DECL_ARR(V,v,c);
           DDO(i,lv->l) v[i]=cpy(AT(lv,i));
           DO(i,rv->l) v[i+lv->l]=cpy(AT(rv,i));
-          del(l); del(r); setL(p, wrapL(t, c, ll, 0, v));
+          del(l); del(r); REL(wrapL(t, c, ll, 0, v));
         }
 #undef AT
       }
@@ -63,22 +66,22 @@ D_P2(concat) {
 #define AT(a,i) a->p + s*((a->o+i)%a->c)
         if (lv->r==1) {
           resize(lv,s,c); valcpy(AT(lv,lv->l), P(r), t);
-          del(r); lv->l++; RE(l);
+          del(r); lv->l++; RELL(l);
         } else {
           P v=malloc(s*c);
           DDO(i,lv->l) valcpy(v+s*i, AT(lv,i), t);
           valcpy(v+s*lv->l, P(r), t);
-          del(r); setL(p, wrapL(t, c, ll, 0, v));
+          del(r); REL(wrapL(t, c, ll, 0, v));
         }
 #undef AT
       } else {
 #define AT(a,i) ((V*)a->p)[(a->o+i)%a->c]
         if (lv->r==1 && PURE(lv->t)) {
-          resize(lv,s,c); AT(lv,lv->l)=r; lv->l++; RE(l);
+          resize(lv,s,c); AT(lv,lv->l)=r; lv->l++; RELL(l);
         } else {
           DECL_ARR(V,v,c);
           DDO(i,lv->l) v[i]=cpy(AT(lv,i)); v[lv->l]=r; del(l);
-          setL(p, wrapL(t, c, ll, 0, v));
+          REL(wrapL(t, c, ll, 0, v));
         }
 #undef AT
       }
@@ -87,6 +90,8 @@ D_P2(concat) {
     return cross_p2(p,l,r);
   }
 }
+#undef REL
+#undef RELL
 
 D_L1(list) { return !!(l&L_t); }
 D_D1(list) { return list_l1(T(l)); }
@@ -150,9 +155,9 @@ D_P11(reduce) {
   if (!(T(ll)&L_t)) { V(p)=ll; }
   I len=L(ll)->l;
   if (len==0) { del(ll); identity_of_p1(p,l); }
-  ll=get(ll); V lv; V v=listV_at(ll,0); I i=1;
-  for(;i<len;i++) { v=apply2(l,v,list_at(L(ll),i)); }
-  FREE(L(ll)->p); FREE(L(ll)); FREE(P(ll)); V(p)=v;
+  ll=get(ll); V lv; V v=cpy1(listV_at(ll,0)); I i=1;
+  for(;i<len;i++) { V vt=apply2(l,v,list_at(L(ll),i)); FREE(P(v)); v=vt; }
+  FREE(L(ll)->p); FREE(L(ll)); V(p)=v;
 }
 D_P12(reduce) {
   if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); }

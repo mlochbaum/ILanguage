@@ -3,6 +3,8 @@ V apply2(V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply(f,2,x); }
 
 V apply1d(V f, V l) { V v=apply1(f, l); del(f); return v; }
 V apply2d(V f, V l, V r) { V v=apply2(f, l, r); del(f); return v; }
+V apply1dd(V f, V l) { V v=apply1(f, l); ddel(f); FREE(P(l)); return v; }
+V apply2dd(V f, V l, V r) { V v=apply2(f, l, r); ddel(f); FREE(P(l)); FREE(P(r)); return v; }
 
 T apply1_T(V f, T l) { T x[1]; x[0]=l; return apply_T(f,1,x); }
 T apply2_T(V f, T l, T r) { T x[2]; x[0]=l; x[1]=r; return apply_T(f,2,x); }

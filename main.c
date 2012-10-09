@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     if (getline(&in, &c, stdin) == -1) { break; }
     I l = strlen(in);
     if (l <= 1) break;
-    puts(s = toString(v = scan(in))); del(v); FREE(s);
+    puts(s = toString(v = scan(in))); ddel(v); FREE(s);
   }
   FREE(in);
   StrVfree(names);
