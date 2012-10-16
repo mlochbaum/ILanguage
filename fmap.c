@@ -55,7 +55,8 @@ void fmap_P(V v, V f, I n, V* x, I d) {
   switch (m.t) {
     case CONST_X: DO(i,n)del(x[i]); Err_T(P(v), "Domain error");
     case FUNC_X:  { DECL_ARR(V,xx,n); DDO(i,n) {
-                    if (d&1<<i) xx[i]=constant(x[i]); else xx[i]=x[i];
+                    if (d&1<<i) xx[i]=constant(cpy1(x[i]));
+                    else xx[i]=cpy1(x[i]);
                   } setO(v, wrapO(cpy(f),n,xx)); return; }
     case LIST_X:  return fmap_LIST_P(v, f, n, x, d, *(I*)m.v);
   }
