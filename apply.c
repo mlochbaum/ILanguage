@@ -56,7 +56,11 @@ T apply_T_O(O o, I n, T* x) {
 }
 void apply_P_O(V v, O o, I n, V* x) {
   V xt[n]; V xx[o->l];
-  DDO(j, o->l-1) { DDO(i,n)xt[i]=cpy(x[i]); xx[j]=apply(o->x[j], n, xt); }
+  DDO(j, o->l-1) {
+    DDO(i,n)xt[i]=cpy(x[i]);
+    xx[j]=apply(o->x[j], n, xt);
+    DO(i,n)FREE(P(xt[i]));
+  }
   xx[o->l-1]=apply(o->x[o->l-1], n, x);
   apply_P(v, o->f, o->l, xx); DO(j,o->l) FREE(P(xx[j]));
 }
