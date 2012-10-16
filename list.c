@@ -1,8 +1,8 @@
-D_P1(itemize) { setL(p, wrapL(T(l),1,1,0,P(l))); }
+D_P1(itemize) { setL(p, wrapL(T(l),1,1,0,P(cpy1(l)))); }
 D_P2(cross) {
   T tl=T(l), tr=T(r), t=tl|tr; I s=t_sizeof(t); P v=MALLOC(2*s);
   if (PURE(t)) { memcpy(v,P(l),s); memcpy(v+s,P(r),s); }
-  else { ((V*)v)[0]=l; ((V*)v)[1]=r; }
+  else { ((V*)v)[0]=cpy1(l); ((V*)v)[1]=cpy1(r); }
   setL(p, wrapL(t,2,2,0,v));
 }
 
