@@ -32,6 +32,8 @@ V apply1(V, V);
 V apply2(V, V, V);
 V apply1d(V, V);
 V apply2d(V, V, V);
+V apply1_d(V, V);
+V apply2_d(V, V, V);
 V apply1dd(V, V);
 V apply2dd(V, V, V);
 
