@@ -2,8 +2,8 @@ Str toString(V);
 V scan(Str);
 D_P1(print) { setL(p, wrapStr(toString(l))); del(l); }
 
-D_L1(string) { return 0; }
-D_U1(string) { return !!(l&L_t); }
+D_L1(string) { return !!(l&L_t); }
+D_U1(string) { return 0; }
 D_D1(string) { return !!((T(l)&L_t) && (L(l)->t==S_t)); }
 Str arrToString(I l, I c, I o, P v) {
   DECL_NSTR(s, l); memcpy(s,v+o,min(c-o,l)); memcpy(s,v,max(0,l+o-c)); return s;
