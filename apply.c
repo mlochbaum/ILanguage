@@ -1,4 +1,4 @@
-V apply1(V f, V l) { V x[1]; x[0]=l; return apply(f,1,x); }
+V apply1(V f, V l) { return apply(f,1,&l); }
 V apply2(V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply(f,2,x); }
 
 V apply1d(V f, V l) { V v=apply1(f, l); del(f); return v; }
