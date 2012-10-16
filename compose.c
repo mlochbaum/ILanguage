@@ -24,11 +24,11 @@ D_T21(backbind) { return apply2_T(r,T(l),ll); }
 D_P21(backbind) { V l_=cpy(l); apply2_P(p,r,l_,ll); FREE(P(l_)); }
 
 D_T21(hook)     { return apply2_T(r,apply1_T(l,ll),ll); }
-D_P21(hook)     { V l1,a; apply2_P(p,r,a=apply1(l,l1=cpy(ll)),ll); FREE(P(l1)); FREE(P(a)); }
+D_P21(hook)     { V a; apply2_P(p,r,a=apply1_d(l,cpy(ll)),ll); FREE(P(a)); }
 D_T22(hook)     { return apply2_T(r,apply1_T(l,ll),rr); }
 D_P22(hook)     { apply2_P(p,r,apply1(l,ll),rr); }
 D_T21(backhook) { return apply2_T(l,ll,apply1_T(r,ll)); }
-D_P21(backhook) { V l1,a; apply2_P(p,l,ll,a=apply1(r,l1=cpy(ll))); FREE(P(l1)); FREE(P(a)); }
+D_P21(backhook) { V a; apply2_P(p,l,ll,a=apply1_d(r,cpy(ll))); FREE(P(a)); }
 D_T22(backhook) { return apply2_T(l,ll,apply1_T(r,rr)); }
 D_P22(backhook) { apply2_P(p,l,ll,apply1(r,rr)); }
 
