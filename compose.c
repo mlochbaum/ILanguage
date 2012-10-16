@@ -37,6 +37,7 @@ D_P21(compose) { V a; apply1_P(p, r, a=apply1(l,ll)); FREE(P(a)); }
 D_T22(compose) { return apply2_T(r, apply1_T(l,ll), apply1_T(l,rr)); }
 D_P22(compose) { V al,ar; apply2_P(p, r, al=apply1(l,ll), ar=apply1(l,rr)); FREE(P(al)); FREE(P(ar)); }
 
+I toBoold(V v) { I r = (T(v)!=Z_t || Z(v)); ddel(v); return r; }
 I toBool(V v) { I r = (T(v)!=Z_t || Z(v)); del(v); return r; }
 /* TODO
 D_L2(power) { return 2*(!!(r&Z_t)) + 1; }
