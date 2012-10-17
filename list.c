@@ -12,6 +12,37 @@ void resize(L l, I s, I c) { // Assume resizing up
   l->c=c;
 }
 
+void listcpy1(L d, L s, I i) {
+#define DS s1-s0
+#define DD d1-d0
+  I ss=t_sizeof(d->t);
+  P d0=LIST_PTR_ATS(d,i,ss), d1=d->p+d->c*ss;
+  P s0=LIST_PTR_ATS(s,0,ss), s1=s->p+s->c*ss;
+  I l=s->l*ss;
+  if (DS <= DD) {
+    memcpy(d0,s0,min(l,DS)); if((l-=DS)<=0)return; s0=s->p; d0+=DS;
+    memcpy(d0,s0,min(l,DD)); if((l-=DD)<=0)return; s0+=DD; d0=d->p;
+  } else {
+    memcpy(d0,s0,min(l,DD)); if((l-=DD)<=0)return; s0+=DD; d0=d->p;
+    memcpy(d0,s0,min(l,DS)); if((l-=DS)<=0)return; s0=s->p; d0+=DS;
+  }
+  memcpy(d0,s0,l);
+#undef DS
+#undef DD
+}
+void listcpy(L d, L s, I i) {
+  d->l += s->l;
+  if (PURE(d->t)==PURE(s->t)) listcpy1(d,s,i);
+  else { DDO(j,s->l) LIST_AT(d,i+j) = cpy1(list_P_at(s,j)); }
+  FREE(s->p); FREE(s);
+}
+/* Assume (^l->t)|r->t and l->c>=l->l+r->l.
+ * Copy the contents of r into l. */
+void append(L l, L r) { listcpy(l, r, l->l); }
+/* Assume l->t|(^r->t) and r->c>=l->l+r->l.
+ * Copy the contents of l into r. */
+void prepend(L l, L r) { r->o += r->c-l->l; r->o%=r->c; listcpy(r,l,0); }
+
 #define REL(v) return setL(p,v);
 #define RELL(v) return setL(p,L(v));
 D_P2(concat) {
@@ -19,72 +50,24 @@ D_P2(concat) {
     if (T(r)==L_t) { L rv=L(r);
       T t=lv->t|rv->t; I ll=lv->l+rv->l, c=next_pow_2(ll);
       I s=t_sizeof(t);
-      if (PURE(t)) {
-#define AT(a,i) a->p + s*((a->o+i)%a->c)
-        if (lv->r==1 || rv->r==1) {
-          if ((lv->r==1)*lv->l >= (rv->r==1)*rv->l) { // Copy to left
-            resize(lv,s,c);
-            DDO(i,rv->l) valcpy(AT(lv,lv->l+i),AT(rv,i),t);
-            del(r); lv->l=ll; RELL(l);
-          } else { // Copy to right
-            resize(rv,s,c);
-            DDO(i,lv->l) valcpy(AT(rv,i-lv->l+rv->c),AT(lv,i),t);
-            rv->l=ll; rv->o=(rv->o-lv->l+rv->c)%rv->c; del(l); RELL(r);
-          }
-        } else {
-          P v=malloc(s*c);
-          DDO(i,lv->l) valcpy(v+s*i, AT(lv,i), t);
-          DO(i,rv->l) valcpy(v+s*(i+lv->l), AT(rv,i), t);
-          del(l); del(r); REL(wrapL(t, c, ll, 0, v));
-        }
-#undef AT
+      I ifl = lv->r==1 && PURE(lv->t)==PURE(t);
+      I ifr = rv->r==1 && PURE(rv->t)==PURE(t);
+      if (ifl  &&  lv->l >= ifr*rv->l) {
+        resize(lv,s,c); append(lv,rv); REL(lv);
+      } else if (ifr) {
+        resize(rv,s,c); prepend(lv,rv); REL(rv);
       } else {
-#define AT(a,i) ((V*)a->p)[(a->o+i)%a->c]
-        I le=(lv->r==1 && PURE(lv->t)), re=(rv->r==1 && PURE(rv->t));
-        if (le||re) {
-          if (le*lv->l >= re*rv->l) { // Copy to left
-            resize(lv,s,c);
-            DDO(i,rv->l) AT(lv,lv->l+i)=cpy(AT(rv,i));
-            del(r); lv->l=ll; RELL(l);
-          } else { // Copy to right
-            resize(rv,s,c);
-            DDO(i,lv->l) AT(rv,i-lv->l+rv->c)=cpy(AT(lv,i));
-            rv->l=ll; rv->o=(rv->o-lv->l+rv->c)%rv->c; del(l); RELL(r);
-          }
-        } else {
-          DECL_ARR(V,v,c);
-          DDO(i,lv->l) v[i]=cpy(AT(lv,i));
-          DO(i,rv->l) v[i+lv->l]=cpy(AT(rv,i));
-          del(l); del(r); REL(wrapL(t, c, ll, 0, v));
-        }
-#undef AT
+        L v=wrapL(t,c,0,0,MALLOC(s*c));
+        append(v,lv); append(v,rv); REL(v);
       }
     } else {
-      T t=lv->t|T(r); I ll=lv->l+1, c=next_pow_2(ll);
-      I s=t_sizeof(t);
-      if (PURE(t)) {
-#define AT(a,i) a->p + s*((a->o+i)%a->c)
-        if (lv->r==1) {
-          resize(lv,s,c); valcpy(AT(lv,lv->l), P(r), t);
-          del(r); lv->l++; RELL(l);
-        } else {
-          P v=malloc(s*c);
-          DDO(i,lv->l) valcpy(v+s*i, AT(lv,i), t);
-          valcpy(v+s*lv->l, P(r), t);
-          del(r); REL(wrapL(t, c, ll, 0, v));
-        }
-#undef AT
+      T t=lv->t|T(r); I ll=lv->l+1, c=next_pow_2(ll); I s=t_sizeof(t);
+      L v; if (lv->r==1 && PURE(lv->t)==PURE(t)) {
+        resize(lv,s,c); v=lv;
       } else {
-#define AT(a,i) ((V*)a->p)[(a->o+i)%a->c]
-        if (lv->r==1 && PURE(lv->t)) {
-          resize(lv,s,c); AT(lv,lv->l)=r; lv->l++; RELL(l);
-        } else {
-          DECL_ARR(V,v,c);
-          DDO(i,lv->l) v[i]=cpy(AT(lv,i)); v[lv->l]=r; del(l);
-          REL(wrapL(t, c, ll, 0, v));
-        }
-#undef AT
+        v=wrapL(t,c,0,0,MALLOC(s*c)); append(v,lv);
       }
+      mv_P(list_P_at(v,v->l), r); v->l=ll; REL(v);
     }
   } else {
     return cross_p2(p,l,r);
@@ -135,12 +118,12 @@ D_P2(iota) {
   switch (T(l)) {
     case Z_t: { Z lz=getZ(l), ll=getCeilZ(r)-lz; del(l); del(r);
                 I s=sign(ll); ll*=s; I c=next_pow_2(ll); DECL_ARR(Z,v,c);
-                DDO(i,ll)v[i]=lz+s*i; setL(p, wrapL(Z_t, c, ll, 0, v));
+                DDO(i,ll)v[i]=lz+s*i; return setL(p, wrapL(Z_t, c, ll, 0, v));
               }
     case R_t: { R lr=getR(l), llr=getR(r)-lr; del(l); del(r);
                 I s=sign(llr), ll=ceiling(s*llr);
                 I c=next_pow_2(ll); DECL_ARR(R,v,c);
-                DDO(i,ll)v[i]=lr+(R)s*i; setL(p, wrapL(R_t, c, ll, 0, v));
+                DDO(i,ll)v[i]=lr+(R)s*i; return setL(p, wrapL(R_t, c, ll, 0, v));
               }
   }
 }

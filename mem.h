@@ -18,6 +18,7 @@ I next_pow_2(I);
 #define P(v) ((v).p)
 #define REF(v) (**(I**)P(v))
 
+V TP(T, P);
 V wrapP(T, P);
 
 O wrapO(V, I, V*);
@@ -36,6 +37,7 @@ V DErr(Str); V Err(Str);
 void delP(T, P);  void del(V);   void ddel(V); // Delete this copy of v.
 void valcpy(P, P, T);
 V cpy(V);    // Return a new copy of v.
+V cpy1(V);   // Copy the pointer in v.
 V get(V);    // Ensure that the returned value is safely modifiable.
 
 
@@ -60,5 +62,6 @@ R getR(V);
 #define LIST_AT(l, i) ((V*)(l)->p)[((i)+(l)->o)%(l)->c]
 #define LIST_PTR_AT(l, i) (l)->p+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c)
 #define LIST_PTR_ATS(l, i, s) (l)->p+(s)*(((i)+(l)->o)%(l)->c)
+V list_P_at(L, I);
 V list_at(L, I);
 V listV_at(V, I);

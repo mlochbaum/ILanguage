@@ -7,9 +7,10 @@ I next_pow_2(I l) {
 I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
 #undef LINE
 
+V TP(T t, P p) { V v; T(v)=t; P(v)=p; return v; }
 V wrapP(T t, P p) {
   if (!PURE(t)) { V v=*(V*)p; FREE(p); return v; }
-  else { V v; T(v)=t; P(v)=p; return v; }
+  else return TP(t,p);
 }
 
 O wrapO(V f, I l, V* x) {
@@ -76,7 +77,7 @@ P arrcpy(P aa, I s, I l, I c, I o) {
   return a;
 }
 void mv_P(V p, V v) {
-  if (!PURE(T(p))) V(p)=v;
+  if (!PURE(T(p))) V(p)=cpy1(v);
   else if (T(p)==T(v)) {
     memcpy(P(p), P(v), t_sizeof(T(v)));
   } else printf("Internal error: type mismatch in mv_P");
@@ -136,6 +137,7 @@ R getR(V v) {
 }
 
 // List properties
+V list_P_at(L l, I i) { return TP(l->t, LIST_PTR_AT(l,i)); }
 V list_at(L l, I i) {
   if (PURE(l->t)) { return wrapP(l->t, LIST_PTR_AT(l,i)); }
   else return LIST_AT(l, i);
