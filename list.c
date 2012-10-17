@@ -78,24 +78,26 @@ D_P2(concat) {
 
 D_L1(list) { return !!(l&L_t); }
 D_D1(list) { return list_l1(T(l)); }
-D_P1(first) { V(p)=listV_at(l,0); del(l); }
-D_P1(last) { V(p)=listV_at(l,L(l)->l-1); del(l); }
+D_P1(first) { mv_P(p, cpy1(listV_at(l,0))); del(l); }
+D_P1(last) { mv_P(p, cpy1(listV_at(l,L(l)->l-1))); del(l); }
 
 D_L2(select) { return 2*!!(r&ARITH_t) + !!(l&L_t); }
 D_D2(select) { return select_l2(T(l),T(r)); }
 D_P2(select) {
   I i=Z(r), ll=L(l)->l; if (i<0 && i>-ll) i+=ll;
-  V(p) = listV_at(l,i); del(l);del(r);
+  mv_P(p, cpy1(listV_at(l,i))); del(l);del(r);
 }
 D_P2(take) {
-  l=get(l); I i=Z(r), ll=L(l)->l, c=L(l)->c, o=L(l)->o;
-  if (i>=0) L(l)->l=i; else { L(l)->o=(o+ll+i)%c; L(l)->l=-i; }
-  del(r); V(p)=l;
+  l=get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
+  if (i>=0) { I j; for(j=i;j<ll;j++) del(list_P_at(lv,j)); lv->l=i; }
+  else { DDO(j,ll+i) del(list_P_at(lv,j)); lv->o=(o+ll+i)%c; lv->l=-i; }
+  del(r); mv_P(p, l);
 }
 D_P2(drop) {
-  l=get(l); I i=Z(r), ll=L(l)->l, c=L(l)->c, o=L(l)->o;
-  if (i>=0) { L(l)->l-=i; L(l)->o=(o+i)%c; } else L(l)->l+=i;
-  del(r); V(p)=l;
+  l=get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
+  if (i>=0) { DDO(j,i) del(list_P_at(lv,j)); lv->l-=i; lv->o=(o+i)%c; }
+  else { I j; for(j=ll+i;j<ll;j++) del(list_P_at(lv,j)); lv->l+=i; }
+  del(r); mv_P(p, l);
 }
 
 D_P1(length) { I n; if (T(l)&L_t) n=L(l)->l; else n=1; del(l); setZ(p,n); }
