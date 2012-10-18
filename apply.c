@@ -92,13 +92,12 @@ void apply_P_Q(V v, Q q, I n, V* x) {
 }
 
 T apply_T_L(L l, I n, T* x) { return L_t; }
-void apply_P_L(V v, L l, I n, V* x) {
-  if (!(l->t & (NCONST_t))) { DDO(i,n) del(x[i]); L(v)=l; return; }
-  // TODO
+void apply_P_L(V p, L l, I n, V* x) {
+  if (!(l->t & (NCONST_t))) { DDO(i,n) del(x[i]); setL(p,l); return; }
   V xt[n]; DECL_ARR(V, vs, l->c);
   DDO(i, l->l-1) {
-    DDO(j,n)xt[j]=cpy(x[j]);
-    apply_P(vs[i], wrapP(l->t,LIST_PTR_AT(l,i)), n, xt);
-  } apply_P(vs[l->l-1], wrapP(l->t,LIST_PTR_AT(l,i)), n, xt);
-  // wrapList(l->l, v);
+    DDO(j,n)xt[j]=cpy(x[j]); vs[i] = apply(list_P_at(l,i), n, xt);
+    DO(j,n)FREE(P(xt[j]));
+  } vs[l->l-1] = apply(list_P_at(l,i), n, x);
+  setL(p, wrapList(l->l, vs));
 }
