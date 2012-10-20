@@ -39,7 +39,7 @@ D_P22(compose) { V al,ar; apply2_P(p, r, al=apply1(l,ll), ar=apply1(l,rr)); FREE
 
 I toBoold(V v) { I r = (T(v)!=Z_t || Z(v)); ddel(v); return r; }
 I toBool(V v) { I r = (T(v)!=Z_t || Z(v)); del(v); return r; }
-/* TODO
+
 D_L2(power) { return 2*(!!(r&Z_t)) + 1; }
 D_D2(power) { return power_l2(T(l), T(r)); }
 D_T21(power) {
@@ -48,24 +48,28 @@ D_T21(power) {
   return ll;
 }
 D_P21(power) {
-  I n=getFloorZ(r); DDO(i,n) ll=apply1(l,ll);
+  I n=getFloorZ(r); ll=cpy1(ll); DDO(i,n) ll=apply1_d(l,ll);
+  mv_P(p,ll); FREE(P(ll));
+}
+D_T22(power) {
+  I n=getFloorZ(r);
+  DDO(i,n) { T llt=apply2_T(l,ll,rr); if(llt==ll)break; ll=llt; }
   return ll;
 }
-D_F22(power) {
-  I n=getFloorZ(r); DDO(i,n) ll=apply2(l,ll,cpy(rr));
-  del(rr); return ll;
+D_P22(power) {
+  I n=getFloorZ(r); ll=cpy1(ll); DDO(i,n) ll=apply2_d(l,ll,cpy(rr));
+  del(rr); mv_P(p,ll); FREE(P(ll));
 }
 
-D_F21(while) {
-  while(toBool(apply1(r, cpy(ll)))) ll=apply1(l,ll);
-  return ll;
+D_P21(while) {
+  ll=cpy1(ll); while(toBoold(apply1_d(r, cpy(ll)))) ll=apply1_d(l,ll);
+  mv_P(p,ll); FREE(P(ll));
 }
-D_F22(while) {
-  while(toBool(apply2(r, cpy(ll), cpy(rr))))
-    ll=apply2(l,ll,cpy(rr));
-  del(rr); return ll;
+D_P22(while) {
+  ll=cpy1(ll); while(toBoold(apply2_d(r, cpy(ll), cpy(rr))))
+    ll=apply2_d(l,ll,cpy(rr));
+  del(rr); mv_P(p,ll); FREE(P(ll));
 }
-*/
 
 EXTERN_BUILTINS;
 void compose_init() {
@@ -93,11 +97,10 @@ void compose_init() {
   D(21,'b',bind);
   D(21,'B',backbind);
 
-/*B_d2['p'] = &power_d2;
-  B_f21['p'] = &power_f21;
-  B_f22['p'] = &power_f22;
+  B_u2['p']=DB(l2,'p',power); DB(d2,'p',power);
+  D(21,'p',power); D(22,'p',power);
 
-  B_f21['w'] = &while_f21;
-  B_f22['w'] = &while_f22;*/
+  DB(t21,'w',V); DB(p21,'w',while);
+  DB(t22,'w',V); DB(p22,'w',while);
 #undef D
 }
