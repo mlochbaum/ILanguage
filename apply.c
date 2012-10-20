@@ -8,9 +8,9 @@ V apply2_d(V f, V l, V r) { V v=apply2(f, l, r); FREE(P(l)); FREE(P(r)); return 
 V apply1dd(V f, V l) { V v=apply1(f, l); ddel(f); FREE(P(l)); return v; }
 V apply2dd(V f, V l, V r) { V v=apply2(f, l, r); ddel(f); FREE(P(l)); FREE(P(r)); return v; }
 
-T apply1_T(V f, T l) { T x[1]; x[0]=l; return apply_T(f,1,x); }
+T apply1_T(V f, T l) { return apply_T(f,1,&l); }
 T apply2_T(V f, T l, T r) { T x[2]; x[0]=l; x[1]=r; return apply_T(f,2,x); }
-void apply1_P(V v, V f, V l) { V x[1]; x[0]=l; return apply_P(v,f,1,x); }
+void apply1_P(V v, V f, V l) { return apply_P(v,f,1,&l); }
 void apply2_P(V v, V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply_P(v,f,2,x); }
 
 T apply_T(V f, I n, T* x) {
