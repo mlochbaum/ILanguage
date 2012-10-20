@@ -44,7 +44,6 @@ void append(L l, L r) { listcpy(l, r, l->l); }
 void prepend(L l, L r) { r->o += r->c-l->l; r->o%=r->c; listcpy(r,l,0); }
 
 #define REL(v) return setL(p,v);
-#define RELL(v) return setL(p,L(v));
 D_P2(concat) {
   if (T(l)==L_t) { L lv=L(l);
     if (T(r)==L_t) { L rv=L(r);
@@ -74,7 +73,6 @@ D_P2(concat) {
   }
 }
 #undef REL
-#undef RELL
 
 D_L1(list) { return !!(l&L_t); }
 D_D1(list) { return list_l1(T(l)); }
@@ -133,21 +131,21 @@ D_P2(iota) {
 D_L11(reduce) { return !!(ll&(L_t|CONST_t)); }
 D_D11(reduce) { return reduce_l11(l,T(ll)); }
 D_L12(reduce) { return 2 + !!(ll&(L_t|CONST_t)); }
-D_D12(reduce) { return 2 + reduce_l12(l,T(ll),T(rr)); }
+D_D12(reduce) { return reduce_l12(l,T(ll),T(rr)); }
 D_T1(identity_of) { return E_t; }
 D_P1(identity_of) { del(l); setE(p, strdup("Identity unknown")); }
 D_P11(reduce) {
-  if (!(T(ll)&L_t)) { V(p)=ll; }
+  if (!(T(ll)&L_t)) { return mv_P(p, ll); }
   I len=L(ll)->l;
-  if (len==0) { del(ll); identity_of_p1(p,l); }
-  ll=get(ll); V lv; V v=cpy1(listV_at(ll,0)); I i=1;
-  for(;i<len;i++) { V vt=apply2(l,v,list_at(L(ll),i)); FREE(P(v)); v=vt; }
-  FREE(L(ll)->p); FREE(L(ll)); V(p)=v;
+  if (len==0) { del(ll); return identity_of_p1(p,l); }
+  ll=get(ll); I i; V vt,v=cpy1(list_P_at(L(ll),0));
+  for(i=1;i<len;i++) { v = apply2(l,vt=v,list_P_at(L(ll),i)); FREE(P(vt)); }
+  FREE(L(ll)->p); FREE(L(ll)); mv_P(p,v); FREE(P(v));
 }
 D_P12(reduce) {
   if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); }
-  I len=L(ll)->l;
-  DDO(i,len) rr=apply2(l,rr,listV_at(ll,i));
+  I len=L(ll)->l; rr=cpy1(rr); V r_;
+  DDO(i,len) { rr=apply2(l,r_=rr,list_P_at(L(ll),i)); FREE(P(r_)); }
   del(ll); V(p)=rr;
 }
 
