@@ -45,7 +45,6 @@ void prepend(L l, L r) { r->o += r->c-l->l; r->o%=r->c; listcpy(r,l,0); }
 
 #define REL(v) return setL(p,v);
 D_P2(concat) {
-  while (!PURE(T(l))) l=V(l); while (!PURE(T(r))) r=V(r);
   if (T(l)==L_t) { L lv=L(l);
     if (T(r)==L_t) { L rv=L(r);
       T t=lv->t|rv->t; I ll=lv->l+rv->l, c=next_pow_2(ll);
@@ -136,7 +135,6 @@ D_D12(reduce) { return reduce_l12(l,T(ll),T(rr)); }
 D_T1(identity_of) { return E_t; }
 D_P1(identity_of) { del(l); setE(p, strdup("Identity unknown")); }
 D_P11(reduce) {
-  while (!PURE(T(ll))) ll=V(ll);
   if (!(T(ll)&L_t)) { return mv_P(p, ll); }
   I len=L(ll)->l;
   if (len==0) { del(ll); return identity_of_p1(p,l); }

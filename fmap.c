@@ -39,7 +39,7 @@ T fmap_TT(T f, I n, T* x, I dl, I du) {
   T t=0; if (!PURE(tu)) t|=E_t;
   if (tu & CONST_X) t |= E_t;
   if (tu & FUNC_X ) t |= O_t;
-  if (tu & LIST_X ) t |= L_t + E_t;
+  if (tu & LIST_X ) t |= L_t + (n>1)*E_t;
   return t;
 }
 void fmap_P(V v, V f, I n, V* x, I d) {
@@ -69,8 +69,8 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   I c=next_pow_2(l); L ll = wrapL(t,c,l,0,MALLOC(c*s));
   V xj[n];
   DO(i, l) {
-    DDO(j,n) xj[j] = d&1<<j ? x[j] : list_P_at(L(x[j]),i);
-    apply_P(list_P_at(ll,i), f, n, xj);
+    DDO(j,n) xj[j] = cpy(d&1<<j ? x[j] : list_P_at(L(x[j]),i));
+    apply_P(list_P_at(ll,i), f, n, xj); DO(j,n) FREE(P(xj[j]));
   }
   DO(i, n) del(x[i]); return setL(v,ll);
 }
