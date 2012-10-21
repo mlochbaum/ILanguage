@@ -15,7 +15,7 @@ void apply2_P(V v, V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply_P(v,f,2
 
 T apply_T(V f, I n, T* x) {
 #define LINE(T) case T##_t: t|=apply_T_##T(T(f),n,x); break;
-  T tf=T(f);
+  while (!PURE(T(f))) f=V(f); T tf=T(f);
   if (tf & CONST_t) return tf;
   T t=0; if (tf & (O_t+L_t)) {
     switch (tf) {LINE(O) LINE(L)} return t;
@@ -29,8 +29,7 @@ T apply_T(V f, I n, T* x) {
 }
 void apply_P(V v, V f, I n, V* x) {
 #define LINE(T) case T##_t: return apply_P_##T(v,*(T*)p,n,x); break;
-  T t=T(f); P p=P(f);
-  if (!PURE(t)) { V f=*(V*)p; return apply_P(v, f, n, x); }
+  while (!PURE(T(f))) f=V(f); T t=T(f); P p=P(f);
   if (t & CONST_t) { DDO(i,n) del(x[i]); return valcpy(P(v), p, t); }
   if (t & (O_t+L_t)) {
     switch (t) {LINE(O) LINE(L)}
