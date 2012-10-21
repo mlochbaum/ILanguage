@@ -69,7 +69,7 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   I c=next_pow_2(l); L ll = wrapL(t,c,l,0,MALLOC(c*s));
   V xj[n];
   DO(i, l) {
-    DDO(j,n) xj[j] = cpy(d&1<<j ? x[j] : list_at(L(x[j]),i));
+    DDO(j,n) xj[j] = cpy(d&1<<j ? x[j] : listV_at(x[j],i));
     apply_P(list_at(ll,i), f, n, xj); DO(j,n) FREE(P(xj[j]));
   }
   DO(i, n) del(x[i]); return setL(v,ll);
