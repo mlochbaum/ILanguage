@@ -22,7 +22,6 @@ I next_pow_2(I);
 #define REF(v) (**(I**)P(v))
 
 V TP(T, P);
-V wrapP(T, P);
 
 O wrapO(V, I, V*);
 F wrapF(V, I, V*);
@@ -65,6 +64,5 @@ R getR(V);
 #define LIST_AT(l, i) ((V*)(l)->p)[((i)+(l)->o)%(l)->c]
 #define LIST_PTR_AT(l, i) (l)->p+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c)
 #define LIST_PTR_ATS(l, i, s) (l)->p+(s)*(((i)+(l)->o)%(l)->c)
-V list_P_at(L, I);
 V list_at(L, I);
 V listV_at(V, I);

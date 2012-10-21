@@ -8,10 +8,6 @@ I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
 #undef LINE
 
 V TP(T t, P p) { V v; T(v)=t; P(v)=p; return v; }
-V wrapP(T t, P p) {
-  if (!PURE(t)) { V v=*(V*)p; FREE(p); return v; }
-  else return TP(t,p);
-}
 
 O wrapO(V f, I l, V* x) {
   DECL(O,oo); oo->r=1; oo->f=f; oo->l=l; oo->x=x; return oo;
@@ -138,9 +134,5 @@ R getR(V v) {
 }
 
 // List properties
-V list_P_at(L l, I i) { return TP(l->t, LIST_PTR_AT(l,i)); }
-V list_at(L l, I i) {
-  if (PURE(l->t)) { return wrapP(l->t, LIST_PTR_AT(l,i)); }
-  else return LIST_AT(l, i);
-}
+V list_at(L l, I i) { return TP(l->t, LIST_PTR_AT(l,i)); }
 V listV_at(V v, I i) { return list_at(L(v), i); }
