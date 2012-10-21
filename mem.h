@@ -1,6 +1,5 @@
 // Memory and general utilities
 #define MALLOC(l) malloc(l)
-#define CALLOC(l, n) calloc(l, n)
 #define FREE(ptr) free(ptr)
 
 #define DECL(t, v) t v = MALLOC(sizeof(*v))
@@ -8,7 +7,6 @@
 #define DECL_STR(v, l) Str v = MALLOC((l)+1)
 #define DECL_NSTR(v, l) DECL_STR(v, l); v[l]='\0'
 #define DECL_V(type, v) V v; T(v)=type##_t; P(v)=MALLOC(sizeof(type))
-#define WRAP(type, d, dv) DECL(type,d); *d=dv
 
 I t_sizeof(T);
 I next_pow_2(I);
@@ -33,10 +31,12 @@ ON_TYPES(ALL, NEW);
 
 L wrapArray(T, I, P);
 L wrapList(I, V*);
+L wrapStr(Str);
 V makeStr(Str);
-V DErr(Str); V Err(Str);
+V Err(Str);
 
-void delP(T, P);  void del(V);   void ddel(V); // Delete this copy of v.
+void del(V);  // Delete this copy of v.
+void ddel(V); // Delete this copy of v and free P(v).
 void valcpy(P, P, T);
 V cpy(V);    // Return a new copy of v.
 V cpy1(V);   // Copy the pointer in v.

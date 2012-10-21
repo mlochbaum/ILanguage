@@ -42,14 +42,13 @@ L wrapList(I l, V* v) {
   }
 }
 L wrapStr(Str s) { return wrapArray(S_t, strlen(s), s); }
-V makeStr(Str s) { L l=wrapStr(s); return newL(l); }
-V DErr(Str s) { DECL_V(E, v); E(v)=s; return v; }
-V Err(Str s) { return DErr(strdup(s)); }
-void Err_T(E* p, Str s) { *p = strdup(s); return; }
+V makeStr(Str s) { return newL(wrapStr(s)); }
+V Err(Str s) { return newE(strdup(s)); }
 
 
 /////////////////// Utilities ////////////////////
-void delP(T t, P p) {
+void del(V v) {
+  T t=T(v); P p=P(v);
   if (PURE(t)) switch (t) {
     case N_t: FREE(*(N*)p); break;
     case Q_t: FREE(*(Q*)p); break;
@@ -57,14 +56,12 @@ void delP(T t, P p) {
                           ddel(o->f); DDO(i,o->l) ddel(o->x[i]); FREE(o->x);
                           FREE(o); break; }
     case L_t: { L l=*(L*)p; if (--l->r) break;
-                if (!PURE(l->t)) { DDO(i,l->l) ddel(LIST_AT(l,i)); }
-                else { DDO(i,l->l) delP(l->t, LIST_PTR_AT(l,i)); }
+                DDO(i,l->l) del(list_at(l,i));
                 FREE(l->p); FREE(l); break; }
   } else {
     ddel(*(V*)p);
   }
 }
-void del(V v) { delP(T(v), P(v)); }
 void ddel(V v) { del(v); FREE(P(v)); }
 
 P arrcpy(P aa, I s, I l, I c, I o) {

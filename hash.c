@@ -70,7 +70,7 @@ UI hash(V v) {
   void name##free(M m) { DDO(i,m->l){ L n=m->v[i],nn;                    \
     while(n){ nn=n; n=n->n; name##freeL(nn); } } FREE(m->v); FREE(m); }  \
   V name##get(M m, K k) { L n=m->v[hash(k)%m->l];                        \
-    while(n){if(equals(k,n->k))return n->v; else n=n->n;} return DErr(""); /* TODO */} \
+    while(n){if(equals(k,n->k))return n->v; else n=n->n;} return Err(""); /* TODO */} \
   void name##del(M m, K k) {                                             \
     L p=NULL, n=m->v[hash(k)%m->l]; while(n) { if (equals(k,n->k)) {     \
       if(p) p->n=n->n; else m->v[hash(k)%m->l]=n->n;                     \
