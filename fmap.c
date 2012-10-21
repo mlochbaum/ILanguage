@@ -64,18 +64,13 @@ void fmap_P(V v, V f, I n, V* x, I d) {
 
 
 void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
-  T ts[n]; { DDO(i,n) ts[i]=(d&1<<i)?(T(x[i])):(L(x[i])->t); }
+  T ts[n]; DDO(i,n) ts[i] = d&1<<i ? T(x[i]) : L(x[i])->t;
   T t = apply_T(f, n, ts); I s=t_sizeof(t);
-  DECL(L, ll); setL(v, ll); ll->l=l; ll->c=next_pow_2(l); ll->o=0; ll->r=1;
-  ll->p = MALLOC(l*s); ll->t=t;
-  I i[n], c[n]; V xi[n];
-  DDO(j, n) if (!(d&1<<j)) { i[j]=L(x[j])->o; c[j]=L(x[j])->c; }
-  DDO(k, l) {
-    DO(j,n) {
-      if (d&1<<j) { xi[j]=x[j]; }
-      else { xi[j]=listV_at(x[j],i[j]); i[j]++; if(i[j]==c[j]) i[j]=0; }
-    }
-    V vv; T(vv)=ll->t; P(vv)=LIST_PTR_ATS(ll,k,s); apply_P(vv, f, n, xi);
+  I c=next_pow_2(l); L ll = wrapL(t,c,l,0,MALLOC(c*s));
+  V xj[n];
+  DO(i, l) {
+    DDO(j,n) xj[j] = d&1<<j ? x[j] : list_P_at(L(x[j]),i);
+    apply_P(list_P_at(ll,i), f, n, xj);
   }
-  DO(j, n) del(x[j]);
+  DO(i, n) del(x[i]); return setL(v,ll);
 }
