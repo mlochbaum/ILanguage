@@ -76,14 +76,14 @@ D_P2(concat) {
 
 D_L1(list) { return !!(l&L_t); }
 D_D1(list) { return list_l1(T(l)); }
-D_P1(first) { mv_P(p, cpy1(listV_at(l,0))); del(l); }
-D_P1(last) { mv_P(p, cpy1(listV_at(l,L(l)->l-1))); del(l); }
+D_P1(first) { mv_Pd(p, cpy(list_P_at(L(l),0))); del(l); }
+D_P1(last) { mv_Pd(p, cpy(list_P_at(L(l),L(l)->l-1))); del(l); }
 
 D_L2(select) { return 2*!!(r&ARITH_t) + !!(l&L_t); }
 D_D2(select) { return select_l2(T(l),T(r)); }
 D_P2(select) {
   I i=Z(r), ll=L(l)->l; if (i<0 && i>-ll) i+=ll;
-  mv_P(p, cpy1(listV_at(l,i))); del(l);del(r);
+  mv_Pd(p, cpy(list_P_at(L(l),i))); del(l);del(r);
 }
 D_P2(take) {
   l=get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
