@@ -86,13 +86,13 @@ D_P2(select) {
   mv_Pd(p, cpy(list_P_at(L(l),i))); del(l);del(r);
 }
 D_P2(take) {
-  l=get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
+  get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
   if (i>=0) { I j; for(j=i;j<ll;j++) del(list_P_at(lv,j)); lv->l=i; }
   else { DDO(j,ll+i) del(list_P_at(lv,j)); lv->o=(o+ll+i)%c; lv->l=-i; }
   del(r); mv_P(p, l);
 }
 D_P2(drop) {
-  l=get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
+  get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
   if (i>=0) { DDO(j,i) del(list_P_at(lv,j)); lv->l-=i; lv->o=(o+i)%c; }
   else { I j; for(j=ll+i;j<ll;j++) del(list_P_at(lv,j)); lv->l+=i; }
   del(r); mv_P(p, l);
@@ -138,7 +138,7 @@ D_P11(reduce) {
   if (!(T(ll)&L_t)) { return mv_P(p, ll); }
   I len=L(ll)->l;
   if (len==0) { del(ll); return identity_of_p1(p,l); }
-  ll=get(ll); I i; V vt,v=cpy1(list_P_at(L(ll),0));
+  get(ll); I i; V vt,v=cpy1(list_P_at(L(ll),0));
   for(i=1;i<len;i++) { v = apply2(l,vt=v,list_P_at(L(ll),i)); FREE(P(vt)); }
   FREE(L(ll)->p); FREE(L(ll)); mv_P(p,v); FREE(P(v));
 }
@@ -150,7 +150,7 @@ D_P12(reduce) {
 }
 
 D_P1(reverse) {
-  l=get(l); L v=L(l); I n=v->l; T t=v->t;
+  get(l); L v=L(l); I n=v->l; T t=v->t;
   if (!PURE(t)) {
     DDO(i,n/2) {
       V vt=LIST_AT(v,i); LIST_AT(v,i)=LIST_AT(v,n-i-1);

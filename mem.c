@@ -111,18 +111,19 @@ V cpy1(V v) {
 void deln(I n, V* v) { DDO(i,n) del(v[i]); FREE(v); }
 V* cpyn(I n, V* v) {DECL_ARR(V,vv,n); DDO(i,n)vv[i]=cpy(v[i]); return vv;}
 
-V get(V v) {
-  if (!(T(v)&COMP_t) || REF(v)==1) return v;
-  else { REF(v)--; V r; switch (T(v)) {
-    case O_t:
-      { O o=O(v); r=newO(wrapO(cpy(o->f), o->l, cpyn(o->l, o->x))); break;}
-    case F_t:
-      { F f=F(v); r=newF(wrapF(cpy(f->f), f->l, cpyn(f->l, f->x))); break;}
-    case L_t:
-      { L l=L(v); I s=t_sizeof(l->t); P p=MALLOC(s*l->c);
-        DDO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
-        r=newL(wrapL(l->t, l->c, l->l, 0, p)); break; }
-  } FREE(P(v)); return r; }
+void get(V v) {
+  if ((T(v)&COMP_t) && REF(v)>1) {
+    REF(v)--; V r; switch (T(v)) {
+      case O_t:
+        { O o=O(v); setO(v,wrapO(cpy(o->f), o->l, cpyn(o->l, o->x))); break;}
+      case F_t:
+        { F f=F(v); setF(v,wrapF(cpy(f->f), f->l, cpyn(f->l, f->x))); break;}
+      case L_t:
+        { L l=L(v); I s=t_sizeof(l->t); P p=MALLOC(s*l->c);
+          DDO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
+          setL(v,wrapL(l->t, l->c, l->l, 0, p)); break; }
+    }
+  }
 }
 
 

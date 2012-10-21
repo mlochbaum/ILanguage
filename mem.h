@@ -38,7 +38,7 @@ void delP(T, P);  void del(V);   void ddel(V); // Delete this copy of v.
 void valcpy(P, P, T);
 V cpy(V);    // Return a new copy of v.
 V cpy1(V);   // Copy the pointer in v.
-V get(V);    // Ensure that the returned value is safely modifiable.
+void get(V); // Ensure that the input is safely modifiable.
 
 
 // util

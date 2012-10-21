@@ -93,7 +93,7 @@ void apply_P_Q(V v, Q q, I n, V* x) {
 
 T apply_T_L(L l, I n, T* x) { return L_t; }
 void apply_P_L(V p, L l, I n, V* x) {
-  if (!(l->t & (NCONST_t))) { DDO(i,n) del(x[i]); setL(p,l); return; }
+  if (!(l->t & (NCONST_t))) { DDO(i,n) del(x[i]); l->r++; setL(p,l); return; }
   V xt[n]; DECL_ARR(V, vs, l->c);
   DDO(i, l->l-1) {
     DDO(j,n)xt[j]=cpy(x[j]); vs[i] = apply(list_P_at(l,i), n, xt);
