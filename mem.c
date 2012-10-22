@@ -41,7 +41,7 @@ L wrapList(I l, V* v) {
     v=realloc(v,c*sizeof(V)); return wrapL(t,c,l,0,v);
   }
 }
-L wrapStr(Str s) { return wrapArray(S_t, strlen(s), s); }
+L wrapStr(Str s) { return wrapArray(C_t, strlen(s), s); }
 V makeStr(Str s) { return newL(wrapStr(s)); }
 V Err(Str s) { return newE(strdup(s)); }
 
@@ -86,7 +86,7 @@ void valcpy(P p, P pp, T t) { // from pp to p
   if (PURE(t)) switch (t) {
     case E_t: case N_t: case Q_t: *(E*)p=strdup(*(E*)pp); break;
     case O_t: case F_t: case L_t: (**(I**)pp)++;
-    case B_t: case S_t: case Z_t: case R_t: case C_t:
+    case B_t: case C_t: case Z_t: case R_t: case K_t:
                                   memcpy(p, pp, s); break;
   } else *(V*)p=cpy(*(V*)pp);
 }

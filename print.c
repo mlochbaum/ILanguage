@@ -80,10 +80,10 @@ Str PToString(T t, P p) {
     case O_t: return Ofmt(*(O*)p);
     case Q_t: return quote('`', strdup(*(Q*)p));
     case N_t: return quote('\'', strdup(*(N*)p));
-    case S_t: return quote('"', chartostr(*(S*)p));
+    case C_t: return quote('"', chartostr(*(C*)p));
     case Z_t: return Zfmt(*(Z*)p);
     case R_t: return Rfmt(*(R*)p);
-    case C_t: return strdup("Dude, that's complex."); //TODO
+    case K_t: return strdup("Dude, that's complex."); //TODO
     case L_t: return Lfmt(*(L*)p);
     default: return toString(*(V*)p);
   }

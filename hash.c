@@ -39,12 +39,12 @@ UI hash(V v) {
   UI h=2184626789L;
   switch (T(v)) {
     case E_t: case N_t: case Q_t: return hash_string(E(v));
-    case B_t: case S_t: return h * B(v);
+    case B_t: case C_t: return h * B(v);
     case O_t: case F_t: { O o=O(v); I l = o->l+1; UI u[l];
                           DDO(i,l-1) u[i]=hash(o->x[i]);
                           u[l]=hash(o->f); return hash_UI(l, u); }
 #define LINE(T) case T##_t: return hash_UI(sizeof(T)/sizeof(UI), (UI*)P(v));
-    LINE(Z) LINE(R) LINE(C)
+    LINE(Z) LINE(R) LINE(K)
 #undef LINE
     case L_t: return hash_LIST(L(v));
   }
