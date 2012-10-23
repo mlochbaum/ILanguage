@@ -28,9 +28,11 @@ T apply_T(V f, I n, T* x) {
 #undef LINE
 }
 void apply_P(V v, V f, I n, V* x) {
-#define LINE(T) case T##_t: return apply_P_##T(v,*(T*)p,n,x); break;
-  PURIFY(f); T t=T(f); P p=P(f); DDO(i,n) { PURIFY_D(x[i]); }
-  if (t & CONST_t) { DDO(i,n) del(x[i]); return valcpy(P(v), p, t); }
+#define LINE(T) case T##_t: return apply_P_##T(v,T(f),n,x); break;
+  PURIFY(f); T t=T(f);
+  if (t & S_t) { S s=S(f); return s->f(s->a,v,n,x); }
+  DDO(i,n) { PURIFY_D(x[i]); }
+  if (t & CONST_t) { DDO(i,n) del(x[i]); return mv_P(v, f); }
   if (t & (O_t+L_t)) {
     switch (t) {LINE(O) LINE(L)}
   } else {
