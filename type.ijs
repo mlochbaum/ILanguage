@@ -8,6 +8,7 @@ unlines =: ;@:(,&LF e) :. lines
 
 n=: #all =: {.@> comments=: lines 0 :0
 Error
+Specialized function
 Builtin
 O Composition
 Function application
@@ -21,6 +22,7 @@ List
 )
 typedefs =: lines 0 :0
 E Str
+S Apply*
 B Char
 O struct { I r; V f; I l; V* x; } *
 F struct { I r; V f; I l; V* x; } *
@@ -33,8 +35,8 @@ K struct { R a; R b; }
 L struct { I r; T t; I c; I l; I o; P p; } *
 )
 
-classes =:      'const arith func  comp'
-(classes) =: ;: 'ECZRK ZRK   BOFNQ OFL'
+classes =:      'const arith func   comp'
+(classes) =: ;: 'ECZRK ZRK   SBOFNQ OFL'
 classes =: 'all ',classes,' nconst'
 nconst =: all-.const
 
@@ -53,6 +55,7 @@ typedef I T;
 typedef T TT;
 
 typedef struct { T t; P p; } V;
+typedef struct { void (*f)(P,V,I,V*); P a; } Apply;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 )

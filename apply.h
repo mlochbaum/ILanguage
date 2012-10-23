@@ -18,6 +18,9 @@ T fmap_TT    (T, I, T*, I, I);
 void apply_P (V, V, I, V*);
 void fmap_P  (V, V, I, V*, I);
 
+// Return a version of the function specialized for input type
+V getspec(V, I, T*);
+
 // apply.c
 #define DECLARE_APPLY(t) void apply_P_##t(V, t, I, V*); \
                          T apply_T_##t(t, I, T*);
