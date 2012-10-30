@@ -56,7 +56,8 @@ void del(V v) {
                           ddel(o->f); DDO(i,o->l) ddel(o->x[i]); FREE(o->x);
                           FREE(o); break; }
     case L_t: { L l=*(L*)p; if (--l->r) break;
-                DDO(i,l->l) del(list_at(l,i));
+                if(l->t&(N_t+Q_t+COMP_t) || !PURE(l->t))
+                  { DDO(i,l->l) del(list_at(l,i)); }
                 FREE(l->p); FREE(l); break; }
   } else {
     ddel(*(V*)p);
