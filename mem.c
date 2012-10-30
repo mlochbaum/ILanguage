@@ -47,22 +47,27 @@ V Err(Str s) { return newE(strdup(s)); }
 
 
 /////////////////// Utilities ////////////////////
-void del(V v) {
-  T t=T(v); P p=P(v);
-  if (PURE(t)) switch (t) {
-    case N_t: FREE(*(N*)p); break;
-    case Q_t: FREE(*(Q*)p); break;
-    case O_t: case F_t: { O o=*(O*)p; if (--o->r) break;
-                          ddel(o->f); DDO(i,o->l) ddel(o->x[i]); FREE(o->x);
-                          FREE(o); break; }
-    case L_t: { L l=*(L*)p; if (--l->r) break;
-                if(l->t&(N_t+Q_t+COMP_t) || !PURE(l->t))
-                  { DDO(i,l->l) del(list_at(l,i)); }
-                FREE(l->p); FREE(l); break; }
-  } else {
-    ddel(*(V*)p);
+void delO(V v) {
+  O o=O(v); if (--o->r) return;
+  ddel(o->f); DDO(i,o->l) ddel(o->x[i]); FREE(o->x); FREE(o);
+}
+void delN(V v) { FREE(N(v)); }
+void delL(V v) {
+  L l=L(v); if (--l->r) return;
+  del_t d=del_S(l->t); if (d) { DDO(i,l->l) d(list_at(l,i)); }
+  FREE(l->p); FREE(l);
+}
+void delV(V v) { ddel(V(v)); }
+del_t del_S(T t) {
+  if (IMPURE(t)) return &delV;
+  switch (t) {
+    case N_t: case Q_t: return &delN;
+    case O_t: case F_t: return &delO;
+    case L_t: return &delL;
+    default: return NULL;
   }
 }
+void del(V v) { del_t d=del_S(T(v)); if (d) d(v); }
 void ddel(V v) { del(v); FREE(P(v)); }
 
 P arrcpy(P aa, I s, I l, I c, I o) {

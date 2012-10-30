@@ -35,6 +35,8 @@ L wrapStr(Str);
 V makeStr(Str);
 V Err(Str);
 
+typedef void (*del_t)(V); del_t del_S(T);
+void delO(V); void delN(V); void delL(V); void delV(V);
 void del(V);  // Delete this copy of v.
 void ddel(V); // Delete this copy of v and free P(v).
 void valcpy(P, P, T);
