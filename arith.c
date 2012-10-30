@@ -6,17 +6,18 @@ D_D2(arith) { return arith_l2(T(l),T(r)); }
 
 D_T2(arith) { return max(l,r); }
 
+#define D_S(name) void name##_s(P p, V v, I n, V* vs)
 //Monads
-//TODO: complex case
-#define OP(op) { switch (T(l)) { M_L(Z,op); M_L(R,op); } del(l); }
-#define M_L(T, op) case T##_t: set##T(p, op T(l)); break
-D_P1(negate) OP(-);
-D_P1(reciprocal) OP(1/);
-#undef M_L
-#define M_L(T, op) case T##_t: set##T(p, op(T(l))); break
-D_P1(floor) OP(floor);
-D_P1(ceiling) OP(ceiling);
-#undef M_L
+#define DF(n, T, op) D_S(n##T) { return set##T(v,op(T(vs[0]))); }
+#define LINE(n, T) case T##_t: s->f=&n##T##_s
+#define OP(n,op) DF(n,Z,op); DF(n,R,op); \
+  D_S1(n) { DECL(S,s); switch(l){ LINE(n,Z); LINE(n,R); } return s; }
+OP(negate, -);
+OP(reciprocal, 1/);
+OP(floor, floor);
+OP(ceiling, ceiling);
+#undef DF
+#undef LINE
 #undef OP
 
 //Dyads
@@ -43,7 +44,7 @@ D_P2(max) OP(max);
 EXTERN_BUILTINS;
 void arith_init() {
 #define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
-                  B_d1[c] = &arith_d1; B_p1[c] = &f##_p1
+                  B_d1[c] = &arith_d1; B_s1[c] = &f##_s1
   SET('-', negate);
   SET('/', reciprocal);
   SET('m', floor);
