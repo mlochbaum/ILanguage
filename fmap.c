@@ -64,13 +64,18 @@ void fmap_P(V v, V f, I n, V* x, I d) {
 
 
 void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
-  T ts[n]; DDO(i,n) ts[i] = d&1<<i ? T(x[i]) : L(x[i])->t;
-  T t = apply_T(f, n, ts); I s=t_sizeof(t);
+  T ts[n]; I ss[n];
+  DDO(i,n) {
+    ts[i] = d&1<<i ? T(x[i]) : L(x[i])->t; ss[i]=t_sizeof(ts[i]);
+    if (!(d&1<<i)) get(x[i]);
+  }
+  T t = apply_T(f, n, ts); I s=t_sizeof(t); f=apply_S(f, n, ts);
   I c=next_pow_2(l); L ll = wrapL(t,c,l,0,MALLOC(c*s));
   V xj[n];
   DO(i, l) {
-    DDO(j,n) xj[j] = cpy(d&1<<j ? x[j] : listV_at(x[j],i));
-    apply_P(list_at(ll,i), f, n, xj); DO(j,n) FREE(P(xj[j]));
+    DDO(j,n) xj[j] = d&1<<j ? cpy(x[j]) : listV_ats(x[j],i,ss[j]);
+    apply_P(list_ats(ll,i,s), f, n, xj); DO(j,n) if (d&1<<j) FREE(P(xj[j]));
   }
-  DO(i, n) del(x[i]); return setL(v,ll);
+  DO(i, n) if (d&1<<i) del(x[i]); else { FREE(L(x[i])->p); FREE(L(x[i])); }
+  ddel(f); return setL(v,ll);
 }

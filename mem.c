@@ -132,4 +132,6 @@ R getR(V v) {
 
 // List properties
 V list_at(L l, I i) { return TP(l->t, LIST_PTR_AT(l,i)); }
+V list_ats(L l, I i, I s) { return TP(l->t, LIST_PTR_ATS(l,i,s)); }
 V listV_at(V v, I i) { return list_at(L(v), i); }
+V listV_ats(V v, I i, I s) { return list_ats(L(v), i, s); }

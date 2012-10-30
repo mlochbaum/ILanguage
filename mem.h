@@ -65,4 +65,6 @@ R getR(V);
 #define LIST_PTR_AT(l, i) (l)->p+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c)
 #define LIST_PTR_ATS(l, i, s) (l)->p+(s)*(((i)+(l)->o)%(l)->c)
 V list_at(L, I);
+V list_ats(L, I, I);
 V listV_at(V, I);
+V listV_ats(V, I, I);
