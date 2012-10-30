@@ -11,6 +11,7 @@
 #include "parse.c"
 #include "builtin.c"
 #include "apply.c"
+#include "spec.c"
 #include "dom.c"
 #include "fmap.c"
 #include "scan.c"

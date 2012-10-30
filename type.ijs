@@ -1,6 +1,6 @@
 #!/usr/bin/jconsole
 
-load 'strings'
+require 'strings'
 
 e =: &.>
 lines   =: <;._2 :. unlines
@@ -52,7 +52,6 @@ typedef char* Str;
 typedef unsigned int UI;
 
 typedef I T;
-typedef T TT;
 
 typedef struct { T t; P p; } V;
 typedef struct { void (*f)(P,V,I,V*); P a; } Apply;

@@ -5,7 +5,6 @@ typedef char* Str;
 typedef unsigned int UI;
 
 typedef I T;
-typedef T TT;
 
 typedef struct { T t; P p; } V;
 typedef struct { void (*f)(P,V,I,V*); P a; } Apply;
@@ -55,13 +54,13 @@ typedef struct { I r; T t; I c; I l; I o; P p; } * L;
 #define ALL_t     (E_t + S_t + B_t + O_t + F_t + N_t + Q_t + C_t + Z_t + R_t + K_t + L_t)
 #define CONST_t   (E_t + C_t + Z_t + R_t + K_t)
 #define ARITH_t   (Z_t + R_t + K_t)
-#define FUNC_t    (B_t + O_t + F_t + N_t + Q_t)
+#define FUNC_t    (S_t + B_t + O_t + F_t + N_t + Q_t)
 #define COMP_t    (O_t + F_t + L_t)
 #define NCONST_t  (S_t + B_t + O_t + F_t + N_t + Q_t + L_t)
 
 #define ON_ALL_TYPES(f) f(E) f(S) f(B) f(O) f(F) f(N) f(Q) f(C) f(Z) f(R) f(K) f(L)
 #define ON_CONST_TYPES(f) f(E) f(C) f(Z) f(R) f(K)
 #define ON_ARITH_TYPES(f) f(Z) f(R) f(K)
-#define ON_FUNC_TYPES(f) f(B) f(O) f(F) f(N) f(Q)
+#define ON_FUNC_TYPES(f) f(S) f(B) f(O) f(F) f(N) f(Q)
 #define ON_COMP_TYPES(f) f(O) f(F) f(L)
 #define ON_NCONST_TYPES(f) f(S) f(B) f(O) f(F) f(N) f(Q) f(L)

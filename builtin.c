@@ -83,6 +83,13 @@ void apply_P_B(V p, B b, I n, V* x) {
   }
 }
 
+V apply_S_B(B b, I n, T* x) {
+  switch (n) {
+    case 1: { S1 s=B_s1[b]; return s ? newS(s(x[0])) : newB(b); }
+    case 2: { S2 s=B_s2[b]; return s ? newS(s(x[0],x[1])) : newB(b); }
+  }
+}
+
 I dom_B(B b, I n, V* x) {
   switch (n) {
     case 1: return B_d1[b](x[0]);
