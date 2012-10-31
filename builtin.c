@@ -85,8 +85,8 @@ void apply_P_B(V p, B b, I n, V* x) {
 
 V apply_S_B(B b, I n, T* x) {
   switch (n) {
-    case 1: { S1 s=B_s1[b]; S ss; return (s&&(ss=s(x[0]))) ? newS(ss) : newB(b); }
-    case 2: { S2 s=B_s2[b]; S ss; return (s&&(ss=s(x[0],x[1]))) ? newS(ss) : newB(b); }
+    case 1: { S1 s=B_s1[b]; S ss; return (s&&(ss=s(x[0])).f) ? newS(ss) : newB(b); }
+    case 2: { S2 s=B_s2[b]; S ss; return (s&&(ss=s(x[0],x[1])).f) ? newS(ss) : newB(b); }
   }
 }
 

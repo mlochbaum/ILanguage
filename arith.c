@@ -9,9 +9,9 @@ D_T2(arith) { return max(l,r); }
 #define D_S(name) void name##_s(P p, V v, I n, V* vs)
 //Monads
 #define DF(n, T, op) D_S(n##T) { return set##T(v,op(T(vs[0]))); }
-#define LINE(n, T) case T##_t: s->f=&n##T##_s
+#define LINE(n, T) case T##_t: s.f=&n##T##_s; break;
 #define OP(n,op) DF(n,Z,op); DF(n,R,op); \
-  D_S1(n) { DECL(S,s); switch(l){ LINE(n,Z); LINE(n,R); } return s; }
+  D_S1(n) { S s; switch(l){ LINE(n,Z); LINE(n,R); } return s; }
 OP(negate, -);
 OP(reciprocal, 1/);
 OP(floor, floor);

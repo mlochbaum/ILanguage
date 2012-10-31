@@ -30,7 +30,7 @@ T apply_T(V f, I n, T* x) {
 void apply_P(V v, V f, I n, V* x) {
 #define LINE(T) case T##_t: return apply_P_##T(v,T(f),n,x); break;
   PURIFY(f); T t=T(f);
-  if (t & S_t) { S s=S(f); return s->f(s->a,v,n,x); }
+  if (t & S_t) { S s=S(f); return s.f(s.a,v,n,x); }
   DDO(i,n) { PURIFY_D(x[i]); }
   if (t & CONST_t) { DDO(i,n) del(x[i]); return mv_P(v, f); }
   if (t & (O_t+L_t)) {
@@ -46,7 +46,8 @@ void apply_P(V v, V f, I n, V* x) {
 V apply(V f, I n, V* x) {
   T t[n]; DDO(i,n) t[i]=T(x[i]);
   V v; T(v)=apply_T(f, n, t); P(v)=MALLOC(t_sizeof(T(v)));
-  apply_P(v, f, n, x); PURIFY_D(v); return v;
+  f=apply_S(f, n, t);
+  apply_P(v, f, n, x); PURIFY_D(v); ddel(f); return v;
 }
 
 

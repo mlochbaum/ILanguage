@@ -7,12 +7,11 @@ typedef unsigned int UI;
 typedef I T;
 
 typedef struct { T t; P p; } V;
-typedef struct { void (*f)(P,V,I,V*); P a; } Apply;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 
 typedef Str E;
-typedef Apply* S;
+typedef struct { void (*f)(P,V,I,V*); P a; } S;
 typedef Char B;
 typedef struct { I r; V f; I l; V* x; } * O;
 typedef struct { I r; V f; I l; V* x; } * F;

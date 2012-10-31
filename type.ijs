@@ -22,7 +22,7 @@ List
 )
 typedefs =: lines 0 :0
 E Str
-S Apply*
+S struct { void (*f)(P,V,I,V*); P a; }
 B Char
 O struct { I r; V f; I l; V* x; } *
 F struct { I r; V f; I l; V* x; } *
@@ -54,7 +54,6 @@ typedef unsigned int UI;
 typedef I T;
 
 typedef struct { T t; P p; } V;
-typedef struct { void (*f)(P,V,I,V*); P a; } Apply;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 )
