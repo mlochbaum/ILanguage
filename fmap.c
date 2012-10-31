@@ -71,10 +71,14 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   }
   T t = apply_T(f, n, ts); I s=t_sizeof(t); f=apply_S(f, n, ts);
   I c=next_pow_2(l); L ll = wrapL(t,c,l,0,MALLOC(c*s));
-  V xj[n];
+  V xj[n]; I is[n]; I cs[n];
+  DO(i,n) if (!(d&1<<i)) { is[i]=L(x[i])->o; cs[i]=L(x[i])->c; }
   DO(i, l) {
-    DDO(j,n) xj[j] = d&1<<j ? cpy(x[j]) : listV_ats(x[j],i,ss[j]);
-    apply_P(list_ats(ll,i,s), f, n, xj); DO(j,n) if (d&1<<j) FREE(P(xj[j]));
+    DDO(j,n) {
+      if (d&1<<j) xj[j]=cpy(x[j]);
+      else { xj[j]=TP(ts[j], L(x[j])->p + ss[j]*is[j]); if (++is[j]==cs[j]) is[j]=0; }
+    }
+    apply_P(TP(ll->t,ll->p+i*s), f, n, xj); DO(j,n) if (d&1<<j) FREE(P(xj[j]));
   }
   DO(i, n) if (d&1<<i) del(x[i]); else { FREE(L(x[i])->p); FREE(L(x[i])); }
   ddel(f); return setL(v,ll);
