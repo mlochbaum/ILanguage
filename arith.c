@@ -11,7 +11,7 @@ D_T2(arith) { return max(l,r); }
 #define DF(n, T, op) D_S(n##T) { return set##T(v,op(T(vs[0]))); }
 #define LINE(n, T) case T##_t: s.f=&n##T##_s; break;
 #define OP(n,op) DF(n,Z,op); DF(n,R,op); \
-  D_S1(n) { S s; switch(l){ LINE(n,Z); LINE(n,R); } return s; }
+  D_S1(n) { S s; s.f=NULL; switch(l){ LINE(n,Z); LINE(n,R); } return s; }
 OP(negate, -);
 OP(reciprocal, 1/);
 OP(floor, floor);
@@ -28,7 +28,7 @@ OP(ceiling, ceiling);
 #define DFRR(n, op) D_S(n##RR) { return setR(v,ON(op,R(vs[0]),R(vs[1]))); }
 
 #define LINE(n, T1,T2) case T2##_t: s.f=&n##T1##T2##_s; break;
-#define DECL_S2(n)  D_S2(n) { S s; switch(l){ \
+#define DECL_S2(n)  D_S2(n) { S s; s.f=NULL; switch(l){ \
     case Z_t: switch(r){ LINE(n,Z,Z); LINE(n,Z,R); } \
     case R_t: switch(r){ LINE(n,R,Z); LINE(n,R,R); } } return s; }
 #define OP(n,op)  DFZZ(n,op) DFZR(n,op) DFRZ(n,op) DFRR(n,op) DECL_S2(n)
@@ -46,12 +46,12 @@ Z modZZ(Z a, Z b) { Z m=a%b; return m+b*(m*b<0); }
 R modRZ(R a, Z b) { return a-b*floor(a/b); }
 D_S(modZZ) { return setZ(v,modZZ(Z(vs[0]),Z(vs[1]))); }
 D_S(modRZ) { return setR(v,modRZ(R(vs[0]),Z(vs[1]))); }
-D_S2(mod) { S s; switch(r) { // Using r, not l
-  case Z_t: { switch(l){ case Z_t: s.f=&modZZ_s; break;
-                         case R_t: s.f=&modRZ_s; break; }
-              return s; }
-  case R_t: s.f=NULL; return s;
-} }
+D_S2(mod) {
+  S s; s.f=NULL; if (r==Z_t) {
+    switch(l){ case Z_t: s.f=&modZZ_s; break;
+               case R_t: s.f=&modRZ_s; break; }
+  } return s;
+}
 
 #undef DFZZ
 #undef DFZR
