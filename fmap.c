@@ -64,22 +64,30 @@ void fmap_P(V v, V f, I n, V* x, I d) {
 
 
 void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
-  T ts[n]; I ss[n];
-  DDO(i,n) {
+  I i,j; T ts[n]; I ss[n];
+  DO(i,n) {
     ts[i] = d&1<<i ? T(x[i]) : L(x[i])->t; ss[i]=t_sizeof(ts[i]);
     if (!(d&1<<i)) get(x[i]);
   }
   T t = apply_T(f, n, ts); I s=t_sizeof(t); f=apply_S(f, n, ts);
   I c=next_pow_2(l); L ll = wrapL(t,c,l,0,MALLOC(c*s));
-  V xj[n]; I is[n]; I cs[n];
-  DO(i,n) if (!(d&1<<i)) { is[i]=L(x[i])->o; cs[i]=L(x[i])->c; }
-  DO(i, l) {
-    DDO(j,n) {
-      if (d&1<<j) xj[j]=cpy(x[j]);
-      else { xj[j]=TP(ts[j], L(x[j])->p + ss[j]*is[j]); if (++is[j]==cs[j]) is[j]=0; }
+  V xi[n]; P end[n]; DO(j,n) {
+    V *u=xi+j; I sj=ss[j];
+    if (d&1<<j) P(*u)=MALLOC(sj);
+    else {
+      L lj=L(x[j]); P(*u)=lj->p + sj*(lj->o-1); end[j]=lj->p + sj*lj->c;
     }
-    apply_P(TP(ll->t,ll->p+i*s), f, n, xj); DO(j,n) if (d&1<<j) FREE(P(xj[j]));
   }
-  DO(i, n) if (d&1<<i) del(x[i]); else { FREE(L(x[i])->p); FREE(L(x[i])); }
-  ddel(f); return setL(v,ll);
+  DO(i, l) {
+    DO(j,n) {
+      V *u=xi+j;
+      if (d&1<<j) cp_P(*u,x[j]);
+      else { P(*u)+=ss[j]; if (end[j] == P(*u)) P(*u)=L(x[j])->p; }
+    }
+    apply_P(TP(t, ll->p + s*i), f, n, xi);
+  }
+  DO(i, n) {
+    if (d&1<<i) { del(x[i]); FREE(P(xi[i])); }
+    else { FREE(L(x[i])->p); FREE(L(x[i])); }
+  } ddel(f); return setL(v,ll);
 }

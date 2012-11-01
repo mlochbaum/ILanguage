@@ -96,6 +96,7 @@ void valcpy(P p, P pp, T t) { // from pp to p
                                   memcpy(p, pp, s); break;
   } else *(V*)p=cpy(*(V*)pp);
 }
+void cp_P(V p, V v) { valcpy(P(p), P(v), T(p)); }
 
 V cpy(V v) {
   V vv; T(vv)=T(v); P(vv)=MALLOC(t_sizeof(T(v)));
