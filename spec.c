@@ -1,5 +1,5 @@
 V apply_S_O(O f, I n, T* x) {
-  I l=f->l; T t[l]; V s[l];
+  I l=f->l; T t[l]; DECL_ARR(V,s,l);
   DDO(i,l) { V v=f->x[i]; t[i]=apply_T(v,n,x); s[i]=apply_S(v,n,x); }
   return newO(wrapO(apply_S(f->f,l,t), l, s));
 }
