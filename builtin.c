@@ -69,10 +69,12 @@ void FfromB_P(V p, B b, I n, V* x) {
 }
 
 void apply_P_B1(V p, B b, V* x) {
+  S1 s=B_s1[b]; S ss; if (s&&(ss=s(T(x[0]))).f) return ss.f(ss.a,p,1,x);
   P1 f=B_p1[b]; if(!f) return FfromB_P(p,b,1,x);
   else return f(p,x[0]);
 }
 void apply_P_B2(V p, B b, V* x) {
+  S2 s=B_s2[b]; S ss; if (s&&(ss=s(T(x[0]),T(x[1]))).f) return ss.f(ss.a,p,2,x);
   P2 f=B_p2[b]; if(!f) return FfromB_P(p,b,2,x);
   else return f(p,x[0],x[1]);
 }
