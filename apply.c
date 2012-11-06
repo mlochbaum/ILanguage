@@ -16,6 +16,7 @@ void apply2_P(V v, V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply_P(v,f,2
 T apply_T(V f, I n, T* x) {
 #define LINE(T) case T##_t: t|=apply_T_##T(T(f),n,x); break;
   PURIFY(f); T tf=T(f);
+  if (tf & S_t) { return S(f).t; }
   if (tf & CONST_t) return tf;
   T t=0; if (tf & (O_t+L_t)) {
     switch (tf) {LINE(O) LINE(L)} return t;

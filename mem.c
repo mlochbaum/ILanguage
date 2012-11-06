@@ -92,8 +92,7 @@ void valcpy(P p, P pp, T t) { // from pp to p
   if (PURE(t)) switch (t) {
     case E_t: case N_t: case Q_t: *(E*)p=strdup(*(E*)pp); break;
     case O_t: case F_t: case L_t: (**(I**)pp)++;
-    case B_t: case C_t: case Z_t: case R_t: case K_t:
-                                  memcpy(p, pp, s); break;
+    default: memcpy(p, pp, s); break;
   } else *(V*)p=cpy(*(V*)pp);
 }
 void cp_P(V p, V v) { valcpy(P(p), P(v), T(p)); }

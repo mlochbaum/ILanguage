@@ -22,7 +22,7 @@ List
 )
 typedefs =: lines 0 :0
 E Str
-S struct { void (*f)(P,V,I,V*); P a; }
+S struct { T t; void (*f)(P,V,I,V*); P a; }
 B Char
 O struct { I r; V f; I l; V* x; } *
 F struct { I r; V f; I l; V* x; } *

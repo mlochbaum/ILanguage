@@ -9,7 +9,7 @@ D_T2(arith) { return max(l,r); }
 #define D_S(name) void name##_s(P p, V v, I n, V* vs)
 //Monads
 #define DF(n, T, op) D_S(n##T) { return set##T(v,op(T(vs[0]))); }
-#define LINE(n, T) case T##_t: s.f=&n##T##_s; break;
+#define LINE(n, T) case T##_t: s.t=T##_t; s.f=&n##T##_s; break;
 #define OP(n,op) DF(n,Z,op); DF(n,R,op); \
   D_S1(n) { S s; s.f=NULL; switch(l){ LINE(n,Z); LINE(n,R); } return s; }
 OP(negate, -);
@@ -27,7 +27,7 @@ OP(ceiling, ceiling);
 #define DFRZ(n, op) D_S(n##RZ) { return setR(v,ON(op,Z(vs[0]),(R)Z(vs[1]))); }
 #define DFRR(n, op) D_S(n##RR) { return setR(v,ON(op,R(vs[0]),R(vs[1]))); }
 
-#define LINE(n, T1,T2) case T2##_t: s.f=&n##T1##T2##_s; return s
+#define LINE(n, T1,T2) case T2##_t: s.t=max(T1##_t,T2##_t); s.f=&n##T1##T2##_s; return s
 #define DECL_S2(n)  D_S2(n) { S s; switch(l){ \
     case Z_t: switch(r){ LINE(n,Z,Z); LINE(n,Z,R); } \
     case R_t: switch(r){ LINE(n,R,Z); LINE(n,R,R); } \

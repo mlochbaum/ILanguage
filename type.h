@@ -11,7 +11,7 @@ typedef struct { T t; P p; } V;
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 
 typedef Str E;
-typedef struct { void (*f)(P,V,I,V*); P a; } S;
+typedef struct { T t; void (*f)(P,V,I,V*); P a; } S;
 typedef Char B;
 typedef struct { I r; V f; I l; V* x; } * O;
 typedef struct { I r; V f; I l; V* x; } * F;
