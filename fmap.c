@@ -65,14 +65,14 @@ void fmap_P(V v, V f, I n, V* x, I d) {
 
 void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   I i,j; T ts[n]; I ss[n];
-  DO(i,n) {
-    ts[i] = d&1<<i ? T(x[i]) : L(x[i])->t; ss[i]=t_sizeof(ts[i]);
-    if (!(d&1<<i)) get(x[i]);
+  DO(j,n) {
+    ts[j] = d&1<<j ? T(x[j]) : L(x[j])->t; ss[j]=t_sizeof(ts[j]);
+    if (!(d&1<<j)) get(x[j]);
   }
   T t = apply_T(f, n, ts); I s=t_sizeof(t); f=apply_S(f, n, ts);
   I c=next_pow_2(l); L ll = wrapL(t,c,l,0,MALLOC(c*s));
   V xi[n]; P end[n]; DO(j,n) {
-    V *u=xi+j; I sj=ss[j];
+    V *u=xi+j; I sj=ss[j]; T(*u)=ts[j];
     if (d&1<<j) P(*u)=MALLOC(sj);
     else {
       L lj=L(x[j]); P(*u)=lj->p + sj*(lj->o-1); end[j]=lj->p + sj*lj->c;
