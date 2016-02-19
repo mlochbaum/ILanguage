@@ -51,8 +51,8 @@ D_S(modZZ) { return setZ(v,modZZ(Z(vs[0]),Z(vs[1]))); }
 D_S(modRZ) { return setR(v,modRZ(R(vs[0]),Z(vs[1]))); }
 D_S2(mod) {
   S s; s.f=NULL; if (r==Z_t) {
-    switch(l){ case Z_t: s.f=&modZZ_s; break;
-               case R_t: s.f=&modRZ_s; break; }
+    switch(l){ case Z_t: s.t=Z_t; s.f=&modZZ_s; break;
+               case R_t: s.t=R_t; s.f=&modRZ_s; break; }
   } return s;
 }
 
