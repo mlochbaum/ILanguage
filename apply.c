@@ -1,3 +1,8 @@
+#include <string.h>
+
+#include "type.h"
+#include "name.h"
+
 V apply1(V f, V l) { return apply(f,1,&l); }
 V apply2(V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply(f,2,x); }
 

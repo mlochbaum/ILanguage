@@ -1,3 +1,5 @@
+#include "builtin.h"
+
 #define IS_ARITH(v) !!(v&ARITH_t)
 D_L1(arith) { return IS_ARITH(l); }
 D_L2(arith) { return 2*IS_ARITH(r) + IS_ARITH(l); }
@@ -62,7 +64,6 @@ D_S2(mod) {
 #undef OP
 
 // EXPORT DEFINITIONS
-EXTERN_BUILTINS;
 void arith_init() {
 #define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
                   B_d1[c] = &arith_d1; B_s1[c] = &f##_s1

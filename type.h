@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 typedef int I;
 typedef void* P;
 typedef char Char;
@@ -63,3 +65,6 @@ typedef struct { I r; T t; I c; I l; I o; P p; } * L;
 #define ON_FUNC_TYPES(f) f(S) f(B) f(O) f(F) f(N) f(Q)
 #define ON_COMP_TYPES(f) f(O) f(F) f(L)
 #define ON_NCONST_TYPES(f) f(S) f(B) f(O) f(F) f(N) f(Q) f(L)
+
+#include "mem.h"
+#include "apply.h"

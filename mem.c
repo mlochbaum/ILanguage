@@ -1,3 +1,7 @@
+#include <string.h>
+#include <stdio.h>
+#include "type.h"
+
 // Find next power of two for length: or with
 // all down bitshifts, then add one.
 I next_pow_2(I l) {

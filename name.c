@@ -1,9 +1,9 @@
+#include <string.h>
+#include "builtin.h"
+#include "name.h"
+
 I equalsStr(Str l, Str r) { return 0==strcmp(l,r); }
 SET_HASH_TABLE(Str, V, hash_string, equalsStr, FREE, ddel);
-
-typedef StrV_HashMap Name;
-
-Name names;
 
 D_L2(set) { return 2 + !!(l&N_t); }
 D_D2(set) { return 2 + !!(T(l)&N_t); }
@@ -16,7 +16,6 @@ D_P1(get) { V v=StrVget(names, N(l)); del(l); mv_P(p,cpy(v)); }
 D_T1(del) { return N_t; }
 D_P1(del) { StrVdel(names, N(l)); setN(p,N(l)); }
 
-EXTERN_BUILTINS;
 void name_init() {
   names = StrVnew(256);
 

@@ -1,4 +1,7 @@
+#include <stdio.h>
 #include <string.h>
+
+#include "type.h"
 
 Str PToString(T t, P p);
 Str toString(V v);

@@ -39,7 +39,10 @@ typedef void (*del_t)(V); del_t del_S(T);
 void delO(V); void delN(V); void delL(V); void delV(V);
 void del(V);  // Delete this copy of v.
 void ddel(V); // Delete this copy of v and free P(v).
+void mv_P(V,V);
+void mv_Pd(V,V);
 void valcpy(P, P, T);
+void cp_P(V,V);
 V cpy(V);    // Return a new copy of v.
 V cpy1(V);   // Copy the pointer in v.
 void get(V); // Ensure that the input is safely modifiable.

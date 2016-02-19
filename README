@@ -4,7 +4,7 @@ I is a language which generalizes constructs from J.
 See doc/introduction.txt for documentation.
 
 To build,
-gcc main.c -o I
+gcc *.c -o I
 .
 
 Then ./I is a command-line interpreter.

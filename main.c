@@ -1,24 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "type.h"
-#include "mem.h"
-#include "apply.h"
-#include "stack.h"
-#include "mem.c"
-#include "hash.c"
-#include "parse.c"
-#include "builtin.c"
-#include "apply.c"
-#include "spec.c"
-#include "dom.c"
-#include "fmap.c"
-#include "scan.c"
-#include "print.c"
-
-V scan(Str);
-Str toString(V v);
+#include "name.h"
+#include "scan.h"
 
 int main(int argc, char** argv) {
   builtin_init();

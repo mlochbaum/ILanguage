@@ -1,3 +1,5 @@
+#include "builtin.h"
+
 #define RE(v) return mv_P(p,v)
 
 D_P1(left)  { RE(l); }
@@ -71,7 +73,6 @@ D_P22(while) {
   del(rr); mv_P(p,ll); FREE(P(ll));
 }
 
-EXTERN_BUILTINS;
 void compose_init() {
 #define D(n,c,f) DB(t##n,c,f); DB(p##n,c,f)
   DB(t1,'[',l);  DB(p1,'[',left);

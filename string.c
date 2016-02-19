@@ -1,3 +1,6 @@
+#include <string.h>
+#include "builtin.h"
+
 Str toString(V);
 V scan(Str);
 D_P1(print) { setL(p, wrapStr(toString(l))); del(l); }
@@ -12,7 +15,6 @@ D_P1(eval) { L ll=L(l); Str s=arrToString(ll->l, ll->c, ll->o, ll->p);
   del(l); V(p)=scan(s); FREE(s);
 }
 
-EXTERN_BUILTINS;
 void string_init() {
   DB(t1,'s',L); DB(p1,'s',print);
   DB(l1,'S',string); DB(u1,'S',string); DB(d1,'S',string);

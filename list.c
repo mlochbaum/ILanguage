@@ -1,3 +1,7 @@
+#include <string.h>
+#include "builtin.h"
+#include "arith.h"
+
 D_P1(itemize) { setL(p, wrapL(T(l),1,1,0,P(cpy1(l)))); }
 D_P2(cross) {
   T tl=T(l), tr=T(r), t=tl|tr; I s=t_sizeof(t); P v=MALLOC(2*s);
@@ -170,7 +174,6 @@ D_P1(reverse) {
 }
 
 
-EXTERN_BUILTINS;
 void list_init() {
   DB(t1,';',L); DB(p1,';',itemize);
   DB(t2,';',L); DB(p2,';',cross);

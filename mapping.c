@@ -1,3 +1,5 @@
+#include "builtin.h"
+
 D_T2(map) { return fmap_TT(r,1,&l,0,0); }
 D_P2(map) { fmap_P(p,r,1,&l,0); del(r); }
 D_T11(map) { return map_t2(ll,T(l)); }
@@ -20,7 +22,6 @@ D_P22(apply) { apply2_P(p,l,ll,rr); }
 
 D_P1(type) { setZ(p,T(l)); del(l); }
 
-EXTERN_BUILTINS;
 void map_init() {
 #define D(n,c,f) DB(t##n,c,f); DB(p##n,c,f)
   D(2,'f',map); D(11,'f',map); D(12,'f',map);

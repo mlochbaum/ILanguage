@@ -1,3 +1,6 @@
+#include <string.h>
+#include "type.h"
+
 T mapclass_T(T t) {
   return ((t&CONST_t)?CONST_X:0) | ((t&FUNC_t)?FUNC_X:0)
     | ((t&L_t)?LIST_X:0);

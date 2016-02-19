@@ -59,3 +59,7 @@ I dom_true(I);
 
 // fmap.c
 void fmap_LIST_P(V, V, I, V*, I, I);
+
+// compose.c
+I toBoold(V);
+I toBool(V);

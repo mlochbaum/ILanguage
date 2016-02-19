@@ -1,3 +1,4 @@
+#include <string.h>
 #include "builtin.h"
 
 #define ON_ALL_NUMS(F) F(1) F(2) F(11) F(12) F(21) F(22)
@@ -37,15 +38,15 @@ D_T11(ll){return ll;}  D_T12(ll){return ll;}
 D_T21(ll){return ll;}  D_T22(ll){return ll;}
 D_T12(rr){return rr;}  D_T22(rr){return rr;}
 
-#define DB(s,c,n) (B_##s[c]=&n##_##s)
+// Initializers from correspondingly named files
+void name_init();
+void compose_init();
+void map_init(); // mapping.c
+void arith_init();
+void compare_init();
+void list_init();
+void string_init();
 
-#include "name.c"
-#include "compose.c"
-#include "mapping.c"
-#include "arith.c"
-#include "compare.c"
-#include "list.c"
-#include "string.c"
 void builtin_init() {
 #define INIT(n) \
   B_l##n[i]=B_u##n[i]=&true_l##n; B_t##n[i]=NULL; \

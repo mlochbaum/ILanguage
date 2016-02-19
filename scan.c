@@ -1,7 +1,10 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+
+#include "type.h"
+#include "stack.h"
+#include "scan.h"
 
 /*
 Verify the given string, checking that nesting symbols ()'`"

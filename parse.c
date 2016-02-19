@@ -1,4 +1,6 @@
-#include <stdlib.h>
+#include <string.h>
+#include "type.h"
+#include "scan.h"
 
 /////////////// parseChar //////////////////
 V parseChar(Str* s) { return newB(*(*s)++); }
