@@ -143,7 +143,18 @@ D_P11(reduce) {
   I len=L(ll)->l;
   if (len==0) { del(ll); return identity_of_p1(p,l); }
   get(ll); I i; V vt,v=cpy1(listV_at(ll,0));
-  for(i=1;i<len;i++) { v = apply2(l,vt=v,listV_at(ll,i)); FREE(P(vt)); }
+  T s,t=L(ll)->t; if (len>1 && t==(s=apply2_T(l,t,t))) {
+    T ts[2]; ts[0]=ts[1]=t; l=apply_S(l,2,ts);
+    for(i=1;i<len;i++) { apply2_P(v,l,vt=v,listV_at(ll,i)); }
+    ddel(l);
+  } else if (len>2 && s==apply2_T(l,s,t)) {
+    T ts[2]; ts[0]=s; ts[1]=t; l=apply_S(l,2,ts);
+    v = apply2(l,vt=v,listV_at(ll,1)); FREE(P(vt));
+    for(i=2;i<len;i++) { apply2_P(v,l,vt=v,listV_at(ll,i)); }
+    ddel(l);
+  } else {
+    for(i=1;i<len;i++) { v = apply2(l,vt=v,listV_at(ll,i)); FREE(P(vt)); }
+  }
   FREE(L(ll)->p); FREE(L(ll)); mv_P(p,v); FREE(P(v));
 }
 D_P12(reduce) {
