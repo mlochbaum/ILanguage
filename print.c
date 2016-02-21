@@ -97,3 +97,54 @@ Str PToString(T t, P p) {
   }
 }
 Str toString(V v) { return PToString(T(v), P(v)); }
+
+
+// Show the exact state of an object (including reference count)
+Str PShowI(T t, P p, I indent);
+Str TShow(T t) {
+  switch (t) {
+    case E_t: return strdup("Error");
+    case S_t: return strdup("Compiled");
+    case B_t: return strdup("Builtin");
+    case F_t: return strdup("Composition");
+    case O_t: return strdup("Partial application");
+    case Q_t: return strdup("Quasiquote");
+    case N_t: return strdup("Name");
+    case C_t: return strdup("Char");
+    case Z_t: return strdup("Integer");
+    case R_t: return strdup("Real");
+    case K_t: return strdup("Complex");
+    case L_t: return strdup("List");
+    default: { DECL_STR(s, 28); sprintf(s, "Multitype (%llx)", t);
+               return s; }
+  }
+}
+Str Lshow(L l, I indent) {
+  I ll=l->l;
+  DECL_STR(sp, 0); Str st,si; I len;
+  I e=1,et; DDO(i, ll) {
+    st=PShowI(l->t, LIST_PTR_AT(l,i), indent+2); len=strlen(st);
+    et=e; sp=realloc(sp, e = et+3+indent+len); si=sp+et-1;
+    *(si++)='\n'; DDO(j,indent+2) *(si++)=' ';
+    strcpy(si,st); FREE(st);
+  }
+  st = TShow(l->t);
+  DECL_STR(s, strlen(st)+23+4*20+e);
+  sprintf(s, "%s, ref %lld, %lld[%lld] (%lld allocated)%s",
+              st,     l->r, l->o,l->l,  l->c,          sp);
+  FREE(st); FREE(sp);
+  return s;
+}
+Str PShowI(T t, P p, I indent) {
+  switch (t) {
+    case F_t: return Ffmt(*(F*)p); //TODO
+    case O_t: return Ofmt(*(O*)p); //TODO
+    case L_t: return Lshow(*(L*)p, indent);
+    default: return PToString(t,p);
+  }
+}
+Str Show(V v) {
+  Str st=TShow(T(v)), sp=PShowI(T(v), P(v), 0);
+  DECL_STR(s, strlen(st)+2+strlen(sp));
+  sprintf(s, "%s: %s", st, sp); FREE(st); FREE(sp); return s;
+}

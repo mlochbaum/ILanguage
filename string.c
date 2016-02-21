@@ -2,8 +2,10 @@
 #include "builtin.h"
 
 Str toString(V);
+Str Show(V);
 V scan(Str);
 D_P1(print) { setL(p, wrapStr(toString(l))); del(l); }
+D_P1(show) { setL(p, wrapStr(Show(l))); del(l); }
 
 D_L1(string) { return !!(l&L_t); }
 D_U1(string) { return 0; }
@@ -17,6 +19,7 @@ D_P1(eval) { L ll=L(l); Str s=arrToString(ll->l, ll->c, ll->o, ll->p);
 
 void string_init() {
   DB(t1,'s',L); DB(p1,'s',print);
+  DB(t1,'x',L); DB(p1,'x',show);
   DB(l1,'S',string); DB(u1,'S',string); DB(d1,'S',string);
   DB(t1,'S',V); DB(p1,'S',eval);
 }
