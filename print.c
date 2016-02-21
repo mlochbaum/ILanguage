@@ -59,6 +59,11 @@ Str Ofmt(O o) {
 Str Lfmt(L l) {
   I ll=l->l;
   if (ll==0) return strdup("N");
+  if (l->t == C_t) {
+    DECL_NSTR(s, ll+2); s[0]=s[ll+1]='"';
+    DDO(i,ll) s[i+1] = ((C*)l->p)[(i+l->o)%l->c];
+    return s;
+  }
   DECL_STR(s, 1); s[0]=' '; Str st; I len;
   if (ll==1) {
     st=PToString(l->t, LIST_PTR_AT(l,0)); len=1+strlen(st);
