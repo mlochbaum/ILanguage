@@ -101,6 +101,7 @@ Str toString(V v) { return PToString(T(v), P(v)); }
 
 // Show the exact state of an object (including reference count)
 Str PShowI(T t, P p, I indent);
+Str ShowI(V v, I indent);
 Str TShow(T t) {
   switch (t) {
     case E_t: return strdup("Error");
@@ -140,11 +141,13 @@ Str PShowI(T t, P p, I indent) {
     case F_t: return Ffmt(*(F*)p); //TODO
     case O_t: return Ofmt(*(O*)p); //TODO
     case L_t: return Lshow(*(L*)p, indent);
-    default: return PToString(t,p);
+    default: { if (PURE(t)) return PToString(t,p);
+               else return ShowI(*(V*)p, indent); }
   }
 }
-Str Show(V v) {
-  Str st=TShow(T(v)), sp=PShowI(T(v), P(v), 0);
+Str ShowI(V v, I indent) {
+  Str st=TShow(T(v)), sp=PShowI(T(v), P(v), indent);
   DECL_STR(s, strlen(st)+2+strlen(sp));
   sprintf(s, "%s: %s", st, sp); FREE(st); FREE(sp); return s;
 }
+Str Show(V v) { return ShowI(v,0); }
