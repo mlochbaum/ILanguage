@@ -14,6 +14,7 @@ I next_pow_2(I);
 #define IMPURE(t) ((t)&((t)-1))
 #define PURIFY(v) while(IMPURE(T(v))) v=V(v);
 #define PURIFY_D(v) while(IMPURE(T(v))) { V vt=V(v); FREE(P(v)); v=vt; }
+#define PURIFY_D1(v) if(IMPURE(T(v))) { v=V(v); PURIFY_D(v) }
 
 #define T(v) ((v).t)
 #define P(v) ((v).p)
