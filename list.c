@@ -36,9 +36,14 @@ void listcpy1(L d, L s, I i) {
 }
 void listcpy(L d, L s, I i) {
   d->l += s->l;
+  if (--s->r && s->t&COMP_t) {
+    // Increase reference count of source's children
+    I ss=t_sizeof(s->t);
+    DDO(j,s->l) (**(I**)(LIST_PTR_ATS(s,j,ss)))++;
+  }
   if (PURE(d->t)==PURE(s->t)) listcpy1(d,s,i);
   else { DDO(j,s->l) LIST_AT(d,i+j) = cpy1(list_at(s,j)); }
-  FREE(s->p); FREE(s);
+  if (!s->r) { FREE(s->p); FREE(s); }
 }
 /* Assume (^l->t)|r->t and l->c>=l->l+r->l.
  * Copy the contents of r into l. */
