@@ -107,8 +107,8 @@ Str TShow(T t) {
     case E_t: return strdup("Error");
     case S_t: return strdup("Compiled");
     case B_t: return strdup("Builtin");
-    case F_t: return strdup("Composition");
-    case O_t: return strdup("Partial application");
+    case O_t: return strdup("Composition");
+    case F_t: return strdup("Partial application");
     case Q_t: return strdup("Quasiquote");
     case N_t: return strdup("Name");
     case C_t: return strdup("Char");
@@ -120,26 +120,35 @@ Str TShow(T t) {
                return s; }
   }
 }
+// Append s to d with indent i and update e to point to the end of d.
+Str appendI(Str d, Str s, I* e, I indent) {
+  I et=*e; d=realloc(d, *e = et+1+indent+strlen(s)); Str di=d+et-1;
+  *(di++)='\n'; DDO(j,indent) *(di++)=' ';
+  strcpy(di,s); FREE(s); return d;
+}
 Str Lshow(L l, I indent) {
-  I ll=l->l;
-  DECL_STR(sp, 0); Str st,si; I len;
-  I e=1,et; DDO(i, ll) {
-    st=PShowI(l->t, LIST_PTR_AT(l,i), indent+2); len=strlen(st);
-    et=e; sp=realloc(sp, e = et+3+indent+len); si=sp+et-1;
-    *(si++)='\n'; DDO(j,indent+2) *(si++)=' ';
-    strcpy(si,st); FREE(st);
-  }
-  st = TShow(l->t);
+  DECL_STR(sp, 0); I in=indent+2, e=1;
+  DDO(i, l->l) sp=appendI(sp, PShowI(l->t, LIST_PTR_AT(l,i), in), &e, in);
+  Str st = TShow(l->t);
   DECL_STR(s, strlen(st)+23+4*20+e);
   sprintf(s, "%s, ref %lld, %lld[%lld] (%lld allocated)%s",
               st,     l->r, l->o,l->l,  l->c,          sp);
   FREE(st); FREE(sp);
   return s;
 }
+Str Fshow(F f, I indent) {
+  DECL_STR(sp, 0); I in=indent+2, e=1;
+  sp=appendI(sp, ShowI(f->f, in), &e, in);
+  DDO(i, f->l) sp=appendI(sp, ShowI(f->x[i], in), &e, in);
+  DECL_STR(s, 11+2*20+e);
+  sprintf(s, "ref %lld, %lld args%s",
+                  f->r, f->l,    sp);
+  FREE(sp);
+  return s;
+}
 Str PShowI(T t, P p, I indent) {
   switch (t) {
-    case F_t: return Ffmt(*(F*)p); //TODO
-    case O_t: return Ofmt(*(O*)p); //TODO
+    case O_t: case F_t: return Fshow(*(F*)p, indent);
     case L_t: return Lshow(*(L*)p, indent);
     default: { if (PURE(t)) return PToString(t,p);
                else return ShowI(*(V*)p, indent); }
