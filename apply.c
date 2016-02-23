@@ -37,9 +37,9 @@ void apply_P(V v, V f, I n, V* x) {
 #define LINE(T) case T##_t: apply_P_##T(v,T(f),n,x); break;
   PURIFY(f); T t=T(f);
   if (t & S_t) { S s=S(f); return s.f(s.a,v,n,x); }
-  B delp[n]; DDO(i,n) {
+  B delp[n]; V op[n]; DDO(i,n) {
     delp[i] = 0!=IMPURE(T(x[i]));
-    if (delp[i]) { x[i]=V(x[i]); PURIFY_D(x[i]); }
+    if (delp[i]) { op[i]=x[i]; x[i]=V(x[i]); PURIFY_D(x[i]); }
   }
   if (t & CONST_t) { DDO(i,n) del(x[i]); mv_P(v, f); }
   if (t & (O_t+L_t)) {
@@ -49,7 +49,7 @@ void apply_P(V v, V f, I n, V* x) {
     if ((d+1)==1<<n) switch (t) {LINE(B) LINE(F) LINE(N) LINE(Q)}
     else fmap_P(v,f,n,x,d);
   }
-  DO(i,n) if (delp[i]) FREE(P(x[i])); return;
+  DO(i,n) if (delp[i]) { FREE(P(x[i])); x[i]=op[i]; } return;
 #undef LINE
 }
 
