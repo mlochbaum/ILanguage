@@ -46,7 +46,6 @@ T fmap_TT(T f, I n, T* x, I dl, I du) {
   return t;
 }
 void fmap_P(V v, V f, I n, V* x, I d) {
-  T t=T(f); P p=P(f);
   X m={0,NULL};
   DDO(i, n) if (! (d&1<<i)) {
     X mt=mapclass(x[i]);

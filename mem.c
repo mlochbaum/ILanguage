@@ -116,7 +116,7 @@ V* cpyn(I n, V* v) {DECL_ARR(V,vv,n); DDO(i,n)vv[i]=cpy(v[i]); return vv;}
 
 void get(V v) {
   if ((T(v)&COMP_t) && REF(v)>1) {
-    REF(v)--; V r; switch (T(v)) {
+    REF(v)--; switch (T(v)) {
       case O_t:
         { O o=O(v); setO(v,wrapO(cpy(o->f), o->l, cpyn(o->l, o->x))); break;}
       case F_t:
