@@ -17,7 +17,7 @@ Str quote(const char q, Str s) {
 }
 
 Str Zfmt(Z z) {
-  DECL_STR(s, 20); sprintf(s, "%lld", z); return s;
+  DECL_STR(s, 20); sprintf(s, "%ld", z); return s;
 }
 Str Rfmt(R r) {
   DECL_STR(s, 20); sprintf(s, "%f", r); return s;
@@ -116,7 +116,7 @@ Str TShow(T t) {
     case R_t: return strdup("Real");
     case K_t: return strdup("Complex");
     case L_t: return strdup("List");
-    default: { DECL_STR(s, 28); sprintf(s, "Multitype (%llx)", t);
+    default: { DECL_STR(s, 28); sprintf(s, "Multitype (%x)", t);
                return s; }
   }
 }
@@ -131,8 +131,8 @@ Str Lshow(L l, I indent) {
   DDO(i, l->l) sp=appendI(sp, PShowI(l->t, LIST_PTR_AT(l,i), in), &e, in);
   Str st = TShow(l->t);
   DECL_STR(s, strlen(st)+23+4*20+e);
-  sprintf(s, "%s, ref %lld, %lld[%lld] (%lld allocated)%s",
-              st,     l->r, l->o,l->l,  l->c,          sp);
+  sprintf(s, "%s, ref %d, %d[%d] (%d allocated)%s",
+              st, l->r,l->o,l->l,l->c,         sp);
   FREE(st); FREE(sp);
   return s;
 }
@@ -141,8 +141,8 @@ Str Fshow(F f, I indent) {
   sp=appendI(sp, ShowI(f->f, in), &e, in);
   DDO(i, f->l) sp=appendI(sp, ShowI(f->x[i], in), &e, in);
   DECL_STR(s, 11+2*20+e);
-  sprintf(s, "ref %lld, %lld args%s",
-                  f->r, f->l,    sp);
+  sprintf(s, "ref %d, %d args%s",
+                f->r,f->l,   sp);
   FREE(sp);
   return s;
 }
