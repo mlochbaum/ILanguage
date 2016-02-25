@@ -99,7 +99,7 @@ W next(Str* s, I* lp) {
 V parse(Str* s) {
   if (**s == ')') return Err("Empty parens"); 
   WStack stack = Wnew();
-  I *p=MALLOC(sizeof(p)); *p=0;
+  DECL(I*,p); *p=0;
   while (**s && **s!=')') {
     push(stack, next(s,p));
   }

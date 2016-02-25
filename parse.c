@@ -46,7 +46,6 @@ V parseQuote(Str* s) {
   }
 }
 
-V parse(Str* s);
 V parseVal(Str* s) {
   V v;
   switch (**s) {
