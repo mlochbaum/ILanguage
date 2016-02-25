@@ -22,7 +22,6 @@ S  S     T
 temptemp =: <;._2 ] 0 : 0
 #define D_Q9(func) R func##_q9(fprotF)
 typedef R (*Q9)(protF); Q9 B_q9[256];
-Q9 B_q9[256];
 )
 torplc =. (;:'Q R F') (,~ tolower&.>@:(2&{.))@:,@,."_ _1 chart
 templates =: ; temptemp (>@[ <@rplc ])"0 1`[@.(a:=[)(<@)"0 _ torplc
