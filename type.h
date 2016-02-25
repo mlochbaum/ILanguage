@@ -14,7 +14,7 @@ typedef struct { T t; P p; } V;
 
 typedef Str E;
 typedef struct { T t; void (*f)(P,V,I,V*); P a; } S;
-typedef Char B;
+typedef unsigned char B;
 typedef struct { I r; V f; I l; V* x; } * O;
 typedef struct { I r; V f; I l; V* x; } * F;
 typedef Str N;
