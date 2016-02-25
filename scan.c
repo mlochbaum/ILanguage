@@ -39,7 +39,7 @@ Str verify(Str s) {
     } else {
       if (isquote(*s) || *s=='(') charpush(stack,*s);
       if (*s==')') {
-        if (last=='(') { charpop(stack); last=charpeek(stack); }
+        if (last=='(') charpop(stack);
         else { charfree(stack); return "Closed quote with no open quote"; }
       }
     }

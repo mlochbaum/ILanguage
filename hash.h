@@ -19,7 +19,7 @@ UI hash(V);
 
 #define _SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, L, M) \
   M name##new(I l) { l=next_pow_2(l);                                    \
-    DECL(M, m); m->l=l; m->n=0; m->v=malloc(l*sizeof(m->v));             \
+    DECL(M, m); m->l=l; m->n=0; m->v=malloc(l*sizeof(*m->v));            \
     DDO(i,l) m->v[i]=NULL; return m; }                                   \
   void name##freeL(L l) { freeK(l->k); freeV(l->v); FREE(l); }           \
   M name##resize(M m, I l) { M mm=name##new(l);                          \

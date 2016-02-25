@@ -37,7 +37,7 @@ V parseQuote(Str* s) {
   char q=**s;
   I l=0; (*s)++;
   while ((*s)[l]!=q) l++;
-  Str ss=malloc((l+1)*sizeof(ss)); ss[l]='\0';
+  DECL_NSTR(ss,l);
   strncpy(ss, *s, l); (*s)+=l+1;
   switch(q) {
     case '`': return newQ(ss);
