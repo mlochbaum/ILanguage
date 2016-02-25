@@ -7,28 +7,28 @@ lines   =: <;._2 :. unlines
 unlines =: ;@:(,&LF e) :. lines
 
 n=: #all =: {.@> comments=: lines 0 :0
-Error
-Specialized function
 Builtin
+Char
+Error
+K Complex
+Specialized function
 O Composition
 Function application
 Name
 Quasiquote
-Char
 Z Integer
 Real
-K Complex
 List
 )
 typedefs =: lines 0 :0
+B unsigned char
+C Char
 E Str
 S struct { T t; void (*f)(P,V,I,V*); P a; }
-B Char
 O struct { I r; V f; I l; V* x; } *
 F struct { I r; V f; I l; V* x; } *
 N Str
 Q Str
-C Char
 Z int64_t
 R double
 K struct { R a; R b; }
@@ -41,10 +41,12 @@ classes =: 'all ',classes,' nconst'
 nconst =: all-.const
 
 echo^:(0 e.~:all) 'Error: non-unique letters'
-echo^:(all-.@-:{.@>typedefs) 'Error: typedefs don''t match types'
+echo^:(all-.@-:&(/:~){.@>typedefs) 'Error: typedefs don''t match types'
 
 NB. type.h
 preamble =: 0 :0
+#include <stdlib.h>
+
 typedef int I;
 typedef void* P;
 typedef char Char;
@@ -56,6 +58,10 @@ typedef I T;
 typedef struct { T t; P p; } V;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
+)
+post =: 0 : 0
+#include "mem.h"
+#include "apply.h"
 )
 
 def =: '#define '
@@ -71,6 +77,6 @@ typeclasses =: unlines ((18{.def,toupper,'_t '"_),typesum@:".)e ;:classes
 fs=: [: ' 'join/ ('f(',],')'"_)"0
 ON =: unlines ('#define ON_',toupper,'_TYPES(f) ',fs@".)e ;:classes
 
-'type.h' (1!:2<)~ }:unlines preamble;types;val;get;typeclasses;ON
+'type.h' (1!:2<)~ }:unlines preamble;types;val;get;typeclasses;ON;post
 
 exit ''

@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "type.h"
 
 // Find next power of two for length: or with
@@ -7,9 +8,15 @@
 I next_pow_2(I l) {
   I c=l-1; I i=32; while (i) { c |= c>>i; i>>=1; } return c+1;
 }
+I t_sizeof(T t) {
+#if UINTPTR_MAX == 0xffffffffffffffff
+  return IMPURE(t) ? 16 : 1 + 7*(t>2) + (t&24);
+#else
 #define LINE(T) case T##_t: return sizeof(T);
-I t_sizeof(T t) {switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}}
+  switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}
 #undef LINE
+#endif
+}
 
 V TP(T t, P p) { V v; T(v)=t; P(v)=p; return v; }
 
