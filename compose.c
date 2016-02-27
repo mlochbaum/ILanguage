@@ -6,8 +6,8 @@ D_P1(left)  { RE(l); }
 D_P2(left)  { del(r); RE(l); }
 D_P2(right) { del(l); RE(r); }
 
-D_P11(constant) { del(ll); RE(l); }
-D_P12(constant) { del(ll); del(rr); RE(l); }
+D_P11(constant) { del(ll); cp_P(p,l); }
+D_P12(constant) { del(ll); del(rr); cp_P(p,l); }
 
 D_P2(apply) { V(p) = apply1d(r,l); }
 D_P2(flip)  { V(p) = apply1d(l,r); }
