@@ -17,7 +17,7 @@ UI hash(V);
 #define SET_HASH_TABLE_H(K, V) \
   SET_HASH_TABLE_H_AS(K, V, K##V)
 
-#define _SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, L, M) \
+#define _SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, L, M, N) \
   M name##new(I l) { l=next_pow_2(l);                                    \
     DECL(M, m); m->l=l; m->n=0; m->v=malloc(l*sizeof(*m->v));            \
     DDO(i,l) m->v[i]=NULL; return m; }                                   \
@@ -33,7 +33,7 @@ UI hash(V);
   void name##free(M m) { DDO(i,m->l){ L n=m->v[i],nn;                    \
     while(n){ nn=n; n=n->n; name##freeL(nn); } } FREE(m->v); FREE(m); }  \
   V name##get(M m, K k) { L n=m->v[hash(k)%m->l];                        \
-    while(n){if(equals(k,n->k))return n->v; else n=n->n;} return Err(""); /* TODO */} \
+    while(n){if(equals(k,n->k))return n->v; else n=n->n;} return (N); }  \
   void name##del(M m, K k) {                                             \
     L p=NULL, n=m->v[hash(k)%m->l]; while(n) { if (equals(k,n->k)) {     \
       if(p) p->n=n->n; else m->v[hash(k)%m->l]=n->n;                     \
@@ -41,11 +41,11 @@ UI hash(V);
       } else { p=n; n=n->n; } } }
 
 
-#define SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name) \
+#define SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, N) \
   _SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, \
-      name##_HashLink, name##_HashMap)
-#define SET_HASH_TABLE(K, V, hash, equals, freeK, freeV) \
-  SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, K##V)
+      name##_HashLink, name##_HashMap, N)
+#define SET_HASH_TABLE(K, V, hash, equals, freeK, freeV, N) \
+  SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, K##V, N)
 
 // TODO complete equality testing
 // I equalsV(V l, V r) { return compare_arith(l,r)==0; }

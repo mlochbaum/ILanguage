@@ -3,7 +3,7 @@
 #include "name.h"
 
 I equalsStr(Str l, Str r) { return 0==strcmp(l,r); }
-SET_HASH_TABLE(Str, V, hash_string, equalsStr, FREE, ddel);
+SET_HASH_TABLE(Str, V, hash_string, equalsStr, FREE, ddel, Err(""));
 
 D_L2(set) { return 2 + !!(l&N_t); }
 D_D2(set) { return 2 + !!(T(l)&N_t); }
