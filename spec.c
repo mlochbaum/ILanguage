@@ -14,7 +14,9 @@ V apply_S_L(L f, I n, T* x) {
 }
 
 V apply_S_N(N f, I n, T* x) {
-  return apply_S(StrVget(names, f), n, x);
+  V fv=StrVget(names, f);
+  if (!P(fv)) { return Err("Value error"); }
+  return apply_S(fv, n, x);
 }
 
 V apply_S_B(B,I,T*);

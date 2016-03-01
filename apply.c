@@ -91,9 +91,14 @@ void apply_P_F(V v, F f, I n, V* x) {
   }
 }
 
-T apply_T_N(N m, I n, T* x) { return apply_T(StrVget(names, m), n, x); }
+T apply_T_N(N m, I n, T* x) {
+  V mv=StrVget(names, m);
+  return P(mv) ? apply_T(mv, n, x) : E_t;
+}
 void apply_P_N(V v, N m, I n, V* x) {
-  return apply_P(v, StrVget(names, m), n, x);
+  V mv=StrVget(names, m);
+  if (!P(mv)) { DDO(i,n) del(x[i]); E(v)=strdup("Value error"); return; }
+  return apply_P(v, mv, n, x);
 }
 
 T apply_T_Q(Q q, I n, T* x) { return E_t; }
