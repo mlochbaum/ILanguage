@@ -30,10 +30,12 @@ L wrapL(T t, I c, I l, I o, P p) {
   DECL(L,ll); ll->r=1; ll->t=t; ll->c=c; ll->l=l; ll->o=o; ll->p=p; return ll;
 }
 
+#define DECL_V(type, v) V v; T(v)=type##_t; P(v)=MALLOC(sizeof(type))
 #define SET_NEW(T) V new##T(T vv) { DECL_V(T,v); T(v)=vv; return v; } \
   void set##T(V v,T t) { if (!PURE(v.t)) V(v)=new##T(t); else T(v)=t; }
 ON_TYPES(ALL, SET_NEW);    // functions new##T : T->V
 #undef SET_NEW
+#undef DECL_V
 
 // Custom wrap functions
 L wrapArray(T t, I l, P p) {
@@ -58,6 +60,8 @@ V Err(Str s) { return newE(strdup(s)); }
 
 
 /////////////////// Utilities ////////////////////
+typedef void (*del_t)(V); del_t del_S(T);
+void delO(V); void delN(V); void delL(V); void delV(V);
 void delO(V v) {
   O o=O(v); if (--o->r) return;
   ddel(o->f); DDO(i,o->l) ddel(o->x[i]); FREE(o->x); FREE(o);
