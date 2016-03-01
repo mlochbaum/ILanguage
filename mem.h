@@ -4,6 +4,13 @@
 // This does not apply to specific typed values (e.g. L) as these are
 // more stable.
 
+// Terminology:
+// A value of type v has a pointer (type P) which, when cast and
+// dereferenced, yields a value of some type.
+// When this value is freed, so that one reference to it is removed, or
+// when that reference is reused in another value, we say it is consumed.
+// If the pointer is freed as well, we say it is deleted.
+
 // In case changes are required in the future
 #define MALLOC(l) malloc(l)
 #define FREE(ptr) free(ptr)
@@ -25,10 +32,10 @@ I next_pow_2(I); // Return the smallest power of two >= the input.
 #define IMPURE(t) ((t)&((t)-1))
 // Ensure that the type of v is pure (modifies v).
 #define PURIFY(v) while(IMPURE(T(v))) v=V(v)
-// Like PURIFY, but deletes impure values.
+// Like PURIFY, but frees impure pointers along the way.
 // {PURIFY_D(v); ddel(v);} is identical to {ddel(v);}.
 #define PURIFY_D(v) while(IMPURE(T(v))) { V vt=V(v); FREE(P(v)); v=vt; }
-// Like PURIFY_D, but does not delete initial P(v).
+// Like PURIFY_D, but does not free initial P(v).
 // {PURIFY_D1(v); ddel(v);} is identical to {del(v);}.
 #define PURIFY_D1(v) if(IMPURE(T(v))) { v=V(v); PURIFY_D(v) }
 
@@ -52,7 +59,7 @@ L wrapL(T, I c, I l, I o, P);
 // Functions (V newT(T t)) and (void setT(V v,T t)) for each type T
 // newT creates a V value to wrap t.
 // setT makes v's value equal to t, wrapping t is v has an impure type.
-// In each case, t is consumed/reused.
+// In each case, t is consumed.
 // setT will silently cause bugs if (!(T(v)&T##_t)).
 #define NEW(T) V new##T(T); void set##T(V,T);
 ON_TYPES(ALL, NEW);
@@ -66,20 +73,22 @@ V makeStr(Str); // Same, but wraps into a V value.
 V Err(Str); // Turn a C string into an error.
 
 // Delete
-void del(V);  // Delete this copy of v.
-void ddel(V); // Delete this copy of v and free P(v).
+void del(V);  // Consume v.
+void ddel(V); // Delete v.
 
 // Move
 // The first two arguments of each are destination and source.
-void mv_P(V,V);  // Consumes value of source, but not pointer.
-void mv_Pd(V,V); // Like mv_P, but frees pointer.
-// cp_P and valcpy do not consume the source.
+void mv_P(V,V);  // Consumes source.
+void mv_Pd(V,V); // Deletes source.
+// cp_P and valcpy do not consume (or delete) the source.
 void cp_P(V,V);  // Like mv_P.
 void valcpy(P,P,T); // P values must have the given type.
 
 // Copy
-V cpy(V);    // Return a new copy of the argument.
-V cpy1(V);   // Copy only the pointer.
+// cpy and cpy1 copy by reference if possible. the output of get has
+// reference count 1, but elements it contains may not.
+V cpy(V);    // Make a copy of the argument. ddel(cpy(v)) does nothing.
+V cpy1(V);   // Copy only the pointer. FREE(P(cpy1(v))) does nothing.
 void get(V); // Ensure that the input is safely modifiable. Do not copy.
 
 
@@ -95,15 +104,16 @@ void get(V); // Ensure that the input is safely modifiable. Do not copy.
 #define ceiling(a) ((a)==(Z)(a) ? a : (Z)(a) + ((a)>0))
 #define sign(a)  ((a)>0 ? 1 : -((a)<0))
 
-// numbers
+// Numbers
 Z getZ(V);  // Input must have type Z.
 R getR(V);  // Input must have type R or Z. Coerce to R.
-// Get an Z value, taking floor or ceiling if value has type R.
+// Get a Z value, taking floor or ceiling if value has type R.
 #define getOPZ(vv, OP) ((T(vv))==Z_t ? Z(vv) : OP(R(vv)))
 #define getFloorZ(v) getOPZ(v, floor)
 #define getCeilZ(v) getOPZ(v,ceiling)
 
-// lists
+// Lists
+// None of these operations copy; they simply return the value.
 // l->t must be impure. Get the V value at index i.
 #define LIST_AT(l, i) (((V*)(l)->p)[((i)+(l)->o)%(l)->c])
 // Pointer for the value at index i, with no restriction on l.
