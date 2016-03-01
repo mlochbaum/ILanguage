@@ -45,6 +45,8 @@ T fmap_TT(T f, I n, T* x, I dl, I du) {
   if (tu & LIST_X ) t |= L_t + (n>1)*E_t;
   return t;
 }
+
+void fmap_LIST_P(V, V, I, V*, I, I);
 void fmap_P(V v, V f, I n, V* x, I d) {
   X m={0,NULL};
   DDO(i, n) if (! (d&1<<i)) {

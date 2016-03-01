@@ -7,6 +7,11 @@ I dom_FB(F f, I n, V* xx);
 I doml_T_FB(F f, I n, T* xx);
 I domu_T_FB(F f, I n, T* xx);
 
+// Internal declarations
+#define DECLARE_DOM(T) I dom_##T(T, I, V*);
+DECLARE_DOM(B) DECLARE_DOM(F) DECLARE_DOM(N) DECLARE_DOM(Q)
+#undef DECLARE_DOM
+
 I dom_true(I n) { return (1<<n)-1; }
 
 I dom_N(N f, I n, V* x) { return dom_true(n); }

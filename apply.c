@@ -3,6 +3,7 @@
 #include "type.h"
 #include "name.h"
 
+// Outward-facing utilities
 V apply1(V f, V l) { return apply(f,1,&l); }
 V apply2(V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply(f,2,x); }
 
@@ -18,6 +19,19 @@ T apply2_T(V f, T l, T r) { T x[2]; x[0]=l; x[1]=r; return apply_T(f,2,x); }
 void apply1_P(V v, V f, V l) { return apply_P(v,f,1,&l); }
 void apply2_P(V v, V f, V l, V r) { V x[2]; x[0]=l; x[1]=r; return apply_P(v,f,2,x); }
 
+
+// Internal declarations
+#define DECLARE_APPLY(t) void apply_P_##t(V, t, I, V*); \
+                         T apply_T_##t(t, I, T*);
+ON_TYPES(NCONST,DECLARE_APPLY)
+#undef DECLARE_APPLY
+void apply_P_FB(V, F, I, V*);
+//void apply_P_FQ(V, F, I, V*);
+T apply_T_FB(F, I, T*);
+//T apply_T_FQ(F, I, T*);
+
+
+// Outward-facing main apply functions
 T apply_T(V f, I n, T* x) {
 #define LINE(T) case T##_t: t|=apply_T_##T(T(f),n,x); break;
   PURIFY(f); T tf=T(f);
@@ -61,6 +75,7 @@ V apply(V f, I n, V* x) {
 }
 
 
+// Internal functions
 T apply_T_O(O o, I n, T* x) {
   T t[o->l];
   DDO(j, o->l) { t[j]=apply_T(o->x[j], n, x); }
