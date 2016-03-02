@@ -108,6 +108,35 @@ D_P2(drop) {
   else { I j; for(j=ll+i;j<ll;j++) del(list_at(lv,j)); lv->l+=i; }
   del(r); mv_P(p, l);
 }
+D_T2(amend) { return E_t | L_t; }
+// Turn v into a modifiable list including type t.
+void addtype(V v, T t) {
+  L l=L(v); T lt=l->t;
+  if (lt&t || IMPURE(lt)) get(v);
+  else {
+    I n=l->l, c=next_pow_2(n), s=t_sizeof(lt);
+    DECL_ARR(V,vs,c); DDO(i,n) { vs[i] = cpy1(list_ats(l,i,s)); }
+    if (l->r<=1) FREE(l->p);
+    l->r=1; l->t|=t; l->c=c; l->o=0; l->p=(P)vs;
+  }
+}
+void modify(L l, I i, V v) { V dst=list_at(l,i); del(dst); mv_P(dst, v); }
+D_P2(amend) {
+  L lv,rv=L(r);
+#define ERR(m) del(l); del(r); return setE(p, strdup(m))
+  if (rv->l != 2) { ERR("Argument to { must be a two-element list"); }
+  V vi=list_at(rv,0); PURIFY(vi);
+  if (T(vi)&CONST_t) {
+    if (T(vi)!=Z_t) { ERR("Index in { must be an integer"); }
+    get(r); rv=L(r); V v=list_at(rv,1); PURIFY(v);
+    addtype(l,T(v)); lv=L(l);
+    V dst=list_at(lv,Z(vi)); del(dst);
+    mv_Pd(dst, cpy(v)); del(r); mv_P(p, l);
+  } else {
+    ERR("Form of argument to { is invalid");
+  }
+#undef ERR
+}
 
 D_P1(length) { I n; if (T(l)&L_t) n=L(l)->l; else n=1; del(l); setZ(p,n); }
 D_L2(copy) { return 2*!!(r&ARITH_t) + 1; }
@@ -209,6 +238,7 @@ void list_init() {
   DB(t2,'}',V); DB(p2,'}',select);
   DB(t2,'g',V); DB(p2,'g',take);
   DB(t2,'G',V); DB(p2,'G',drop);
+  DB(t2,'{',amend); DB(p2,'{',amend);
 
   DB(t1,'#',Z); DB(p1,'#',length);
   B_u2['#']=DB(l2,'#',copy); DB(d2,'#',copy); 
