@@ -2,7 +2,6 @@
 
 typedef int I;
 typedef void* P;
-typedef char Char;
 typedef char* Str;
 typedef unsigned int UI;
 
@@ -13,7 +12,7 @@ typedef struct { T t; P p; } V;
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 
 typedef unsigned char B;
-typedef Char C;
+typedef char C;
 typedef Str E;
 typedef struct { T t; void (*f)(P,V,I,V*); P a; } S;
 typedef struct { I r; V f; I l; V* x; } * O;

@@ -22,7 +22,7 @@ List
 )
 typedefs =: lines 0 :0
 B unsigned char
-C Char
+C char
 E Str
 S struct { T t; void (*f)(P,V,I,V*); P a; }
 O struct { I r; V f; I l; V* x; } *
@@ -49,7 +49,6 @@ preamble =: 0 :0
 
 typedef int I;
 typedef void* P;
-typedef char Char;
 typedef char* Str;
 typedef unsigned int UI;
 
