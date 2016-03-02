@@ -194,10 +194,10 @@ D_P11(reduce) {
   FREE(L(ll)->p); FREE(L(ll)); mv_P(p,v); FREE(P(v));
 }
 D_P12(reduce) {
-  if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); }
-  I len=L(ll)->l; rr=cpy1(rr); V r_;
+  if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); return; }
+  get(ll); I len=L(ll)->l; rr=cpy1(rr); V r_;
   DDO(i,len) { rr=apply2(l,r_=rr,listV_at(ll,i)); FREE(P(r_)); }
-  del(ll); V(p)=rr;
+  FREE(L(ll)->p); FREE(L(ll)); mv_P(p,rr); FREE(P(rr));
 }
 
 D_P1(reverse) {
