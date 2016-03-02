@@ -14,7 +14,7 @@ D_L1(name) { return !!(l&N_t); }
 D_D1(name) { return !!(T(l)&N_t); }
 D_P1(get) {
   V v=StrVget(names, N(l)); del(l);
-  if (P(v)) mv_P(p, cpy(v)); else setE(p, strdup("Value error"));
+  if (P(v)) mv_Pd(p, cpy(v)); else setE(p, strdup("Value error"));
 }
 D_T1(del) { return N_t; }
 D_P1(del) { StrVdel(names, N(l)); setN(p,N(l)); }
