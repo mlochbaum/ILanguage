@@ -108,6 +108,9 @@ D_P2(drop) {
   else { I j; for(j=ll+i;j<ll;j++) del(list_at(lv,j)); lv->l+=i; }
   del(r); mv_P(p, l);
 }
+
+D_L2(list) { return 2*!!(r&L_t) + !!(l&L_t); }
+D_D2(list) { return list_l2(T(l),T(r)); }
 D_T2(amend) { return E_t | L_t; }
 // Turn v into a modifiable list including type t.
 void addtype(V v, T t) {
@@ -227,21 +230,22 @@ void list_init() {
 
   DB(t2,',',L); DB(p2,',',concat);
 
-  B_u1['g']=DB(l1,'g',list); DB(d1,'g',list); 
+  B_u1['g']=DB(l1,'g',list); DB(d1,'g',list);
   DB(t1,'g',V); DB(p1,'g',first);
-  B_u1['G']=DB(l1,'G',list); DB(d1,'G',list); 
+  B_u1['G']=DB(l1,'G',list); DB(d1,'G',list);
   DB(t1,'G',V); DB(p1,'G',last);
 
-  B_u2['}']=DB(l2,'}',select); DB(d2,'}',select); 
-  B_u2['g']=DB(l2,'g',select); DB(d2,'g',select); 
-  B_u2['G']=DB(l2,'G',select); DB(d2,'G',select); 
+  B_u2['}']=DB(l2,'}',select); DB(d2,'}',select);
+  B_u2['g']=DB(l2,'g',select); DB(d2,'g',select);
+  B_u2['G']=DB(l2,'G',select); DB(d2,'G',select);
   DB(t2,'}',V); DB(p2,'}',select);
   DB(t2,'g',V); DB(p2,'g',take);
   DB(t2,'G',V); DB(p2,'G',drop);
+  B_u2['{']=DB(l2,'{',list); DB(d2,'{',list);
   DB(t2,'{',amend); DB(p2,'{',amend);
 
   DB(t1,'#',Z); DB(p1,'#',length);
-  B_u2['#']=DB(l2,'#',copy); DB(d2,'#',copy); 
+  B_u2['#']=DB(l2,'#',copy); DB(d2,'#',copy);
   DB(t2,'#',L); DB(p2,'#',copy);
 
   B_u1['i']=DB(l1,'i',arith); DB(d1,'i',arith);
