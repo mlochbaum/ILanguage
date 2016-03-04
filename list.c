@@ -119,8 +119,11 @@ void addtype(V v, T t) {
   else {
     I n=l->l, c=next_pow_2(n), s=t_sizeof(lt);
     DECL_ARR(V,vs,c); DDO(i,n) { vs[i] = cpy1(list_ats(l,i,s)); }
-    if (l->r<=1) FREE(l->p);
-    l->r=1; l->t|=t; l->c=c; l->o=0; l->p=(P)vs;
+    if (l->r<=1) {
+      FREE(l->p); l->r=1; l->t|=t; l->c=c; l->o=0; l->p=(P)vs;
+    } else {
+      l->r--; L(v) = wrapL(lt|t, c, n, 0, vs);
+    }
   }
 }
 void modify(L l, I i, V v) { V dst=list_at(l,i); del(dst); mv_P(dst, v); }
