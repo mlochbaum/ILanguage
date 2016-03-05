@@ -126,7 +126,6 @@ void addtype(V v, T t) {
     }
   }
 }
-void modify(L l, I i, V v) { V dst=list_at(l,i); del(dst); mv_P(dst, v); }
 D_P2(amend) {
   L lv,rv=L(r);
 #define ERR(m) del(l); del(r); return setE(p, strdup(m))
