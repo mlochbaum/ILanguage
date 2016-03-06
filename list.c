@@ -127,15 +127,15 @@ void addtype(V v, T t) {
   }
 }
 D_P2(amend) {
-  L lv,rv=L(r);
+  L rv=L(r);
 #define ERR(m) del(l); del(r); return setE(p, strdup(m))
   if (rv->l != 2) { ERR("Argument to { must be a two-element list"); }
   V vi=list_at(rv,0); PURIFY(vi);
   if (T(vi)&CONST_t) {
     if (T(vi)!=Z_t) { ERR("Index in { must be an integer"); }
     get(r); rv=L(r); V v=list_at(rv,1); PURIFY(v);
-    addtype(l,T(v)); lv=L(l);
-    V dst=list_at(lv,Z(vi)); del(dst);
+    addtype(l,T(v));
+    V dst=listV_at(l,Z(vi)); del(dst);
     mv_Pd(dst, cpy(v)); del(r); mv_P(p, l);
   } else {
     ERR("Form of argument to { is invalid");
