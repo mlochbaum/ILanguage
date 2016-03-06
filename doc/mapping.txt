@@ -10,3 +10,6 @@ f "fmap"
 lfr       maps r over l using the appropriate mapping.
 l . r.f   does the same.
 l g.f r   maps g over l and r using l's mapping type.
+
+t "type"
+l.t is the integer giving l's type.

@@ -13,11 +13,17 @@ their domain is everything.
 ; monad: Make into a one-element list.
 ; dyad: Combine into a two-element list.
 
-, monad: flatten into a list with no sublists.
+, monad: flatten into a list with no sublists (unimplemented).
 , dyad: if both arguments are lists, concatenate them. If only the left
   argument is a list, append the right argument. Otherwise, same as ; .
 
-l}r is the r'th element of l.
+l.# is the length of list l.
+l#r is a list consisting of r copies of l.
+
+l}r is the r'th element of l. If r is negative, then l.#+r is used instead.
+l.g is l}0 and l.G is l}_1 .
+lgr is the list consisting of the first r elements of list l, and
+lGr is the same for the last r elements.
 
 l.i is the list of nonnegative integers smaller than l.
 lir is r-l.i+l , i.e. the list of l+(nonnegative integers) smaller than r.
@@ -27,3 +33,5 @@ l . f.r is a "fold" of f across l, for example
 1;2,3,4 . +.r  =  1+2+3+4
 l f.r r is the same fold but starting with r, so that
 1;2,3,4 +.r 7  =  7+1+2+3+4
+
+z monad: Reverse the argument list.
