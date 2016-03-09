@@ -26,7 +26,7 @@ OP(ceiling, ceiling);
 #define ON(op,l,r) (l) op (r)
 #define DFZZ(n, op) D_S(n##ZZ) { return setZ(v,ON(op,Z(vs[0]),Z(vs[1]))); }
 #define DFZR(n, op) D_S(n##ZR) { return setR(v,ON(op,(R)Z(vs[0]),R(vs[1]))); }
-#define DFRZ(n, op) D_S(n##RZ) { return setR(v,ON(op,Z(vs[0]),(R)Z(vs[1]))); }
+#define DFRZ(n, op) D_S(n##RZ) { return setR(v,ON(op,R(vs[0]),(R)Z(vs[1]))); }
 #define DFRR(n, op) D_S(n##RR) { return setR(v,ON(op,R(vs[0]),R(vs[1]))); }
 
 #define LINE(n, T1,T2) case T2##_t: s.t=max(T1##_t,T2##_t); s.f=&n##T1##T2##_s; return s
