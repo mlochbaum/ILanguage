@@ -70,7 +70,7 @@ void delN(V v) { FREE(N(v)); }
 void delL(V v) {
   L l=L(v); if (--l->r) return;
   del_t d=del_S(l->t); if (d) { DDO(i,l->l) d(list_at(l,i)); }
-  FREE(l->p); FREE(l);
+  FREEL(l);
 }
 void delV(V v) { ddel(V(v)); }
 del_t del_S(T t) {

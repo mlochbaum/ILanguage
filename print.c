@@ -68,7 +68,7 @@ Str Lfmt(L l) {
   if (ll==0) return strdup("N");
   if (l->t == C_t) {
     DECL_NSTR(s, ll+2); s[0]=s[ll+1]='"';
-    DDO(i,ll) s[i+1] = ((C*)l->p)[(i+l->o)%l->c];
+    DDO(i,ll) s[i+1] = ((C*)LP(l))[(i+l->o)%l->c];
     return s;
   }
   DECL_STR(s, 1); s[0]=' '; Str st; I len;

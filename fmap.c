@@ -79,19 +79,19 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
     V *u=xi+j; I sj=ss[j]; T(*u)=ts[j];
     if (d&1<<j) P(*u)=MALLOC(sj);
     else {
-      L lj=L(x[j]); P(*u)=lj->p + sj*(lj->o-1); end[j]=lj->p + sj*lj->c;
+      L lj=L(x[j]); P(*u)=LP(lj) + sj*(lj->o-1); end[j]=LP(lj) + sj*lj->c;
     }
   }
   DO(i, l) {
     DO(j,n) {
       V *u=xi+j;
       if (d&1<<j) cp_P(*u,x[j]);
-      else { P(*u)+=ss[j]; if (end[j] == P(*u)) P(*u)=L(x[j])->p; }
+      else { P(*u)+=ss[j]; if (end[j] == P(*u)) P(*u)=LP(L(x[j])); }
     }
-    apply_P(TP(t, ll->p + s*i), f, n, xi);
+    apply_P(TP(t, LP(ll) + s*i), f, n, xi);
   }
   DO(i, n) {
     if (d&1<<i) { del(x[i]); FREE(P(xi[i])); }
-    else { FREE(L(x[i])->p); FREE(L(x[i])); }
+    else { FREEL(L(x[i])); }
   } ddel(f); return setL(v,ll);
 }

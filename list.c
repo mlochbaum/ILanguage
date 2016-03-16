@@ -12,7 +12,7 @@ D_P2(cross) {
 
 void resize(L l, I s, I c) { // Assume resizing up
   if (l->c>=c) return; l->p=realloc(l->p, s*c);
-  if (l->l+l->o > l->c) memcpy(l->p+s*l->c, l->p, s*(l->l+l->o-l->c));
+  if (l->l+l->o > l->c) memcpy(LP(l)+s*l->c, LP(l), s*(l->l+l->o-l->c));
   l->c=c;
 }
 
@@ -20,15 +20,15 @@ void listcpy1(L d, L s, I i) {
 #define DS s1-s0
 #define DD d1-d0
   I ss=t_sizeof(d->t);
-  P d0=LIST_PTR_ATS(d,i,ss), d1=d->p+d->c*ss;
-  P s0=LIST_PTR_ATS(s,0,ss), s1=s->p+s->c*ss;
+  P d0=LIST_PTR_ATS(d,i,ss), d1=LP(d)+d->c*ss;
+  P s0=LIST_PTR_ATS(s,0,ss), s1=LP(s)+s->c*ss;
   I l=s->l*ss;
   if (DS <= DD) {
-    memcpy(d0,s0,min(l,DS)); if((l-=DS)<=0)return; s0=s->p; d0+=DS;
-    memcpy(d0,s0,min(l,DD)); if((l-=DD)<=0)return; s0+=DD; d0=d->p;
+    memcpy(d0,s0,min(l,DS)); if((l-=DS)<=0)return; s0=LP(s); d0+=DS;
+    memcpy(d0,s0,min(l,DD)); if((l-=DD)<=0)return; s0+=DD; d0=LP(d);
   } else {
-    memcpy(d0,s0,min(l,DD)); if((l-=DD)<=0)return; s0+=DD; d0=d->p;
-    memcpy(d0,s0,min(l,DS)); if((l-=DS)<=0)return; s0=s->p; d0+=DS;
+    memcpy(d0,s0,min(l,DD)); if((l-=DD)<=0)return; s0+=DD; d0=LP(d);
+    memcpy(d0,s0,min(l,DS)); if((l-=DS)<=0)return; s0=LP(s); d0+=DS;
   }
   memcpy(d0,s0,l);
 #undef DS
@@ -45,7 +45,7 @@ void listcpy(L d, L s, I i) {
     if (PURE(d->t)==PURE(s->t)) listcpy1(d,s,i);
     else { DDO(j,s->l) LIST_AT(d,i+j) = cpy1(list_at(s,j)); }
   }
-  if (!s->r) { FREE(s->p); FREE(s); }
+  if (!s->r) { FREEL(s); }
 }
 /* Assume (^l->t)|r->t and l->c>=l->l+r->l.
  * Copy the contents of r into l. */
@@ -196,13 +196,13 @@ D_P11(reduce) {
   } else {
     for(i=1;i<len;i++) { v = apply2(l,vt=v,listV_at(ll,i)); FREE(P(vt)); }
   }
-  FREE(L(ll)->p); FREE(L(ll)); mv_P(p,v); FREE(P(v));
+  FREEL(L(ll)); mv_P(p,v); FREE(P(v));
 }
 D_P12(reduce) {
   if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); return; }
   get(ll); I len=L(ll)->l; rr=cpy1(rr); V r_;
   DDO(i,len) { rr=apply2(l,r_=rr,listV_at(ll,i)); FREE(P(r_)); }
-  FREE(L(ll)->p); FREE(L(ll)); mv_P(p,rr); FREE(P(rr));
+  FREEL(L(ll)); mv_P(p,rr); FREE(P(rr));
 }
 
 D_P1(reverse) {
@@ -213,7 +213,7 @@ D_P1(reverse) {
       LIST_AT(v,n-i-1)=vt;
     }
   } else {
-#define AT(i) v->p + s*(((i)+v->o)%v->c)
+#define AT(i) LIST_PTR_ATS(v,i,s)
     I s=t_sizeof(t); P p=MALLOC(s);
     DDO(i,n/2) {
       memcpy(p, AT(i), s); memcpy(AT(i), AT(n-i-1), s);

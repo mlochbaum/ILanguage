@@ -13,7 +13,7 @@ D_D1(string) { return !!((T(l)&L_t) && (L(l)->t==C_t)); }
 Str arrToString(I l, I c, I o, P v) {
   DECL_NSTR(s, l); memcpy(s,v+o,min(c-o,l)); memcpy(s,v,max(0,l+o-c)); return s;
 }
-D_P1(eval) { L ll=L(l); Str s=arrToString(ll->l, ll->c, ll->o, ll->p);
+D_P1(eval) { L ll=L(l); Str s=arrToString(ll->l, ll->c, ll->o, LP(ll));
   del(l); V(p)=scan(s); FREE(s);
 }
 

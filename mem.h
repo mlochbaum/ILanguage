@@ -113,13 +113,19 @@ R getR(V);  // Input must have type R or Z. Coerce to R.
 #define getCeilZ(v) getOPZ(v,ceiling)
 
 // Lists
+// #define LP(l) ((P)((l)+sizeof(*l)))
+#define LP(l) ((l)->p)
+// Assume L l has no references and l's elements are deleted. Free l.
+#define FREEL(l) FREE(LP(l)); FREE(l)
 // None of these operations copy; they simply return the value.
+// l->t must have type T. Get the T value at index i.
+#define LIST_AT_T(t, l, i) (((t*)LP(l))[((i)+(l)->o)%(l)->c])
 // l->t must be impure. Get the V value at index i.
-#define LIST_AT(l, i) (((V*)(l)->p)[((i)+(l)->o)%(l)->c])
+#define LIST_AT(l, i) LIST_AT_T(V,l,i)
 // Pointer for the value at index i, with no restriction on l.
-#define LIST_PTR_AT(l, i) ((l)->p+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c))
+#define LIST_PTR_AT(l, i) (LP(l)+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c))
 // Like LIST_PTR_AT, but avoids recomputing t_sizeof is size s is known.
-#define LIST_PTR_ATS(l, i, s) ((l)->p+(s)*(((i)+(l)->o)%(l)->c))
+#define LIST_PTR_ATS(l, i, s) (LP(l)+(s)*(((i)+(l)->o)%(l)->c))
 V list_at(L, I);      // Return the list value at the given index.
 V list_ats(L, I, I);  // Same, if size (last argument) is known.
 V listV_at(V, I);     // Like list_at for V argument
