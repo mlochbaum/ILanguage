@@ -39,6 +39,9 @@ D_P21(compose) { V a; apply1_P(p, r, a=apply1(l,ll)); FREE(P(a)); }
 D_T22(compose) { return apply2_T(r, apply1_T(l,ll), apply1_T(l,rr)); }
 D_P22(compose) { V al,ar; apply2_P(p, r, al=apply1(l,ll), ar=apply1(l,rr)); FREE(P(al)); FREE(P(ar)); }
 
+D_P11(doublea) { V a; apply1_P(p, a=apply1_d(l,cpy(ll)), ll); ddel(a); }
+D_P12(doublea) { V a; apply2_P(p, a=apply2_d(l,cpy(ll),cpy(rr)), ll, rr); ddel(a); }
+
 I toBoold(V v) { I r = (T(v)!=Z_t || Z(v)); ddel(v); return r; }
 I toBool(V v) { I r = (T(v)!=Z_t || Z(v)); del(v); return r; }
 
@@ -91,6 +94,8 @@ void compose_init() {
   D(21,'O',compose);  D(22,'O',compose);
   D(21,'h',hook);     D(22,'h',hook);
   D(21,'H',backhook); D(22,'H',backhook);
+  DB(t12,'w',V);  DB(p12,'w',doublea);
+  DB(t11,'w',V);  DB(p11,'w',doublea);
 
   D(11,'~',flip);
   D(12,'~',flip);

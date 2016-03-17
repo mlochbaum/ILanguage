@@ -33,6 +33,10 @@ b "bind", B "backbind"
 l . fbr       lfr
 r . lbf       lfr
 
+w "the double u"
+l . u.w       l . l.u
+l u.w r       l lur r
+
 p "power, the iteration one"
 l . fpn       l.f.f...f  (with n f's)
 l fpn r       lfrfr...fr (with n fr's)
