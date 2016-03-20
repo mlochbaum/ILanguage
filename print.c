@@ -3,6 +3,11 @@
 
 #include "type.h"
 
+// Size of I, Z, R under sprintf
+#define SI 21
+#define SZ 21
+#define SR 29
+
 Str PToString(T t, P p);
 Str toString(V v);
 
@@ -17,10 +22,12 @@ Str quote(const char q, Str s) {
 }
 
 Str Zfmt(Z z) {
-  DECL_STR(s, 20); sprintf(s, "%ld", z); return s;
+  DECL_STR(s, SZ);
+  snprintf(s, SZ, "%ld", z); return s;
 }
 Str Rfmt(R r) {
-  DECL_STR(s, 20); sprintf(s, "%f", r); return s;
+  DECL_STR(s, SR);
+  snprintf(s, SR, "%f", r); return s;
 }
 
 Str Ffmt(F f) {
@@ -130,7 +137,7 @@ Str Lshow(L l, I indent) {
   DECL_STR(sp, 0); I in=indent+2, e=1;
   DDO(i, l->l) sp=appendI(sp, PShowI(l->t, LIST_PTR_AT(l,i), in), &e, in);
   Str st = TShow(l->t);
-  DECL_STR(s, strlen(st)+23+4*20+e);
+  DECL_STR(s, strlen(st)+23+4*SI+e);
   sprintf(s, "%s, ref %d, %d[%d] (%d allocated)%s",
               st, l->r,l->o,l->l,l->c,         sp);
   FREE(st); FREE(sp);
@@ -140,7 +147,7 @@ Str Fshow(F f, I indent) {
   DECL_STR(sp, 0); I in=indent+2, e=1;
   sp=appendI(sp, ShowI(f->f, in), &e, in);
   DDO(i, f->l) sp=appendI(sp, ShowI(f->x[i], in), &e, in);
-  DECL_STR(s, 11+2*20+e);
+  DECL_STR(s, 11+2*SI+e);
   sprintf(s, "ref %d, %d args%s",
                 f->r,f->l,   sp);
   FREE(sp);
