@@ -53,11 +53,11 @@ void fmap_P(V v, V f, I n, V* x, I d) {
     X mt=mapclass(x[i]);
     if (!m.t) m=mt;
     else if (!mapclasseq(m,mt)) {
-      DDO(j,n)del(x[j]); return setE(v, strdup("Incompatible mapclasses"));
+      DDO(j,n)del(x[j]); ERR("Incompatible mapclasses");
     }
   }
   switch (m.t) {
-    case CONST_X: DO(i,n)del(x[i]); return setE(v, strdup("Domain error"));
+    case CONST_X: DO(i,n)del(x[i]); ERR("Domain error");
     case FUNC_X:  { DECL_ARR(V,xx,n); DO(i,n) {
                     if (d&1<<i) xx[i]=constant(cpy1(x[i]));
                     else xx[i]=cpy1(x[i]);
@@ -89,9 +89,17 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
       else { P(*u)+=ss[j]; if (end[j] == P(*u)) P(*u)=LP(L(x[j])); }
     }
     apply_P(TP(t, LP(ll) + s*i), f, n, xi);
+    if (err) { DDO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); break; }
   }
+  if (err) { DO(j,n) { if (!(d&1<<j)) {
+    V *u=xi+j;
+    I k; for(k=i+1;k<l;k++) {
+      P(*u)+=ss[j]; if (end[j] == P(*u)) P(*u)=LP(L(x[j]));
+      del(*u);
+    }
+  } } }
   DO(i, n) {
     if (d&1<<i) { del(x[i]); FREE(P(xi[i])); }
     else { FREEL(L(x[i])); }
-  } ddel(f); return setL(v,ll);
+  } ddel(f); if (!err) setL(v,ll);
 }

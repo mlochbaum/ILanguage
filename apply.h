@@ -43,6 +43,11 @@ T fmap_TT    (T, I, T*, I, I);
 // Does not consume the argument.
 V apply_S(V, I, T*);
 
+// Global error register for use with apply_P (declared in apply.c)
+extern E err;
+// Exit with an error
+#define ERR(s) err=strdup(s); return
+
 // Apply a specialized function to arguments. The type of f must be pure.
 // v must have the type returned by apply_T, and an already-allocated
 // pointer. Consumes the arguments.

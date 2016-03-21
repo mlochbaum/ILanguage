@@ -111,7 +111,6 @@ D_P2(drop) {
 
 D_L2(list) { return 2*!!(r&L_t) + !!(l&L_t); }
 D_D2(list) { return list_l2(T(l),T(r)); }
-D_T2(amend) { return E_t | L_t; }
 // Turn v into a modifiable list including type t.
 void addtype(V v, T t) {
   L l=L(v); T lt=l->t;
@@ -128,19 +127,19 @@ void addtype(V v, T t) {
 }
 D_P2(amend) {
   L rv=L(r);
-#define ERR(m) del(l); del(r); return setE(p, strdup(m))
-  if (rv->l != 2) { ERR("Argument to { must be a two-element list"); }
+#define ERR1(m) del(l); del(r); ERR(m)
+  if (rv->l != 2) { ERR1("Argument to { must be a two-element list"); }
   V vi=list_at(rv,0); PURIFY(vi);
   if (T(vi)&CONST_t) {
-    if (T(vi)!=Z_t) { ERR("Index in { must be an integer"); }
+    if (T(vi)!=Z_t) { ERR1("Index in { must be an integer"); }
     get(r); rv=L(r); V v=list_at(rv,1); PURIFY(v);
     addtype(l,T(v));
     V dst=listV_at(l,Z(vi)); del(dst);
     mv_Pd(dst, cpy(v)); del(r); mv_P(p, l);
   } else {
-    ERR("Form of argument to { is invalid");
+    ERR1("Form of argument to { is invalid");
   }
-#undef ERR
+#undef ERR1
 }
 
 D_P1(length) { I n; if (T(l)&L_t) n=L(l)->l; else n=1; del(l); setZ(p,n); }
@@ -178,7 +177,7 @@ D_D11(reduce) { return reduce_l11(l,T(ll)); }
 D_L12(reduce) { return 2 + !!(ll&(L_t|CONST_t)); }
 D_D12(reduce) { return reduce_l12(l,T(ll),T(rr)); }
 D_T1(identity_of) { return E_t; }
-D_P1(identity_of) { del(l); setE(p, strdup("Identity unknown")); }
+D_P1(identity_of) { del(l); ERR("Identity unknown"); }
 D_P11(reduce) {
   if (!(T(ll)&L_t)) { return mv_P(p, ll); }
   I len=L(ll)->l;
@@ -244,7 +243,7 @@ void list_init() {
   DB(t2,'g',V); DB(p2,'g',take);
   DB(t2,'G',V); DB(p2,'G',drop);
   B_u2['{']=DB(l2,'{',list); DB(d2,'{',list);
-  DB(t2,'{',amend); DB(p2,'{',amend);
+  DB(t2,'{',L); DB(p2,'{',amend);
 
   DB(t1,'#',Z); DB(p1,'#',length);
   B_u2['#']=DB(l2,'#',copy); DB(d2,'#',copy);

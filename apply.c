@@ -31,6 +31,7 @@ T apply_T_FB(F, I, T*);
 //T apply_T_FQ(F, I, T*);
 
 
+E err;
 // Outward-facing main apply functions
 T apply_T(V f, I n, T* x) {
 #define LINE(T) case T##_t: t|=apply_T_##T(T(f),n,x); break;
@@ -71,7 +72,9 @@ V apply(V f, I n, V* x) {
   T t[n]; DDO(i,n) t[i]=T(x[i]);
   V v; T(v)=apply_T(f, n, t); P(v)=MALLOC(t_sizeof(T(v)));
   f=apply_S(f, n, t);
-  apply_P(v, f, n, x); PURIFY_D(v); ddel(f); return v;
+  apply_P(v, f, n, x);
+  if (err) { FREE(P(v)); v=newE(err); err=NULL; } else { PURIFY_D(v); }
+  ddel(f); return v;
 }
 
 
@@ -112,13 +115,13 @@ T apply_T_N(N m, I n, T* x) {
 }
 void apply_P_N(V v, N m, I n, V* x) {
   V mv=StrVget(names, m);
-  if (!P(mv)) { DDO(i,n) del(x[i]); E(v)=strdup("Value error"); return; }
+  if (!P(mv)) { DDO(i,n) del(x[i]); ERR("Value error"); }
   return apply_P(v, mv, n, x);
 }
 
 T apply_T_Q(Q q, I n, T* x) { return E_t; }
 void apply_P_Q(V v, Q q, I n, V* x) {
-  E(v) = strdup("Dude, I have no clue what you're talking about.");
+  ERR("Dude, I have no clue what you're talking about.");
 }
 
 T apply_T_L(L l, I n, T* x) { return L_t; }
