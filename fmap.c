@@ -39,10 +39,10 @@ T fmap_TT(T f, I n, T* x, I dl, I du) {
       if (! (du&1<<i)) tu &= mapclass_T(x[i]); }
   }
   if (!tu) return E_t;
-  T t=0; if (!PURE(tu)) t|=E_t;
-  if (tu & CONST_X) t |= E_t;
-  if (tu & FUNC_X ) t |= O_t;
-  if (tu & LIST_X ) t |= L_t + (n>1)*E_t;
+  T t=0;
+  if (tu & FUNC_X) t |= O_t;
+  if (tu & LIST_X) t |= L_t;
+  if (t==0 && (IMPURE(tu) || tu & CONST_X)) t = E_t;
   return t;
 }
 
