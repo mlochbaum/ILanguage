@@ -21,7 +21,9 @@ S  S     T
 )
 temptemp =: <;._2 ] 0 : 0
 #define D_Q9(func) R func##_q9(fprotF)
-typedef R (*Q9)(protF); Q9 B_q9[256];
+typedef R (*Q9)(protF); extern Q9 B_q9[256];
+
+  Q9 B_q9[256]; \
 )
 torplc =. (;:'Q R F') (,~ tolower&.>@:(2&{.))@:,@,."_ _1 chart
 templates =: ; temptemp (>@[ <@rplc ])"0 1`[@.(a:=[)(<@)"0 _ torplc
@@ -44,6 +46,8 @@ protP=: (#~ e.&'VT,')&.> fprotP
 changes =: (<'9'),.nums,. ,./ (<,.".)@>;:'fprotT fprotP fprot protT protP prot'
 
 r1 =. |: changes <@(rplc~ >)"1 0/ templates
-'builtin_auto.h' (1!:2<)~ post,~preamble, ; ,&LF&.> a:-.~,r1
+r2 =. r1 rplc (#&a: ,&< {.&(<'#define DECLARE_BUILTINS  \')) #changes
+'builtin_auto.h' (1!:2<)~ post,~preamble, LF,~_3}. ; ,&LF&.> a:-.~,r2
+NB. 'builtin_auto.h' (1!:2<)~ post,~preamble, ; ,&LF&.> a:-.~,r1
 
 exit ''

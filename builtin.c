@@ -1,6 +1,10 @@
 #include <string.h>
 #include "builtin.h"
 
+// Builtin arrays are externed elsewhere; actually declare them here.
+// (defined in builtin_auto.h)
+DECLARE_BUILTINS
+
 #define ON_ALL_NUMS(F) F(1) F(2) F(11) F(12) F(21) F(22)
 
 D_D1(true){return 1;}   D_D2(true){return 3;}

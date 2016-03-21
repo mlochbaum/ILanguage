@@ -36,41 +36,78 @@
 #define D_S12(func) S func##_s12(V l, T ll, T rr)
 #define D_S21(func) S func##_s21(V l, V r, T ll)
 #define D_S22(func) S func##_s22(V l, V r, T ll, T rr)
-typedef I (*L1)(T); L1 B_l1[256];
-typedef I (*L2)(T,T); L2 B_l2[256];
-typedef I (*L11)(V,T); L11 B_l11[256];
-typedef I (*L12)(V,T,T); L12 B_l12[256];
-typedef I (*L21)(V,V,T); L21 B_l21[256];
-typedef I (*L22)(V,V,T,T); L22 B_l22[256];
-typedef I (*U1)(T); U1 B_u1[256];
-typedef I (*U2)(T,T); U2 B_u2[256];
-typedef I (*U11)(V,T); U11 B_u11[256];
-typedef I (*U12)(V,T,T); U12 B_u12[256];
-typedef I (*U21)(V,V,T); U21 B_u21[256];
-typedef I (*U22)(V,V,T,T); U22 B_u22[256];
-typedef T (*T1)(T); T1 B_t1[256];
-typedef T (*T2)(T,T); T2 B_t2[256];
-typedef T (*T11)(V,T); T11 B_t11[256];
-typedef T (*T12)(V,T,T); T12 B_t12[256];
-typedef T (*T21)(V,V,T); T21 B_t21[256];
-typedef T (*T22)(V,V,T,T); T22 B_t22[256];
-typedef I (*D1)(V); D1 B_d1[256];
-typedef I (*D2)(V,V); D2 B_d2[256];
-typedef I (*D11)(V,V); D11 B_d11[256];
-typedef I (*D12)(V,V,V); D12 B_d12[256];
-typedef I (*D21)(V,V,V); D21 B_d21[256];
-typedef I (*D22)(V,V,V,V); D22 B_d22[256];
-typedef void (*P1)(V,V); P1 B_p1[256];
-typedef void (*P2)(V,V,V); P2 B_p2[256];
-typedef void (*P11)(V,V,V); P11 B_p11[256];
-typedef void (*P12)(V,V,V,V); P12 B_p12[256];
-typedef void (*P21)(V,V,V,V); P21 B_p21[256];
-typedef void (*P22)(V,V,V,V,V); P22 B_p22[256];
-typedef S (*S1)(T); S1 B_s1[256];
-typedef S (*S2)(T,T); S2 B_s2[256];
-typedef S (*S11)(V,T); S11 B_s11[256];
-typedef S (*S12)(V,T,T); S12 B_s12[256];
-typedef S (*S21)(V,V,T); S21 B_s21[256];
-typedef S (*S22)(V,V,T,T); S22 B_s22[256];
+typedef I (*L1)(T); extern L1 B_l1[256];
+typedef I (*L2)(T,T); extern L2 B_l2[256];
+typedef I (*L11)(V,T); extern L11 B_l11[256];
+typedef I (*L12)(V,T,T); extern L12 B_l12[256];
+typedef I (*L21)(V,V,T); extern L21 B_l21[256];
+typedef I (*L22)(V,V,T,T); extern L22 B_l22[256];
+typedef I (*U1)(T); extern U1 B_u1[256];
+typedef I (*U2)(T,T); extern U2 B_u2[256];
+typedef I (*U11)(V,T); extern U11 B_u11[256];
+typedef I (*U12)(V,T,T); extern U12 B_u12[256];
+typedef I (*U21)(V,V,T); extern U21 B_u21[256];
+typedef I (*U22)(V,V,T,T); extern U22 B_u22[256];
+typedef T (*T1)(T); extern T1 B_t1[256];
+typedef T (*T2)(T,T); extern T2 B_t2[256];
+typedef T (*T11)(V,T); extern T11 B_t11[256];
+typedef T (*T12)(V,T,T); extern T12 B_t12[256];
+typedef T (*T21)(V,V,T); extern T21 B_t21[256];
+typedef T (*T22)(V,V,T,T); extern T22 B_t22[256];
+typedef I (*D1)(V); extern D1 B_d1[256];
+typedef I (*D2)(V,V); extern D2 B_d2[256];
+typedef I (*D11)(V,V); extern D11 B_d11[256];
+typedef I (*D12)(V,V,V); extern D12 B_d12[256];
+typedef I (*D21)(V,V,V); extern D21 B_d21[256];
+typedef I (*D22)(V,V,V,V); extern D22 B_d22[256];
+typedef void (*P1)(V,V); extern P1 B_p1[256];
+typedef void (*P2)(V,V,V); extern P2 B_p2[256];
+typedef void (*P11)(V,V,V); extern P11 B_p11[256];
+typedef void (*P12)(V,V,V,V); extern P12 B_p12[256];
+typedef void (*P21)(V,V,V,V); extern P21 B_p21[256];
+typedef void (*P22)(V,V,V,V,V); extern P22 B_p22[256];
+typedef S (*S1)(T); extern S1 B_s1[256];
+typedef S (*S2)(T,T); extern S2 B_s2[256];
+typedef S (*S11)(V,T); extern S11 B_s11[256];
+typedef S (*S12)(V,T,T); extern S12 B_s12[256];
+typedef S (*S21)(V,V,T); extern S21 B_s21[256];
+typedef S (*S22)(V,V,T,T); extern S22 B_s22[256];
+#define DECLARE_BUILTINS  \
+  L1 B_l1[256]; \
+  L2 B_l2[256]; \
+  L11 B_l11[256]; \
+  L12 B_l12[256]; \
+  L21 B_l21[256]; \
+  L22 B_l22[256]; \
+  U1 B_u1[256]; \
+  U2 B_u2[256]; \
+  U11 B_u11[256]; \
+  U12 B_u12[256]; \
+  U21 B_u21[256]; \
+  U22 B_u22[256]; \
+  T1 B_t1[256]; \
+  T2 B_t2[256]; \
+  T11 B_t11[256]; \
+  T12 B_t12[256]; \
+  T21 B_t21[256]; \
+  T22 B_t22[256]; \
+  D1 B_d1[256]; \
+  D2 B_d2[256]; \
+  D11 B_d11[256]; \
+  D12 B_d12[256]; \
+  D21 B_d21[256]; \
+  D22 B_d22[256]; \
+  P1 B_p1[256]; \
+  P2 B_p2[256]; \
+  P11 B_p11[256]; \
+  P12 B_p12[256]; \
+  P21 B_p21[256]; \
+  P22 B_p22[256]; \
+  S1 B_s1[256]; \
+  S2 B_s2[256]; \
+  S11 B_s11[256]; \
+  S12 B_s12[256]; \
+  S21 B_s21[256]; \
+  S22 B_s22[256];
 #define T(v) ((v).t)
 #define S(v) (*(S*)((v).p))
