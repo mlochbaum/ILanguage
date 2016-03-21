@@ -70,7 +70,6 @@ L wrapArray(T t, I l, P p); // Create list with l elements p[i] of type t.
 L wrapList(I l, V* v); // Create list with l V-type elements v.
 L wrapStr(Str); // Turn a C string into an array of characters.
 V makeStr(Str); // Same, but wraps into a V value.
-V Err(Str); // Turn a C string into an error.
 
 // Delete
 void del(V);  // Consume v.

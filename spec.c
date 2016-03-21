@@ -1,3 +1,4 @@
+#include <string.h>
 #include "type.h"
 #include "name.h"
 
@@ -15,7 +16,7 @@ V apply_S_L(L f, I n, T* x) {
 
 V apply_S_N(N f, I n, T* x) {
   V fv=StrVget(names, f);
-  if (!P(fv)) { return Err("Value error"); }
+  if (!P(fv)) { return newE(strdup("Value error")); }
   return apply_S(fv, n, x);
 }
 

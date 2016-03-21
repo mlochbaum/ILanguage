@@ -96,6 +96,7 @@ W next(Str* s, I* lp) {
   return w;
 }
 
+V Err(Str s) { return newE(strdup(s)); }
 V parse(Str* s) {
   if (**s == ')') return Err("Empty parens"); 
   WStack stack = Wnew();

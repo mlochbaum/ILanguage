@@ -56,7 +56,6 @@ L wrapList(I l, V* v) {
 }
 L wrapStr(Str s) { return wrapArray(C_t, strlen(s), s); }
 V makeStr(Str s) { return newL(wrapStr(s)); }
-V Err(Str s) { return newE(strdup(s)); }
 
 
 /////////////////// Utilities ////////////////////
