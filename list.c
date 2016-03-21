@@ -184,19 +184,20 @@ D_P11(reduce) {
   if (len==0) { del(ll); return identity_of_p1(p,l); }
   T t[3]; t[1]=t[2]=L(ll)->t; I s=t_sizeof(t[1]); V ls;
   get(ll); I i; V vt,v=cpy1(listV_ats(ll,0,s));
-  for(i=1;i<len;i++) {
+  for(i=1;i<len&&(!err);i++) {
     t[0]=t[2]; t[2]=apply_T(l,2,t); if(t[0]==t[2]) break;
     vt=v; T(v)=t[2]; P(v)=MALLOC(t_sizeof(T(v)));
     ls=apply_S(l,2,t);
     apply2_P(v, ls, vt, listV_ats(ll,i,s)); FREE(P(vt));
     ddel(ls);
   }
-  if(i<len) {
+  if (i<len && !err) {
     ls=apply_S(l,2,t);
-    do { apply2_P(v, ls, v, listV_ats(ll,i,s)); } while (++i<len);
+    do { apply2_P(v, ls, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
     ddel(ls);
   }
-  FREEL(L(ll)); mv_P(p,v); FREE(P(v));
+  if (err) for(;i<len;i++) del(listV_ats(ll,i,s)); else mv_P(p,v);
+  FREEL(L(ll)); FREE(P(v));
 }
 D_P12(reduce) {
   if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); return; }
