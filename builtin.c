@@ -19,7 +19,7 @@ D_L1(false){return 0;}   D_L2(false){return 0;}
 D_L11(false){return 0;}  D_L12(false){return 0;}
 D_L21(false){return 0;}  D_L22(false){return 0;}
 
-#define DEF(n) D_T##n(V){return ALL_t;}
+#define DEF(n) D_T##n(V){return ALL_t & ~E_t;}
 ON_ALL_NUMS(DEF)
 #undef DEF
 #define DEF(T,n) D_T##n(T){return T##_t;}
