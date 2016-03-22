@@ -96,17 +96,28 @@ D_P2(select) {
   I i=Z(r), ll=L(l)->l; if (i<0 && i>-ll) i+=ll;
   mv_Pd(p, cpy(listV_at(l,i))); del(l);del(r);
 }
+// drop a elements from the beginning and b from the end of l
+void cropList(V p, V l, I a, I b) {
+  L lv=L(l);
+  if (lv->r > 1) {
+    I c=lv->c, nl=lv->l-a-b;
+    T t=lv->t; I s=t_sizeof(t); P v=MALLOC(s*next_pow_2(nl));
+    DDO(i,nl) valcpy(v+s*i, LIST_PTR_ATS(lv,i+a,s), t);
+    del(l); setL(p, wrapArray(t, nl, v));
+  } else {
+    if (a>0) { DDO(j,a) del(list_at(lv,a)); }
+    if (b>0) { DDO(j,b) del(list_at(lv,lv->l-b+j)); }
+    lv->o = (lv->o+a) % lv->c; lv->l -= a+b;
+    mv_P(p, l);
+  }
+}
 D_P2(take) {
-  get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
-  if (i>=0) { I j; for(j=i;j<ll;j++) del(list_at(lv,j)); lv->l=i; }
-  else { DDO(j,ll+i) del(list_at(lv,j)); lv->o=(o+ll+i)%c; lv->l=-i; }
-  del(r); mv_P(p, l);
+  I i=Z(r), ll=L(l)->l; del(r);
+  if (i>=0) cropList(p, l, 0, ll-i); else cropList(p, l, ll+i, 0);
 }
 D_P2(drop) {
-  get(l); L lv=L(l); I i=Z(r), ll=lv->l, c=lv->c, o=lv->o;
-  if (i>=0) { DDO(j,i) del(list_at(lv,j)); lv->l-=i; lv->o=(o+i)%c; }
-  else { I j; for(j=ll+i;j<ll;j++) del(list_at(lv,j)); lv->l+=i; }
-  del(r); mv_P(p, l);
+  I i=Z(r); del(r);
+  if (i>=0) cropList(p, l, i, 0); else cropList(p, l, 0, -i);
 }
 
 D_L2(list) { return 2*!!(r&L_t) + !!(l&L_t); }
