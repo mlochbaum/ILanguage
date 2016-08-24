@@ -31,7 +31,7 @@ l fHg r       l f g~r
 
 b "bind", B "backbind"
 l . fbr       lfr
-r . lbf       lfr
+r . lBf       lfr
 
 w "the double u"
 l . u.w       l . l.u
