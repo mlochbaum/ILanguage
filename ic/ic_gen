@@ -1,0 +1,25 @@
+#! /usr/bin/jconsole
+
+NB. Arguments are (ic file; c template; output file).
+
+require 'ic.ijs'
+
+assert 5=#ARGV
+file =. {&(2}.ARGV)
+
+c =. <;._2 ]1!:1 file 0
+stripl =. (}.~ (~:i.1:)&' ')
+comp =. > (({. ic stripl@:}.)~i.&' ')&.>&.((c~:a:)&(#!.(<;~LF))) c
+
+temp =. 1!:1 file 1
+rplc1 =: 4 : 0
+'pat rep'=.x
+i1 =. y ({.~i:LF"_) i =. y I.@:E.~ pat
+(i1{.y) , (; (,~ LF{.~(1,i-i1){~*@#)&.> rep) , (i+#pat)}.y
+)
+
+'defn decl' =. <"_1 |: }:&.> comp
+out =. ('/*GEN_DEFN*/';<defn) rplc1 ('/*GEN_DECL*/';<decl) rplc1 temp
+
+out 1!:2 file 2
+exit ''

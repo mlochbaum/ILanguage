@@ -1,0 +1,25 @@
+left      l.[       :   l
+right     l.]       :   l
+left      l[r       :   l
+right     l]r       :   r
+
+constant  l . f.k   :   f
+constant  l f.k r   :   f
+
+flip      l~r       :   r.l
+flip      l . f.~   :   lfl
+flip      l f.~ r   :   rfl
+
+bind      l . fbr   :   lfr
+backbind  r . lBf   :   lfr
+
+hook      l . fhg   :   l.fgl
+hook      l fhg r   :   l.fgr
+backhook  l . fHg   :   l f l.g
+backhook  l fHg r   :   l f r.g
+
+compose   l . fOg   :   l.f.g
+compose   l fOg r   :   l.f g r.f
+
+doubleu   l . u.w   :   l . l.u
+doubleu   l u.w r   :   l lur r
