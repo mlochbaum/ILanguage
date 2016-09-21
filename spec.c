@@ -22,7 +22,9 @@ V apply_S_N(N f, I n, T* x) {
 
 V apply_S_B(B,I,T*);
 
+S apply_SA(V f, I n, T* x); // asm.c
 V apply_S(V f, I n, T* x) {
+  S s=apply_SA(f, n, x); if (s.f) return newS(s);
 #define LINE(T) case T##_t: return apply_S_##T(T(f),n,x);
   PURIFY(f); T t=T(f);
   switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) }
