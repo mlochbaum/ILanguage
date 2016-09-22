@@ -21,6 +21,7 @@ void apply_A_O(A a, O f, I n, T* x) {
   DO(i,l) {
     if (i==l-1) ax.u &= ~ua;
     ax.o = NO_REG;
+    // TODO shortcut errors
     apply_A(&ax, f->x[i], n, x);
     t[i] = ax.t; iF[i] = ax.o; ax.u |= 1<<ax.o;
   }
