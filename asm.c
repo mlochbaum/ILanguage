@@ -4,63 +4,12 @@
 #include "name.h"
 #include "asm.h"
 
-void a_append(A a, I l, Asm aa) {
-  I nl = a->l+l; if (!nl) return;
-  I n = next_pow_2(nl);
-  if (a->l*2 <= n) { a->a = a->l ? realloc(a->a, n) : malloc(n); }
-  memcpy(a->a+a->l, aa, l); a->l=nl;
-}
+#define ASM_RAW(A, OP) \
+  do { UC aa[] = OP; a_append(A, sizeof(aa), aa); } while(0)
+#define ASM(A, OP,O,I) ASM_RAW(A, OP(O,I))
 
 // TODO support for compilers other than gcc
 Reg a_first_reg(RegM u) { return __builtin_ctz(~u); }
-
-void apply_A_O(A a, O f, I n, T* x) {
-  I l=f->l; T t[l];
-  AS ax=*a; Reg iF[l];
-  RegM ua=0; DDO(i,n) { ua |= 1<<a->i[i]; } ua&=~ax.u; ax.u|=ua;
-  DO(i,l) {
-    if (i==l-1) ax.u &= ~ua;
-    ax.o = NO_REG;
-    // TODO shortcut errors
-    apply_A(&ax, f->x[i], n, x);
-    t[i] = ax.t; iF[i] = ax.o; ax.u |= 1<<ax.o;
-  }
-  a->l=ax.l; a->a=ax.a;
-
-  AS af=*a; af.n=l; af.i=iF;
-  apply_A(&af, f->f, l, t);
-  a->o=af.o; a->t=af.t; a->l=af.l; a->a=af.a;
-}
-
-// TODO
-void apply_A_L(A a, L f, I n, T* x) {
-  I l=f->l; T t[l], tt; Reg o[l];
-  //Asm DECL_ARR(V, vs, f->c);
-  AS ax=*a; DDO(i,n) { ax.u |= 1<<a->i[i]; }
-  Asm as[l]; I al[l];
-  DO(i, l) {
-    if (i==l-1) ax.u = a->u;
-    ax.l=0; ax.o=NO_REG; apply_A(&ax, list_at(f,i), n, x);
-    o[i]=ax.o; as[i]=ax.a; al[i]=ax.l;
-    tt |= t[i]=ax.t;
-  }
-  DO(i, l) {
-    a_append(a, al[i], as[i]); FREE(as[i]);
-    if (PURE(t[i]) > PURE(tt)) {
-      // wrap ax.o
-    }
-    // mov vs[i] ax.o
-  }
-  //Asm return newL(wrapList(l, vs));
-  a->t = L_t;
-}
-
-void apply_A_N(A a, N f, I n, T* x) {
-  V fv=StrVget(names, f);
-  //TODO if (!P(fv)) { return newE(strdup("Value error")); }
-  return apply_A(a, fv, n, x);
-}
-
 I choose_reg(A a) {
   Reg i=a->i[0], o=a->o;
   if (i==NO_REG_NM) i = a_first_reg(a->u | 1<<o);
@@ -80,9 +29,111 @@ I choose_regs(A a) {
   }
   return ii;
 }
-#define ASM_RAW(A, OP) \
-  do { UC aa[] = OP; a_append(A, sizeof(aa), aa); } while(0)
-#define ASM(A, OP,O,I) ASM_RAW(A, OP(O,I))
+
+void a_append(A a, I l, Asm aa) {
+  I nl = a->l+l; if (!nl) return;
+  I n = next_pow_2(nl);
+  if (a->l*2 <= n) { a->a = a->l ? realloc(a->a, n) : malloc(n); }
+  memcpy(a->a+a->l, aa, l); a->l=nl;
+}
+
+void apply_A_O(A a, O f, I n, T* x) {
+  I l=f->l; T t[l];
+  AS ax=*a; Reg iF[l];
+  RegM ua=0; DDO(i,n) { ua |= 1<<a->i[i]; } ua&=~ax.u; ax.u|=ua;
+  DO(i,l) {
+    if (i==l-1) ax.u &= ~ua;
+    ax.o = NO_REG;
+    // TODO shortcut errors
+    apply_A(&ax, f->x[i], n, x);
+    t[i] = ax.t; iF[i] = ax.o; ax.u |= 1<<ax.o;
+  }
+  a->l=ax.l; a->a=ax.a;
+
+  AS af=*a; af.n=l; af.i=iF;
+  apply_A(&af, f->f, l, t);
+  a->o=af.o; a->t=af.t; a->l=af.l; a->a=af.a;
+}
+
+/*
+ *  i    ui       u
+ *  MOV  PUSH     PUSH
+ *       MOV,POP
+ *                POP
+ */
+#define EACH_REG(U,R) Reg R; for (RegM ui=U; R=a_first_reg(~ui), ui; ui-=1<<R)
+RegM clear_regs(A a, RegM u) {
+  RegM uc = u & a->u;
+  DDO(ii,a->n) { Reg i=a->i[ii]; RegM si=1<<i; if (u&si) {
+    Reg i_=a_first_reg(a->u|u); ASM(a, MOV,i_,i); a->i[ii]=i_;
+    if (uc&si) { /* TODO */ a->u-=si; uc-=si; }
+  } }
+  EACH_REG(uc,r) { ASM(a,PUSH,r,-); }
+  return uc;
+}
+RegM push_regs(A a, RegM u) {
+  RegM uc = u & REG_SAVE; EACH_REG(uc,r) { ASM(a,PUSH,r,-); } return uc;
+}
+void pop_regs(A a, RegM pop) {
+  Reg rs[8*sizeof(RegM)]; I i=0; EACH_REG(pop,r) rs[i++]=r;
+  while(--i>=0) { ASM(a,POP,rs[i],-); }
+}
+
+// REG_ARG0, REG_RES, and res must be modifiable
+// Allocate l bytes and place the pointer at res.
+void a_malloc(A a, I l, Reg res, RegM keep) {
+  RegM pop = push_regs(a, keep);
+  ASM(a, MOV_RI, res,(I)(Z)&malloc);
+  ASM(a, MOV_RI, REG_ARG0,l);
+  ASM(a, CALL, res,-);
+  pop_regs(a, pop);
+  if (res!=REG_RES) ASM(a, MOV, res,REG_RES);
+}
+
+void apply_A_L(A a, L f, I n, T* x) {
+  I l=f->l; T t[l], tt=0; Reg o[l]; RegM au=a->u;
+
+  RegM pop = clear_regs(a, 1<<REG_RES|1<<REG_ARG0);
+
+  // Don't add any code to a; store in as
+  AS ax=*a; DDO(i,n) { ax.u |= 1<<a->i[i]; }
+  Reg vals = a_first_reg(ax.u|1<<REG_RES|1<<REG_ARG0);
+  a->u |= 1<<vals; ax.u |= 1<<vals;
+  Asm as[l]; I al[l];
+  DO(i, l) {
+    if (i==l-1) ax.u = a->u;
+    ax.l=0; ax.o=NO_REG; apply_A(&ax, list_at(f,i), n, x);
+    o[i]=ax.o; as[i]=ax.a; al[i]=ax.l;
+    tt |= t[i]=ax.t;
+  }
+
+  I s=t_sizeof(tt);
+  I c=next_pow_2(l); a_malloc(a, s*c, vals, 1<<a->i[0] | 1<<a->i[1]);
+
+  DO(i, l) {
+    a_append(a, al[i], as[i]); FREE(as[i]);
+    if (PURE(t[i]) > PURE(tt)) {
+      // TODO: wrap ax.o
+    }
+    ASM_RAW(a, MOV_MR(vals,o[i],i*s));
+  }
+
+  choose_regs(a); Reg ll = a->o; L lt=NULL;
+  a_malloc(a, sizeof(*lt), ll, 1<<vals);
+#define M(N,T,V) ASM_RAW(a, MOV_M##T(ll,(V),(C)(Z)&lt->N))
+  // ref      type       capacity     length       offset    value
+  M(r,I,1); M(t,I,tt); M(c,I,f->c); M(l,I,f->l); M(o,I,0); M(p,R,vals);
+#undef M
+
+  pop_regs(a, pop); a->u=au; a->t=L_t;
+}
+
+void apply_A_N(A a, N f, I n, T* x) {
+  V fv=StrVget(names, f);
+  //TODO if (!P(fv)) { return newE(strdup("Value error")); }
+  return apply_A(a, fv, n, x);
+}
+
 // builtin.c
 void apply_A_B(A a, B b, I n, T* x) {
   if (b=='-' && n==1 && x[0]==Z_t) {

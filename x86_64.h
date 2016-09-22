@@ -39,6 +39,17 @@ typedef unsigned short RegM;
 #define CMOVLE(O,I) {0x48,0x0F,0x4E,A_REG(I,O)}
 #define NEG(O,I) {0x48,0xF7,A_REG(I,3)}
 
+#define PUSH(O,I) {0x50+O}
+#define POP(O,I)  {0x58+O}
+
+#define BYTES4(I) ((UC)(I)),((UC)((I)>>8)),((UC)((I)>>16)),((UC)((I)>>24))
+
+#define MOV_MR(O,I,OFF) {0x48,0x89,0x40+A_0REG(O,I),OFF}
+#define MOV_MI(O,I,OFF) {0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
+#define MOV_RI(O,I) {0xB8+(O) , BYTES4(I)}
+
+#define CALL(O,I) {0xFF,A_REG(O,2)}
+
 // Frame to convert from A to S
 // Args: P rdi, V {rsi rdx}, I ecx, V* r8
 
