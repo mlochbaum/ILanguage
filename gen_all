@@ -1,0 +1,6 @@
+#! /bin/sh
+
+./type.ijs
+./builtin.ijs
+cd ic
+./ic_gen compose.ic compose_templ.c ../compose.c
