@@ -29,20 +29,20 @@ These are the fifth and sixth Fibonacci numbers. If we want, say, just the
 twelfth, we can do this with 12 and then take the first number in the
 list:
 ```
-2.i . G;(+.r)p12oG
-233
+2.i . G;(+.r)p12og
+144
 ```
 Things get a bit harder if we want to make this into a function of the
 index 12, rather than the initial list `2.i` (and stay point-free).
 We first construct the inner part using bind, and then make a verb which
-will apply it to `2.i`. Finally we take the last element:
+will apply it to `2.i`. Finally we take the first element:
 ```
 12 . G;(+.r)Bp
   G; +.r  p12
 12  .  2.i ..o G;(+.r)Bp
  144;233
-12  .  2.i ..o G;(+.r)Bp o G
-233
+12  .  2.i ..o G;(+.r)Bp o g
+144
 ```
 
 What if we want to get the list of all Fibonacci numbers up to a certain
