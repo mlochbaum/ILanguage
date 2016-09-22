@@ -45,6 +45,8 @@ echo^:(all-.@-:&(/:~){.@>typedefs) 'Error: typedefs don''t match types'
 
 NB. type.h
 preamble =: 0 :0
+// Generated; see type.ijs
+
 #include <stdlib.h>
 
 typedef int I;

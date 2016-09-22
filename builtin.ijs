@@ -3,6 +3,8 @@
 require 'strings'
 
 preamble =: 0 : 0
+// Generated; see builtin.ijs
+
 #undef T
 #undef S
 )

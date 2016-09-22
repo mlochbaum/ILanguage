@@ -1,3 +1,5 @@
+// Generated; see builtin.ijs
+
 #undef T
 #undef S
 #define D_L1(func) I func##_l1(T l)

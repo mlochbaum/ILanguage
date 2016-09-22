@@ -1,3 +1,5 @@
+// Generated; see type.ijs
+
 #include <stdlib.h>
 
 typedef int I;
