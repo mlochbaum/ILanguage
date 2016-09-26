@@ -7,7 +7,7 @@
 void a_append(A a, I l, Asm aa) {
   I nl = a->l+l; if (!nl) return;
   I n = next_pow_2(nl);
-  if (a->l*2 < n) { a->a = a->l ? realloc(a->a, n) : malloc(n); }
+  if (a->l*2 <= n) { a->a = a->l ? realloc(a->a, n) : malloc(n); }
   memcpy(a->a+a->l, aa, l); a->l=nl;
 }
 
