@@ -125,7 +125,7 @@ void *asm_mmap(size_t length) {
 }
 
 S apply_SA(V f, I n, T* x) {
-  AS a; a.n=n; a.o=0; a.u=0; a.l=0; a.t=0;
+  AS a; a.n=n; a.o=0; a.u=REG_MASK; a.l=0; a.t=0;
   Reg ai[n]; a.i=ai; DDO(i,n) ai[i]=7-i; // TODO More than 2 args
 
   if (n==1) ASM_RAW(&a,PRE1); else ASM_RAW(&a,PRE2);
