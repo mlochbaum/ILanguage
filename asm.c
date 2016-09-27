@@ -67,10 +67,10 @@ void apply_A_O(A a, O f, I n, T* x) {
  */
 #define EACH_REG(U,R) Reg R; for (RegM ui=U; R=a_first_reg(~ui), ui; ui-=1<<R)
 RegM clear_regs(A a, RegM u) {
-  RegM uc = u & a->u;
-  DDO(ii,a->n) { Reg i=a->i[ii]; RegM si=1<<i; if (u&si) {
-    Reg i_=a_first_reg(a->u|u); ASM(a, MOV,i_,i); a->i[ii]=i_;
-    if (uc&si) { /* TODO */ a->u-=si; uc-=si; }
+  RegM uc = u & a->u, ui=0; DDO(ii,a->n) ui|=1<<a->i[ii];
+  DO(ii,a->n) { Reg i=a->i[ii]; RegM si=1<<i; if (u&si) {
+    Reg i_=a_first_reg(a->u|u|ui); ASM(a, MOV,i_,i); a->i[ii]=i_;
+    ui-=si; ui|=1<<i_; if (uc&si) { /* TODO */ a->u-=si; uc-=si; }
   } }
   EACH_REG(uc,r) { ASM(a,PUSH,r,-); }
   return uc;
