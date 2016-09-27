@@ -12,7 +12,7 @@
 Reg a_first_reg(RegM u) { return __builtin_ctz(~u); }
 I choose_reg(A a) {
   Reg i=a->i[0], o=a->o;
-  if (i==NO_REG_NM) i = a_first_reg(a->u | 1<<o);
+  if (i==NO_REG_NM) a->u|=1<< (i = a_first_reg(a->u | 1<<o));
   if (o==NO_REG) o = (i<NO_REG && !(a->u&1<<i)) ? i : a_first_reg(a->u);
   if (i==NO_REG) i = o;
   a->i[0]=i; a->o=o; return i!=o;
@@ -30,6 +30,10 @@ I choose_regs(A a) {
   return ii;
 }
 
+void protect_input(Reg *i, RegM *u) {
+  if (*i<NO_REG) *u|=1<<*i; else *i=NO_REG_NM;
+}
+
 void a_append(A a, I l, Asm aa) {
   I nl = a->l+l; if (!nl) return;
   I n = next_pow_2(nl);
@@ -40,13 +44,13 @@ void a_append(A a, I l, Asm aa) {
 void apply_A_O(A a, O f, I n, T* x) {
   I l=f->l; T t[l];
   AS ax=*a; Reg iF[l];
-  RegM ua=0; DDO(i,n) { ua |= 1<<a->i[i]; } ua&=~ax.u; ax.u|=ua;
+  RegM ua=ax.u; DDO(i,n) protect_input(&a->i[i],&ax.u);
   DO(i,l) {
-    if (i==l-1) ax.u &= ~ua;
+    if (i==l-1) ax.u = ua;
     ax.o = NO_REG;
     // TODO shortcut errors
     apply_A(&ax, f->x[i], n, x);
-    t[i] = ax.t; iF[i] = ax.o; ax.u |= 1<<ax.o;
+    t[i] = ax.t; iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
   }
   a->l=ax.l; a->a=ax.a;
 
@@ -96,7 +100,7 @@ void apply_A_L(A a, L f, I n, T* x) {
   RegM pop = clear_regs(a, 1<<REG_RES|1<<REG_ARG0);
 
   // Don't add any code to a; store in as
-  AS ax=*a; DDO(i,n) { ax.u |= 1<<a->i[i]; }
+  AS ax=*a; DDO(i,n) protect_input(&a->i[i],&ax.u);
   Reg vals = a_first_reg(ax.u|1<<REG_RES|1<<REG_ARG0);
   a->u |= 1<<vals; ax.u |= 1<<vals;
   Asm as[l]; I al[l];
