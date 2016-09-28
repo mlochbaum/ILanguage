@@ -42,6 +42,12 @@ D_P2(apply) { V(p) = apply1d(r,l); }
 D_P2(compose) { DECL_ARR(V,v,1); v[0]=cpy1(l); setO(p, wrapO(cpy1(r),1,v)); }
 D_P11(compose) { DECL_ARR(V,v,1); v[0]=cpy1(ll); setO(p, wrapO(cpy(l),1,v)); }
 D_P12(compose) { DECL_ARR(V,v,2); v[0]=cpy1(ll); v[1]=cpy1(rr); setO(p, wrapO(cpy(l),2,v)); }
+D_P12(split_compose) {
+  DECL_ARR(V,lv,1); lv[0]=newB('['); DECL_ARR(V,rv,1); rv[0]=newB(']');
+  DECL_ARR(V,v,2);
+  v[0]=newO(wrapO(cpy1(ll),1,lv)); v[1]=newO(wrapO(cpy1(rr),1,rv));
+  setO(p, wrapO(cpy(l),2,v));
+}
 
 I toBoold(V v) { I r = (T(v)!=Z_t || Z(v)); ddel(v); return r; }
 I toBool(V v) { I r = (T(v)!=Z_t || Z(v)); del(v); return r; }
@@ -121,6 +127,7 @@ void compose_init() {
   DB(t2,'o',O);  DB(p2,'o',compose);
   DB(t11,'o',O); DB(p11,'o',compose);
   DB(t12,'o',O); DB(p12,'o',compose);
+  DB(t12,'O',O); DB(p12,'O',split_compose);
 
   B_u2['p']=DB(l2,'p',power); DB(d2,'p',power);
   D(21,'p',power); D(22,'p',power);

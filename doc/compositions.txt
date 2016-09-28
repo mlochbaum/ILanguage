@@ -19,9 +19,11 @@ l fog r       lfr . g
 l . fog       l.f.g
 l f(u.o)g r   lfr u lgr
 l . f(u.o)g   l.f u l.g
-O "also compose"
+O "split compose"
 l fOg r       l.f g r.f
 l . fOg       l.f.g
+l f(u.O)g r   l.f u r.g
+l . f(u.O)g   l.f u l.g
 
 h "hook", H "backhook"
 l . fhg       l.f g l
