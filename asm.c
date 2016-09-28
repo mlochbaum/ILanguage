@@ -150,7 +150,8 @@ void apply_A_B(A a, B b, I n, T* x) {
     if (ii==n) { ASM(a, MOV,a->o,a->i[ii=0]); } // TODO lea for +
     switch (b) {
       case '+': ASM(a, ADD, a->o,a->i[1-ii]); break;
-      case '-': ASM(a, SUB, a->o,a->i[1-ii]); break;
+      case '-': ASM(a, SUB, a->o,a->i[1-ii]);
+                if(ii) ASM(a,NEG,-,a->o); break;
       case '*': ASM(a, IMUL,a->o,a->i[1-ii]); break;
     }
     a->t=Z_t; return;
