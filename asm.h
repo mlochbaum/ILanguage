@@ -24,3 +24,23 @@ typedef AS* A;
 
 // Append code for f on the given types to a.
 void apply_A(A a, V f, I n, T* x);
+
+
+// Given a mask, find the first unmarked register.
+Reg a_first_reg(RegM);
+
+// Choose a->i and a->o (ensuring that neither is NO_REG or NO_REG_NM)
+I choose_reg(A); // One input
+I choose_regs(A); // Multiple inputs
+
+// Append l bytes of aa to a
+void a_append(A a, I l, Asm aa);
+
+// Return a pointer to writable, executable memory
+void *asm_mmap(size_t);
+
+// Append given a UC* literal
+#define ASM_RAW(A, OP) \
+  do { UC aa[] = OP; a_append(A, sizeof(aa), aa); } while(0)
+// Append an instruction
+#define ASM(A, OP,O,I) ASM_RAW(A, OP(O,I))

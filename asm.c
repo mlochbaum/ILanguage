@@ -4,10 +4,6 @@
 #include "name.h"
 #include "asm.h"
 
-#define ASM_RAW(A, OP) \
-  do { UC aa[] = OP; a_append(A, sizeof(aa), aa); } while(0)
-#define ASM(A, OP,O,I) ASM_RAW(A, OP(O,I))
-
 // TODO support for compilers other than gcc
 Reg a_first_reg(RegM u) { return __builtin_ctz(~u); }
 I choose_reg(A a) {
