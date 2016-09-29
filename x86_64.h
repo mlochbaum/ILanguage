@@ -39,6 +39,8 @@ typedef unsigned short RegM;
 #define CMOVLE(O,I) {0x48,0x0F,0x4E,A_REG(I,O)}
 #define NEG(O,I) {0x48,0xF7,A_REG(I,3)}
 
+#define ADDI(O,I) {0x48,0x83,A_REG(O,0),I}
+
 #define PUSH(O,I) {0x50+O}
 #define POP(O,I)  {0x58+O}
 
@@ -47,8 +49,35 @@ typedef unsigned short RegM;
 #define MOV_MR(O,I,OFF) {0x48,0x89,0x40+A_0REG(O,I),OFF}
 #define MOV_MI(O,I,OFF) {0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
 #define MOV_RI(O,I) {0xB8+(O) , BYTES4(I)}
+#define MOV_RM(O,I,OFF) {0x48,0x8B,0x40+A_0REG(I,O),OFF}
+#define MOV_RM0(O,I) {0x48,0x8B,A_0REG(I,O)}
+
+#define BYTES8(I) ((UC)(I)),((UC)((I)>>8)),((UC)((I)>>16)),((UC)((I)>>24)) \
+          ,((UC)((I)>>32)),((UC)((I)>>40)),((UC)((I)>>48)),((UC)((I)>>56))
+#define MOV_RI8(O,I) {0x48,0xB8+(O) , BYTES8(I)}
 
 #define CALL(O,I) {0xFF,A_REG(O,2)}
+
+#define JO(O,I)  {0x70,((UC)(O)-2)}
+#define JNO(O,I) {0x71,((UC)(O)-2)}
+#define JB(O,I)  {0x72,((UC)(O)-2)}
+#define JAE(O,I) {0x73,((UC)(O)-2)}
+#define JE(O,I)  {0x74,((UC)(O)-2)}
+#define JNE(O,I) {0x75,((UC)(O)-2)}
+#define JBE(O,I) {0x76,((UC)(O)-2)}
+#define JA(O,I)  {0x77,((UC)(O)-2)}
+#define JS(O,I)  {0x78,((UC)(O)-2)}
+#define JNS(O,I) {0x79,((UC)(O)-2)}
+#define JP(O,I)  {0x7A,((UC)(O)-2)}
+#define JNP(O,I) {0x7B,((UC)(O)-2)}
+#define JL(O,I)  {0x7C,((UC)(O)-2)}
+#define JGE(O,I) {0x7D,((UC)(O)-2)}
+#define JLE(O,I) {0x7E,((UC)(O)-2)}
+#define JG(O,I)  {0x7F,((UC)(O)-2)}
+
+#define SUBI4(O,I) {0x48,0x81,A_REG(O,5),BYTES4(I)}
+
+#define RET {0xC3}
 
 // Frame to convert from A to S
 // Args: P rdi, V {rsi rdx}, I ecx, V* r8

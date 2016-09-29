@@ -1,6 +1,7 @@
 #include <string.h>
 #include "builtin.h"
 #include "arith.h"
+#include "asm.h"
 
 D_P1(itemize) { setL(p, wrapL(T(l),1,1,0,P(cpy1(l)))); }
 D_P2(cross) {
@@ -203,9 +204,36 @@ D_P11(reduce) {
     ddel(ls);
   }
   if (i<len && !err) {
-    ls=apply_S(l,2,t);
-    do { apply2_P(v, ls, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
-    ddel(ls);
+    AS as; A a=&as; a->n=2; a->l=0; a->t=0;
+    a->u=REG_MASK|1<<REG_ARG0|1<<REG_ARG1;
+    Reg ai[2]; a->i=ai;
+    a->o=ai[0]=REG_RES; ai[1]=a_first_reg(a->u|1<<ai[0]);
+    ASM(a, MOV,ai[0],REG_ARG2); I label=a->l;
+    ASM(a, MOV_RM0,ai[1],REG_ARG0);
+    apply_A(a,l,2,t);
+    if (a->t) {
+      ASM(a, ADDI,REG_ARG0,s);
+      ASM(a, CMP,REG_ARG0,REG_ARG1);
+      ASM(a, JB,label-a->l,-);
+      I c=L(ll)->c, o=L(ll)->o;
+      P lp=LP(L(ll)), end = lp+s*((o+len-1)%c+1);
+      if (o+len > c && o+i < c) {
+        ASM(a, MOV,REG_ARG2,REG_ARG1);
+        ASM(a, MOV_RI8,REG_ARG1, (Z)(end));
+        ASM(a, SUBI4,REG_ARG0, s*c);
+        ASM(a, CMP,REG_ARG1,REG_ARG2);
+        ASM(a, JNE,label-a->l,-);
+        end = lp+s*c;
+      }
+      ASM_RAW(a, RET);
+      int64_t (*f)(P,P,Z); f=asm_mmap(a->l); memcpy(f,a->a,a->l);
+      setZ(v, (Z)f(lp+s*(o+i), end, Z(v))); 
+    } else {
+      ls=apply_S(l,2,t);
+      do { apply2_P(v, ls, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
+      ddel(ls);
+    }
+    FREE(a->a);
   }
   if (err) for(;i<len;i++) del(listV_ats(ll,i,s)); else mv_P(p,v);
   FREEL(L(ll)); FREE(P(v));
