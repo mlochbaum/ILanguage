@@ -115,12 +115,12 @@ void apply_A_L(A a, L f, I n, T* x) {
     if (PURE(t[i]) > PURE(tt)) {
       // TODO: wrap ax.o
     }
-    ASM_RAW(a, MOV_MR(vals,o[i],i*s));
+    ASM3(a, MOV_MR,vals,o[i],i*s);
   }
 
   choose_regs(a); Reg ll = a->o; L lt=NULL;
   a_malloc(a, sizeof(*lt), ll, 1<<vals);
-#define M(N,T,V) ASM_RAW(a, MOV_M##T(ll,(V),(C)(Z)&lt->N))
+#define M(N,T,V) ASM3(a, MOV_M##T,ll,(V),(C)(Z)&lt->N)
   // ref      type       capacity     length       offset    value
   M(r,I,1); M(t,I,tt); M(c,I,f->c); M(l,I,f->l); M(o,I,0); M(p,R,vals);
 #undef M

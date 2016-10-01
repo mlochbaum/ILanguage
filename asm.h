@@ -44,3 +44,4 @@ void *asm_mmap(size_t);
   do { UC aa[] = OP; a_append(A, sizeof(aa), aa); } while(0)
 // Append an instruction
 #define ASM(A, OP,O,I) ASM_RAW(A, OP(O,I))
+#define ASM3(A, OP,O,I,E) ASM_RAW(A, OP(O,I,E))
