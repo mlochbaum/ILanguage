@@ -40,6 +40,8 @@ typedef unsigned short RegM;
 #define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
 #define NEG(I,O)  {REX8(O,0),0xF7,A_REG(O,3)}
 
+#define XOR4(O,I)  {0x31,A_REG(O,I)}
+
 #define LEA1(O,A,B)  {REX8(A,O)+(((B)>7)<<2),0x8D,A_0REG(4,O),A_0REG(B,A)}
 
 #define CVTSI2SD(O,I)  {0xF2,REX8(I,0),0x0F,0x2A,A_REG(I,O)}

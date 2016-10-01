@@ -23,9 +23,18 @@ OP(ceiling, ceiling);
 #undef OP
 
 D_A1(negate) {
-  if (l!=Z_t) return;
-  if (choose_reg(a)) { ASM(a, MOV,a->o,a->i[0]); }
-  ASM(a, NEG,-,a->o); a->t=Z_t; return;
+  switch (l) {
+    case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
+              ASM(a, NEG,-,a->o); a->t=Z_t; return;
+    case R_t: { Reg i=a->i[0];
+                if (!choose_reg(a)) {
+                  i=a_first_reg(a->u|1<<i);
+                  ASM(a, MOVSD,i,a->i[0]);
+                }
+                ASM(a, XOR4,a->o,a->o);
+                ASM(a, CVTSI2SD,a->o,a->o);
+                ASM(a, SUBSD,a->o,i); a->t=R_t; return; }
+  }
 }
 
 //Dyads
