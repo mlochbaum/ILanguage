@@ -206,19 +206,41 @@ void *asm_mmap(size_t length) {
   return (mem == MAP_FAILED) ? NULL : mem;
 }
 
+// Load a value of type t from the address i into o.
+#define A(op) ASM(a,op,o,i)
+void asm_load(A a, T t, Reg o, Reg i) {
+  switch (t) {
+    case B_t: case C_t: A(MOV1_RM0); break;
+    case E_t: case O_t: case F_t: case N_t: case Q_t: case L_t:
+    case Z_t: A(MOV_RM0); break;
+    case R_t: A(MOVSD_RM0); break;
+    /* TODO K */
+  }
+}
+void asm_write(A a, T t, Reg o, Reg i) {
+  switch (t) {
+    case B_t: case C_t: A(MOV1_MR0); break;
+    case E_t: case O_t: case F_t: case N_t: case Q_t: case L_t:
+    case Z_t: A(MOV_MR0); break;
+    case R_t: A(MOVSD_MR0); break;
+    /* TODO K */
+  }
+}
+#undef A
+
 S apply_SA(V f, I n, T* x) {
   AS as; A a=&as; a->n=n; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
   Reg ai[n]; a->i=ai; DDO(i,n) ai[i]=7-i; // TODO More than 2 args
 
   ASM(a,PUSH,REG_ARG2,-);
   DO(i,n) { V*v=NULL; ASM3(a,MOV_RM,ai[i],REG_ARG4,(UI)(Z)&v[i].p); }
-  DO(i,n) { ASM(a,MOV_RM0,ai[i],ai[i]); }
+  DO(i,n) { asm_load(a,x[i],ai[i],ai[i]); }
 
   apply_A(a,f,n,x);
   if (!a->t) { FREE(a->a); return (S){0,NULL,NULL}; }
 
   ASM(a,POP,REG_ARG2,-);
-  ASM(a,MOV_MR0,REG_ARG2,REG_RES);
+  asm_write(a,a->t,REG_ARG2,REG_RES);
   ASM_RAW(a,RET);
 
   Asm aa = asm_mmap(a->l); memcpy(aa,a->a,a->l); FREE(a->a);

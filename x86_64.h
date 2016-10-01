@@ -58,6 +58,18 @@ typedef unsigned short RegM;
 #define MOV4_MI(O,I,OFF) {0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
 #define MOV4_RI(O,I)     {0xB8+(O) , BYTES4(I)}
 
+// TODO REX
+#define MOV1_MR(O,I,OFF) {0x88,0x40+A_0REG(O,I),OFF}
+#define MOV1_MR0(O,I)    {0x88,A_0REG(O,I)}
+#define MOV1_RM(I,O,OFF) {0x0F,0xB6,0x40+A_0REG(O,I),OFF}
+#define MOV1_RM0(I,O)    {0x0F,0xB6,A_0REG(O,I)}
+
+// TODO REX
+#define MOVSD_MR(O,I,OFF) {0xF2,0x0F,0x11,0x40+A_0REG(O,I),OFF}
+#define MOVSD_MR0(O,I)    {0xF2,0x0F,0x11,A_0REG(O,I)}
+#define MOVSD_RM(I,O,OFF) {0xF2,0x0F,0x10,0x40+A_0REG(O,I),OFF}
+#define MOVSD_RM0(I,O)    {0xF2,0x0F,0x10,A_0REG(O,I)}
+
 #define CALL(O,I) {0xFF,A_REG(O,2)}
 
 #define JO(O,I)  {0x70,((UC)(O)-2)}
