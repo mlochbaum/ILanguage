@@ -76,8 +76,8 @@ D_S2(mod) {
 D_A2(plus) {
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
-    case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
-              ASM(a, ADD,a->o,a->i[1-ii]); break;
+    case Z_t: if (ii==2) ASM3(a, LEA1,a->o,a->i[0],a->i[1]);
+              else ASM(a, ADD,a->o,a->i[1-ii]); break;
     case R_t: { I zr = 2 - 2*(l==Z_t) - (r==Z_t);
               if (ii==2) {
                 if (zr==2) ASM(a, MOVSD,a->o,a->i[ii=0]);
