@@ -22,6 +22,12 @@ OP(ceiling, ceiling);
 #undef LINE
 #undef OP
 
+D_A1(negate) {
+  if (l!=Z_t) return;
+  if (choose_reg(a)) { ASM(a, MOV,a->o,a->i[0]); }
+  ASM(a, NEG,-,a->o); a->t=Z_t; return;
+}
+
 //Dyads
 #define ON(op,l,r) (l) op (r)
 #define DFZZ(n, op) D_S(n##ZZ) { return setZ(v,ON(op,Z(vs[0]),Z(vs[1]))); }
@@ -87,7 +93,7 @@ D_A2(mod) {}
 void arith_init() {
 #define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
                   B_d1[c] = &arith_d1; B_s1[c] = &f##_s1
-  SET('-', negate);
+  SET('-', negate); B_a1['-'] = &negate_a1;
   SET('/', reciprocal);
   SET('m', floor);
   SET('M', ceiling);
