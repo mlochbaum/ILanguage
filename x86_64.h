@@ -50,6 +50,7 @@ typedef unsigned short RegM;
 #define MULSD(O,I)  {0xF2,0x0F,0x59,A_REG(I,O)}
 #define SUBSD(O,I)  {0xF2,0x0F,0x5C,A_REG(I,O)}
 #define MINSD(O,I)  {0xF2,0x0F,0x5D,A_REG(I,O)}
+#define DIVSD(O,I)  {0xF2,0x0F,0x5E,A_REG(I,O)}
 #define MAXSD(O,I)  {0xF2,0x0F,0x5F,A_REG(I,O)}
 
 #define ADDI(O,I) {REX8(O,0),0x83,A_REG(O,0),I}

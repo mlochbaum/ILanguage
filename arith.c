@@ -91,15 +91,6 @@ D_A2(plus) {
               ASM(a, ADDSD,a->o,a->i[1-ii]); break;
   }
 }
-D_A2(times) {
-  I ii=choose_regs(a);
-  switch (a->t=arith_t2(l,r)) {
-    case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
-              ASM(a, IMUL,a->o,a->i[1-ii]); break;
-    case R_t: ii=prepR(a,ii,l,r);
-              ASM(a, MULSD,a->o,a->i[1-ii]); break;
-  }
-}
 D_A2(minus) {
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
@@ -119,6 +110,29 @@ D_A2(minus) {
               break;
   }
 }
+D_A2(times) {
+  I ii=choose_regs(a);
+  switch (a->t=arith_t2(l,r)) {
+    case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
+              ASM(a, IMUL,a->o,a->i[1-ii]); break;
+    case R_t: ii=prepR(a,ii,l,r);
+              ASM(a, MULSD,a->o,a->i[1-ii]); break;
+  }
+}
+D_T2(R) { return R_t; }
+D_A2(divide) {
+  I ii=choose_regs(a); a->t=R_t;
+  Reg ai1=a->i[1];
+  if (ii==1) {
+    ai1=a_first_reg(a->u|1<<a->o|1<<a->i[0]);
+    if (r==R_t) ASM(a, MOVSD,ai1,a->o);
+  }
+  if (l==Z_t) ASM(a, CVTSI2SD,a->o,a->i[0]);
+  else if (a->i[0]!=a->o) ASM(a, MOVSD,a->o,a->i[0]);
+  if (r==Z_t) ASM(a, CVTSI2SD,ai1,a->i[1]);
+  ASM(a, DIVSD,a->o,a->i[1]);
+}
+D_A2(mod) {}
 
 #define CMPZ(jj,OP) \
   I ii=choose_regs(a);                               \
@@ -133,8 +147,6 @@ D_A2(minus) {
 D_A2(min) { CMPZ(ii,  MIN) }
 D_A2(max) { CMPZ(1-ii,MAX) }
 #undef CMPZ
-D_A2(divide) {}
-D_A2(mod) {}
 
 // EXPORT DEFINITIONS
 void arith_init() {
@@ -151,7 +163,7 @@ void arith_init() {
   SET('+', plus);
   SET('-', minus);
   SET('*', times);
-  SET('/', divide);
+  SET('/', divide); DB(t2,'/',R);
   SET('%', mod);
   SET('m', min);
   SET('M', max);
