@@ -73,7 +73,21 @@ D_S2(mod) {
 #define D(n, op, EXTRA) D_A2(n) { INIT; \
   if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]); \
   ASM(a, op,a->o,a->i[1-ii]); EXTRA; }
-D(plus,ADD,);
+D_A2(plus) {
+  I ii=choose_regs(a);
+  switch (a->t=arith_t2(l,r)) {
+    case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
+              ASM(a, ADD,a->o,a->i[1-ii]); break;
+    case R_t: { I zr = 2 - 2*(l==Z_t) - (r==Z_t);
+              if (ii==2) {
+                if (zr==2) ASM(a, MOVSD,a->o,a->i[ii=0]);
+                else ASM(a, CVTSI2SD,a->o,a->i[ii=zr]);
+              } else if (zr!=2) {
+                ASM(a, CVTSI2SD,a->i[zr],a->i[zr]);
+              }
+              ASM(a, ADDSD,a->o,a->i[1-ii]); break; }
+  }
+}
 D(times,IMUL,);
 D(minus,SUB, if(ii)ASM(a,NEG,-,a->o));
 #undef D
