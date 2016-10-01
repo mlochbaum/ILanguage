@@ -120,16 +120,19 @@ D_A2(minus) {
   }
 }
 
-#define INIT if (l!=Z_t || r!=Z_t) return; I ii=choose_regs(a); a->t=Z_t
-#define D(n, jj) D_A2(n) { INIT; \
-  I ifm=(ii==2); if (ifm) ii=1;       \
-  ASM(a, CMP,a->i[1-(jj)],a->i[jj]);  \
-  if (ifm) ASM(a, MOV,a->o,a->i[ii]); \
-  ASM(a, CMOVLE,a->o,a->i[1-ii]); }
-D(min,ii);
-D(max,1-ii);
-#undef D
-#undef INIT
+#define CMPZ(jj,OP) \
+  I ii=choose_regs(a);                               \
+  switch (a->t=arith_t2(l,r)) {                      \
+    case Z_t: { I ifm=(ii==2); if (ifm) ii=1;        \
+                ASM(a, CMP,a->i[1-(jj)],a->i[jj]);   \
+                if (ifm) ASM(a, MOV,a->o,a->i[ii]);  \
+                ASM(a, CMOVLE,a->o,a->i[1-ii]); }    \
+    case R_t: ii=prepR(a,ii,l,r);                    \
+              ASM(a, OP##SD,a->o,a->i[1-ii]); break; \
+  }
+D_A2(min) { CMPZ(ii,  MIN) }
+D_A2(max) { CMPZ(1-ii,MAX) }
+#undef CMPZ
 D_A2(divide) {}
 D_A2(mod) {}
 
