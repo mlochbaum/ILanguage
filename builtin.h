@@ -1,4 +1,5 @@
 #include "type.h"
+#include "asm.h"
 #include "builtin_auto.h"
 
 #define DB(s,c,n) (B_##s[c]=&n##_##s)

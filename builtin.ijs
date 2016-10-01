@@ -20,6 +20,7 @@ T  T     T
 D  I
 P  void  P
 S  S     T
+A  void  A
 )
 temptemp =: <;._2 ] 0 : 0
 #define D_Q9(func) R func##_q9(fprotF)
@@ -40,16 +41,14 @@ templates =: ; temptemp (>@[ <@rplc ])"0 1`[@.(a:=[)(<@)"0 _ torplc
 )
 nums =: -.&' '&.> nums
 fprot =: rplc&(;:'T V')&.> fprotT
-fprotP =: ('V p, '&,)&.> fprot
-prot =: (#~ e.&'VT,')&.> fprot
-protT=: (#~ e.&'VT,')&.> fprotT
-protP=: (#~ e.&'VT,')&.> fprotP
+fprotP =: 'V p, '&,&.> fprot
+fprotA =: 'A a, '&,&.> fprotT
 
-changes =: (<'9'),.nums,. ,./ (<,.".)@>;:'fprotT fprotP fprot protT protP prot'
+addprot =. , (}.@[;(#~ e.&'AVT,')@])&>/"1
+changes =: (<'9'),.nums,. ,./ addprot (<,.".)@,~&'fprot'@> 4{.<"0'TPA'
 
 r1 =. |: changes <@(rplc~ >)"1 0/ templates
 r2 =. r1 rplc (#&a: ,&< {.&(<'#define DECLARE_BUILTINS  \')) #changes
 'builtin_auto.h' (1!:2<)~ post,~preamble, LF,~_3}. ; ,&LF&.> a:-.~,r2
-NB. 'builtin_auto.h' (1!:2<)~ post,~preamble, ; ,&LF&.> a:-.~,r1
 
 exit ''

@@ -38,6 +38,12 @@
 #define D_S12(func) S func##_s12(V l, T ll, T rr)
 #define D_S21(func) S func##_s21(V l, V r, T ll)
 #define D_S22(func) S func##_s22(V l, V r, T ll, T rr)
+#define D_A1(func) void func##_a1(A a, T l)
+#define D_A2(func) void func##_a2(A a, T l, T r)
+#define D_A11(func) void func##_a11(A a, V l, T ll)
+#define D_A12(func) void func##_a12(A a, V l, T ll, T rr)
+#define D_A21(func) void func##_a21(A a, V l, V r, T ll)
+#define D_A22(func) void func##_a22(A a, V l, V r, T ll, T rr)
 typedef I (*L1)(T); extern L1 B_l1[256];
 typedef I (*L2)(T,T); extern L2 B_l2[256];
 typedef I (*L11)(V,T); extern L11 B_l11[256];
@@ -74,6 +80,12 @@ typedef S (*S11)(V,T); extern S11 B_s11[256];
 typedef S (*S12)(V,T,T); extern S12 B_s12[256];
 typedef S (*S21)(V,V,T); extern S21 B_s21[256];
 typedef S (*S22)(V,V,T,T); extern S22 B_s22[256];
+typedef void (*A1)(A,T); extern A1 B_a1[256];
+typedef void (*A2)(A,T,T); extern A2 B_a2[256];
+typedef void (*A11)(A,V,T); extern A11 B_a11[256];
+typedef void (*A12)(A,V,T,T); extern A12 B_a12[256];
+typedef void (*A21)(A,V,V,T); extern A21 B_a21[256];
+typedef void (*A22)(A,V,V,T,T); extern A22 B_a22[256];
 #define DECLARE_BUILTINS  \
   L1 B_l1[256]; \
   L2 B_l2[256]; \
@@ -110,6 +122,12 @@ typedef S (*S22)(V,V,T,T); extern S22 B_s22[256];
   S11 B_s11[256]; \
   S12 B_s12[256]; \
   S21 B_s21[256]; \
-  S22 B_s22[256];
+  S22 B_s22[256]; \
+  A1 B_a1[256]; \
+  A2 B_a2[256]; \
+  A11 B_a11[256]; \
+  A12 B_a12[256]; \
+  A21 B_a21[256]; \
+  A22 B_a22[256];
 #define T(v) ((v).t)
 #define S(v) (*(S*)((v).p))

@@ -1,7 +1,6 @@
 #include <string.h>
 #include "builtin.h"
 #include "arith.h"
-#include "asm.h"
 
 D_P1(itemize) { setL(p, wrapL(T(l),1,1,0,P(cpy1(l)))); }
 D_P2(cross) {

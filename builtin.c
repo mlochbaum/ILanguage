@@ -97,6 +97,13 @@ V apply_S_B(B b, I n, T* x) {
   }
 }
 
+void apply_A_B(A a, B b, I n, T* x) {
+  switch (n) {
+    case 1: { A1 f=B_a1[b]; if (f) f(a,x[0]); break; }
+    case 2: { A2 f=B_a2[b]; if (f) f(a,x[0],x[1]); break; }
+  }
+}
+
 I dom_B(B b, I n, V* x) {
   switch (n) {
     case 1: return B_d1[b](x[0]);

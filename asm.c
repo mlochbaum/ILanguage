@@ -135,32 +135,7 @@ void apply_A_N(A a, N f, I n, T* x) {
 }
 
 // builtin.c
-void apply_A_B(A a, B b, I n, T* x) {
-  if (b=='-' && n==1 && x[0]==Z_t) {
-    if (choose_reg(a)) { ASM(a, MOV,a->o,a->i[0]); }
-    ASM(a, NEG,-,a->o); a->t=Z_t;
-    return;
-  }
-  if ((b=='+'||b=='-'||b=='*') && n==2 && x[0]==Z_t && x[1]==Z_t) {
-    I ii = choose_regs(a);
-    if (ii==n) { ASM(a, MOV,a->o,a->i[ii=0]); } // TODO lea for +
-    switch (b) {
-      case '+': ASM(a, ADD, a->o,a->i[1-ii]); break;
-      case '-': ASM(a, SUB, a->o,a->i[1-ii]);
-                if(ii) ASM(a,NEG,-,a->o); break;
-      case '*': ASM(a, IMUL,a->o,a->i[1-ii]); break;
-    }
-    a->t=Z_t; return;
-  }
-  if ((b=='m'||b=='M') && n==2 && x[0]==Z_t && x[1]==Z_t) {
-    I ii = choose_regs(a);
-    I ifm=(ii==n); if (ifm) ii=1;
-    { I jj=b=='m'?ii:1-ii; ASM(a, CMP,a->i[1-jj],a->i[jj]); }
-    if (ifm) { ASM(a, MOV,a->o,a->i[ii]); }
-    ASM(a, CMOVLE,a->o,a->i[1-ii]); a->t=Z_t;
-    return;
-  }
-}
+void apply_A_B(A a, B b, I n, T* x);
 
 void apply_A_F(A a, F f, I n, T* x) {
   // flip
