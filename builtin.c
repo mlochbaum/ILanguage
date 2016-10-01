@@ -29,6 +29,9 @@ ON_ALL_NUMS(DEFO)
 #define DEFZ(n) DEF(Z,n)
 ON_ALL_NUMS(DEFZ)
 #undef DEFZ
+#define DEFR(n) DEF(R,n)
+ON_ALL_NUMS(DEFR)
+#undef DEFR
 #define DEFL(n) DEF(L,n)
 ON_ALL_NUMS(DEFL)
 #undef DEFL

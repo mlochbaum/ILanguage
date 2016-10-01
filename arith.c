@@ -36,6 +36,19 @@ D_A1(negate) {
                 ASM(a, SUBSD,a->o,i); a->t=R_t; return; }
   }
 }
+D_A1(reciprocal) {
+  if (l!=Z_t && l!=R_t) return;
+  a->t=R_t;
+  Reg i=a->i[0];
+  if (!choose_reg(a)) {
+    i=a_first_reg(a->u|1<<i);
+    if (l!=Z_t) ASM(a, MOVSD,i,a->i[0]);
+  }
+  if (l==Z_t) ASM(a, CVTSI2SD,a->i[0],a->i[0]);
+  ASM(a, MOV4_RI,a->o,1);
+  ASM(a, CVTSI2SD,a->o,a->o);
+  ASM(a, DIVSD,a->o,i);
+}
 
 //Dyads
 #define ON(op,l,r) (l) op (r)
@@ -131,7 +144,6 @@ D_A2(times) {
               ASM(a, MULSD,a->o,a->i[1-ii]); break;
   }
 }
-D_T2(R) { return R_t; }
 D_A2(divide) {
   if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a); a->t=R_t;
@@ -167,7 +179,7 @@ void arith_init() {
 #define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
                   B_d1[c] = &arith_d1; B_s1[c] = &f##_s1
   SET('-', negate); B_a1['-'] = &negate_a1;
-  SET('/', reciprocal);
+  SET('/', reciprocal); B_a1['/'] = &reciprocal_a1; DB(t1,'/',R);
   SET('m', floor);
   SET('M', ceiling);
 #undef SET
