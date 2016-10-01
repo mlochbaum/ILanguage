@@ -218,7 +218,7 @@ D_P11(reduce) {
       P lp=LP(L(ll)), end = lp+s*((o+len-1)%c+1);
       if (o+len > c && o+i < c) {
         ASM(a, MOV,REG_ARG2,REG_ARG1);
-        ASM(a, MOV_RI8,REG_ARG1, (Z)(end));
+        ASM(a, MOV_RI,REG_ARG1, (Z)(end));
         ASM(a, SUBI4,REG_ARG0, s*c);
         ASM(a, CMP,REG_ARG1,REG_ARG2);
         ASM(a, JNE,label-a->l,-);

@@ -83,8 +83,8 @@ void pop_regs(A a, RegM pop) {
 // Allocate l bytes and place the pointer at res.
 void a_malloc(A a, I l, Reg res, RegM keep) {
   RegM pop = push_regs(a, keep);
-  ASM(a, MOV_RI, res,(I)(Z)&malloc);
-  ASM(a, MOV_RI, REG_ARG0,l);
+  ASM(a, MOV4_RI, res,(I)(Z)&malloc);
+  ASM(a, MOV4_RI, REG_ARG0,l);
   ASM(a, CALL, res,-);
   pop_regs(a, pop);
   if (res!=REG_RES) ASM(a, MOV, res,REG_RES);
@@ -120,10 +120,14 @@ void apply_A_L(A a, L f, I n, T* x) {
 
   choose_regs(a); Reg ll = a->o; L lt=NULL;
   a_malloc(a, sizeof(*lt), ll, 1<<vals);
-#define M(N,T,V) ASM3(a, MOV_M##T,ll,(V),(C)(Z)&lt->N)
+#define MI MOV4_MI
+#define MR MOV_MR
+#define M(N,T,V) ASM3(a, M##T,ll,(V),(C)(Z)&lt->N)
   // ref      type       capacity     length       offset    value
   M(r,I,1); M(t,I,tt); M(c,I,f->c); M(l,I,f->l); M(o,I,0); M(p,R,vals);
 #undef M
+#undef MI
+#undef MR
 
   pop_regs(a, pop); a->u=au; a->t=L_t;
 }

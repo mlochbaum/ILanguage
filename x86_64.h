@@ -46,17 +46,17 @@ typedef unsigned short RegM;
 #define POP(O,I)  {0x58+O}
 
 #define BYTES4(I) ((UC)(I)),((UC)((I)>>8)),((UC)((I)>>16)),((UC)((I)>>24))
+#define BYTES8(I) BYTES4(I) ,((UC)((I)>>32)),((UC)((I)>>40)) \
+                            ,((UC)((I)>>48)),((UC)((I)>>56))
 
 #define MOV_MR(O,I,OFF) {REX8(O,I),0x89,0x40+A_0REG(O,I),OFF}
 #define MOV_MR0(O,I)    {REX8(O,I),0x89,A_0REG(O,I)}
-#define MOV_MI(O,I,OFF) {0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
-#define MOV_RI(O,I)     {0xB8+(O) , BYTES4(I)}
 #define MOV_RM(I,O,OFF) {REX8(O,I),0x8B,0x40+A_0REG(O,I),OFF}
 #define MOV_RM0(I,O)    {REX8(O,I),0x8B,A_0REG(O,I)}
+#define MOV_RI(O,I)     {REX8(O,0),0xB8+(O) , BYTES8(I)}
 
-#define BYTES8(I) ((UC)(I)),((UC)((I)>>8)),((UC)((I)>>16)),((UC)((I)>>24)) \
-          ,((UC)((I)>>32)),((UC)((I)>>40)),((UC)((I)>>48)),((UC)((I)>>56))
-#define MOV_RI8(O,I) {REX8(O,0),0xB8+(O) , BYTES8(I)}
+#define MOV4_MI(O,I,OFF) {0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
+#define MOV4_RI(O,I)     {0xB8+(O) , BYTES4(I)}
 
 #define CALL(O,I) {0xFF,A_REG(O,2)}
 
