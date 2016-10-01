@@ -39,6 +39,9 @@ void a_append(A a, I l, Asm aa);
 // Return a pointer to writable, executable memory
 void *asm_mmap(size_t);
 
+void asm_load(A a, T t, Reg o, Reg i);
+void asm_write(A a, T t, Reg o, Reg i);
+
 // Append given a UC* literal
 #define ASM_RAW(A, OP) \
   do { UC aa[] = OP; a_append(A, sizeof(aa), aa); } while(0)

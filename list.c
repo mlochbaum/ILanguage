@@ -207,8 +207,9 @@ D_P11(reduce) {
     a->u=REG_MASK|1<<REG_ARG0|1<<REG_ARG1;
     Reg ai[2]; a->i=ai;
     a->o=ai[0]=REG_RES; ai[1]=a_first_reg(a->u|1<<ai[0]);
-    ASM(a, MOV,ai[0],REG_ARG2); I label=a->l;
-    ASM(a, MOV_RM0,ai[1],REG_ARG0);
+    ASM(a, PUSH,REG_ARG2,-);
+    asm_load(a,t[0],ai[0],REG_ARG2); I label=a->l;
+    asm_load(a,t[1],ai[1],REG_ARG0);
     apply_A(a,l,2,t);
     if (a->t) {
       ASM(a, ADDI,REG_ARG0,s);
@@ -224,9 +225,11 @@ D_P11(reduce) {
         ASM(a, JNE,label-a->l,-);
         end = lp+s*c;
       }
+      ASM(a, POP,REG_ARG2,-);
+      asm_write(a,t[0],REG_ARG2,REG_RES);
       ASM_RAW(a, RET);
-      int64_t (*f)(P,P,Z); f=asm_mmap(a->l); memcpy(f,a->a,a->l);
-      setZ(v, (Z)f(lp+s*(o+i), end, Z(v))); 
+      void (*f)(P,P,P); f=asm_mmap(a->l); memcpy(f,a->a,a->l);
+      f(lp+s*(o+i), end, v.p);
     } else {
       ls=apply_S(l,2,t);
       do { apply2_P(v, ls, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
