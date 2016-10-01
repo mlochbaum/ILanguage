@@ -63,6 +63,26 @@ D_S2(mod) {
 #undef LINE
 #undef OP
 
+#define INIT if (l!=Z_t || r!=Z_t) return; I ii=choose_regs(a); a->t=Z_t
+#define D(n, op, EXTRA) D_A2(n) { INIT; \
+  if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]); \
+  ASM(a, op,a->o,a->i[1-ii]); EXTRA; }
+D(plus,ADD,);
+D(times,IMUL,);
+D(minus,SUB, if(ii)ASM(a,NEG,-,a->o));
+#undef D
+#define D(n, jj) D_A2(n) { INIT; \
+  I ifm=(ii==2); if (ifm) ii=1;       \
+  ASM(a, CMP,a->i[1-(jj)],a->i[jj]);  \
+  if (ifm) ASM(a, MOV,a->o,a->i[ii]); \
+  ASM(a, CMOVLE,a->o,a->i[1-ii]); }
+D(min,ii);
+D(max,1-ii);
+#undef D
+D_A2(divide) {}
+D_A2(mod) {}
+#undef INIT
+
 // EXPORT DEFINITIONS
 void arith_init() {
 #define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
@@ -74,7 +94,7 @@ void arith_init() {
 #undef SET
 
 #define SET(c, f) B_l2[c] = B_u2[c] = &arith_l2; B_t2[c] = &arith##_t2; \
-                  B_d2[c] = &arith_d2; B_s2[c] = &f##_s2
+                  B_d2[c] = &arith_d2; B_s2[c] = &f##_s2; B_a2[c] = &f##_a2
   SET('+', plus);
   SET('-', minus);
   SET('*', times);
