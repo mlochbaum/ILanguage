@@ -69,28 +69,58 @@ D_S2(mod) {
 #undef LINE
 #undef OP
 
-#define INIT if (l!=Z_t || r!=Z_t) return; I ii=choose_regs(a); a->t=Z_t
-#define D(n, op, EXTRA) D_A2(n) { INIT; \
-  if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]); \
-  ASM(a, op,a->o,a->i[1-ii]); EXTRA; }
+// Make sure both arguments are in xmm registers. Cast if not.
+// Move one argument to the result, and return its index in a->i.
+I prepR(A a, I ii, T l, T r) {
+  I zr = 2 - 2*(l==Z_t) - (r==Z_t);
+  if (ii==2) {
+    if (zr==2) ASM(a, MOVSD,a->o,a->i[ii=0]);
+    else ASM(a, CVTSI2SD,a->o,a->i[ii=zr]);
+  } else if (zr!=2) {
+    ASM(a, CVTSI2SD,a->i[zr],a->i[zr]);
+  }
+  return ii;
+}
+
 D_A2(plus) {
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM3(a, LEA1,a->o,a->i[0],a->i[1]);
               else ASM(a, ADD,a->o,a->i[1-ii]); break;
-    case R_t: { I zr = 2 - 2*(l==Z_t) - (r==Z_t);
-              if (ii==2) {
-                if (zr==2) ASM(a, MOVSD,a->o,a->i[ii=0]);
-                else ASM(a, CVTSI2SD,a->o,a->i[ii=zr]);
-              } else if (zr!=2) {
-                ASM(a, CVTSI2SD,a->i[zr],a->i[zr]);
-              }
-              ASM(a, ADDSD,a->o,a->i[1-ii]); break; }
+    case R_t: ii=prepR(a,ii,l,r);
+              ASM(a, ADDSD,a->o,a->i[1-ii]); break;
   }
 }
-D(times,IMUL,);
-D(minus,SUB, if(ii)ASM(a,NEG,-,a->o));
-#undef D
+D_A2(times) {
+  I ii=choose_regs(a);
+  switch (a->t=arith_t2(l,r)) {
+    case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
+              ASM(a, IMUL,a->o,a->i[1-ii]); break;
+    case R_t: ii=prepR(a,ii,l,r);
+              ASM(a, MULSD,a->o,a->i[1-ii]); break;
+  }
+}
+D_A2(minus) {
+  I ii=choose_regs(a);
+  switch (a->t=arith_t2(l,r)) {
+    case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
+              ASM(a, SUB,a->o,a->i[1-ii]);
+              if(ii) ASM(a,NEG,-,a->o);
+              break;
+    case R_t: ii=prepR(a,ii,l,r);
+              if (ii) {
+                Reg r=a_first_reg(a->u|1<<a->o);
+                if (r!=a->i[0]) ASM(a, MOVSD,r,a->i[0]);
+                ASM(a, SUBSD,r,a->o);
+                ASM(a, MOVSD,a->o,r);
+              } else {
+                ASM(a, SUBSD,a->o,a->i[1]);
+              }
+              break;
+  }
+}
+
+#define INIT if (l!=Z_t || r!=Z_t) return; I ii=choose_regs(a); a->t=Z_t
 #define D(n, jj) D_A2(n) { INIT; \
   I ifm=(ii==2); if (ifm) ii=1;       \
   ASM(a, CMP,a->i[1-(jj)],a->i[jj]);  \
@@ -99,9 +129,9 @@ D(minus,SUB, if(ii)ASM(a,NEG,-,a->o));
 D(min,ii);
 D(max,1-ii);
 #undef D
+#undef INIT
 D_A2(divide) {}
 D_A2(mod) {}
-#undef INIT
 
 // EXPORT DEFINITIONS
 void arith_init() {
