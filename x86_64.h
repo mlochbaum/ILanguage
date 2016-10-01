@@ -48,6 +48,7 @@ typedef unsigned short RegM;
 #define BYTES4(I) ((UC)(I)),((UC)((I)>>8)),((UC)((I)>>16)),((UC)((I)>>24))
 
 #define MOV_MR(O,I,OFF) {REX8(O,I),0x89,0x40+A_0REG(O,I),OFF}
+#define MOV_MR0(O,I)    {REX8(O,I),0x89,A_0REG(O,I)}
 #define MOV_MI(O,I,OFF) {0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
 #define MOV_RI(O,I)     {0xB8+(O) , BYTES4(I)}
 #define MOV_RM(I,O,OFF) {REX8(O,I),0x8B,0x40+A_0REG(O,I),OFF}
@@ -79,32 +80,3 @@ typedef unsigned short RegM;
 #define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
 
 #define RET {0xC3}
-
-// Frame to convert from A to S
-// Args: P rdi, V {rsi rdx}, I ecx, V* r8
-
-// push  rdx
-// mov   rdi,QWORD PTR [r8+0x8]
-// mov   rdi,QWORD PTR [rdi]
-#define PRE1 {0x52                 \
-             ,0x49,0x8b,0x78,0x08  \
-             ,0x48,0x8b,0x3f}
-
-// push  rdx
-// mov   rdi,QWORD PTR [r8+0x8]
-// mov   rsi,QWORD PTR [r8+0x18]
-// mov   rdi,QWORD PTR [rdi]
-// mov   rsi,QWORD PTR [rsi]
-#define PRE2 {0x52                 \
-             ,0x49,0x8b,0x78,0x08  \
-             ,0x49,0x8b,0x70,0x18  \
-             ,0x48,0x8b,0x3f       \
-             ,0x48,0x8b,0x36}
-
-// TODO test output type rsi; change size based on type
-// pop rdx
-// mov QWORD PTR [rdx],rax
-// ret
-#define POST {0x5a            \
-             ,0x48,0x89,0x02  \
-             ,0xc3}

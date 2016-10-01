@@ -203,13 +203,20 @@ void *asm_mmap(size_t length) {
 }
 
 S apply_SA(V f, I n, T* x) {
-  AS a; a.n=n; a.o=0; a.u=REG_MASK; a.l=0; a.t=0;
-  Reg ai[n]; a.i=ai; DDO(i,n) ai[i]=7-i; // TODO More than 2 args
+  AS as; A a=&as; a->n=n; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
+  Reg ai[n]; a->i=ai; DDO(i,n) ai[i]=7-i; // TODO More than 2 args
 
-  if (n==1) ASM_RAW(&a,PRE1); else ASM_RAW(&a,PRE2);
-  apply_A(&a,f,n,x);
-  if (!a.t) { FREE(a.a); return (S){0,NULL,NULL}; }
-  ASM_RAW(&a,POST);
-  Asm aa = asm_mmap(a.l); memcpy(aa,a.a,a.l); FREE(a.a);
-  return (S){a.t,aa,NULL};
+  ASM(a,PUSH,REG_ARG2,-);
+  DO(i,n) { V*v=NULL; ASM3(a,MOV_RM,ai[i],REG_ARG4,(UI)(Z)&v[i].p); }
+  DO(i,n) { ASM(a,MOV_RM0,ai[i],ai[i]); }
+
+  apply_A(a,f,n,x);
+  if (!a->t) { FREE(a->a); return (S){0,NULL,NULL}; }
+
+  ASM(a,POP,REG_ARG2,-);
+  ASM(a,MOV_MR0,REG_ARG2,REG_RES);
+  ASM_RAW(a,RET);
+
+  Asm aa = asm_mmap(a->l); memcpy(aa,a->a,a->l); FREE(a->a);
+  return (S){a->t,aa,NULL};
 }
