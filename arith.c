@@ -83,6 +83,7 @@ I prepR(A a, I ii, T l, T r) {
 }
 
 D_A2(plus) {
+  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM3(a, LEA1,a->o,a->i[0],a->i[1]);
@@ -92,6 +93,7 @@ D_A2(plus) {
   }
 }
 D_A2(minus) {
+  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
@@ -111,6 +113,7 @@ D_A2(minus) {
   }
 }
 D_A2(times) {
+  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
@@ -121,6 +124,7 @@ D_A2(times) {
 }
 D_T2(R) { return R_t; }
 D_A2(divide) {
+  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a); a->t=R_t;
   Reg ai1=a->i[1];
   if (ii==1) {
@@ -135,6 +139,7 @@ D_A2(divide) {
 D_A2(mod) {}
 
 #define CMPZ(jj,OP) \
+  if ((l|r)&~(Z_t|R_t)) return;                      \
   I ii=choose_regs(a);                               \
   switch (a->t=arith_t2(l,r)) {                      \
     case Z_t: { I ifm=(ii==2); if (ifm) ii=1;        \
