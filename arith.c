@@ -31,8 +31,7 @@ D_A1(negate) {
                   i=a_first_reg(a->u|1<<i);
                   ASM(a, MOVSD,i,a->i[0]);
                 }
-                ASM(a, XOR4,a->o,a->o);
-                ASM(a, CVTSI2SD,a->o,a->o);
+                ASM(a, PXOR,a->o,a->o);
                 ASM(a, SUBSD,a->o,i); a->t=R_t; return; }
   }
 }
