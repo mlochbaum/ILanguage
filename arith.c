@@ -48,6 +48,20 @@ D_A1(reciprocal) {
   ASM(a, CVTSI2SD,a->o,a->o);
   ASM(a, DIVSD,a->o,i);
 }
+#define ROUND(CMP,OP) \
+  if (l!=Z_t && l!=R_t) return;                      \
+  a->t=Z_t; I c=choose_reg(a);                       \
+  if (l==R_t) {                                      \
+    Reg i=a->i[0], o=a->o, r=a_first_reg(a->u|1<<o); \
+    ASM(a, CVTTSD2SI,o,i);                           \
+    ASM(a, XOR4,r,r);                                \
+    ASM(a, CVTSI2SD,r,o);                            \
+    ASM(a, UCOMISD,r,i);                             \
+    ASM(a, SET##CMP,r,-);                            \
+    ASM(a, OP,o,r);                                  \
+  } else if (c) ASM(a, MOV,a->o,a->i[0]);
+D_A1(floor) { ROUND(A,SUB) }
+D_A1(ceiling) { ROUND(B,ADD) }
 
 //Dyads
 #define ON(op,l,r) (l) op (r)
@@ -179,8 +193,8 @@ void arith_init() {
                   B_d1[c] = &arith_d1; B_s1[c] = &f##_s1
   SET('-', negate); B_a1['-'] = &negate_a1;
   SET('/', reciprocal); B_a1['/'] = &reciprocal_a1; DB(t1,'/',R);
-  SET('m', floor);
-  SET('M', ceiling);
+  SET('m', floor); B_a1['m'] = &floor_a1; DB(t1,'m',Z);
+  SET('M', ceiling); B_a1['M'] = &ceiling_a1; DB(t1,'M',Z);
 #undef SET
 
 #define SET(c, f) B_l2[c] = B_u2[c] = &arith_l2; B_t2[c] = &arith##_t2; \

@@ -45,6 +45,7 @@ typedef unsigned short RegM;
 #define LEA1(O,A,B)  {REX8(A,O)+(((B)>7)<<2),0x8D,A_0REG(4,O),A_0REG(B,A)}
 
 #define CVTSI2SD(O,I)  {0xF2,REX8(I,0),0x0F,0x2A,A_REG(I,O)}
+#define CVTTSD2SI(O,I) {0xF2,REX8(I,0),0x0F,0x2C,A_REG(I,O)}
 #define MOVQ(O,I)  {0x66,REX8(O,0),0x0F,0x7E,A_REG(O,I)}
 
 #define MOVSD(O,I)  {0xF2,0x0F,0x10,A_REG(I,O)}
@@ -55,6 +56,8 @@ typedef unsigned short RegM;
 #define DIVSD(O,I)  {0xF2,0x0F,0x5E,A_REG(I,O)}
 #define MAXSD(O,I)  {0xF2,0x0F,0x5F,A_REG(I,O)}
 #define PXOR(O,I)   {0x66,0x0F,0xEF,A_REG(I,O)}
+
+#define UCOMISD(O,I)  {0x66,0x0F,0x2E,A_REG(I,O)}
 
 #define ADDI(O,I) {REX8(O,0),0x83,A_REG(O,0),I}
 
@@ -104,6 +107,9 @@ typedef unsigned short RegM;
 #define JGE(O,I) {0x7D,((UC)(O)-2)}
 #define JLE(O,I) {0x7E,((UC)(O)-2)}
 #define JG(O,I)  {0x7F,((UC)(O)-2)}
+
+#define SETB(O,I)  {0x0F,0x92,A_REG(O,0)}
+#define SETA(O,I)  {0x0F,0x97,A_REG(O,0)}
 
 #define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
 
