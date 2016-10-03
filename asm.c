@@ -45,7 +45,8 @@ void apply_A_O(A a, O f, I n, T* x) {
     if (i==l-1) ax.u = ua;
     ax.o = NO_REG;
     // TODO shortcut errors
-    apply_A(&ax, f->x[i], n, x);
+    ax.t=0; apply_A(&ax, f->x[i], n, x);
+    if (ax.t==0) {a->l=ax.l; a->a=ax.a; a->t=0; return;}
     t[i] = ax.t; iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
   }
   a->l=ax.l; a->a=ax.a;
@@ -102,8 +103,9 @@ void apply_A_L(A a, L f, I n, T* x) {
   Asm as[l]; I al[l];
   DO(i, l) {
     if (i==l-1) ax.u = a->u;
-    ax.l=0; ax.o=NO_REG; apply_A(&ax, list_at(f,i), n, x);
+    ax.l=0; ax.o=NO_REG; ax.t=0; apply_A(&ax, list_at(f,i), n, x);
     o[i]=ax.o; as[i]=ax.a; al[i]=ax.l;
+    if (ax.t==0) {DDO(j,i+1)if(al[i])FREE(as[i]); a->t=0; return;}
     tt |= t[i]=ax.t;
   }
 
