@@ -27,10 +27,16 @@ typedef unsigned short RegM;
 #define REG_MASK 48 // Don't modify rsp or rbp
 #define REG_SAVE 4039 // Registers which function calls may modify
 
+// Ignore leading 0x40
+#define ASM_RAW(A, OP) \
+  do { UC aa[] = OP; C off=aa[0]==0x40; \
+       a_append(A, sizeof(aa)-off, aa+off); } while(0)
+
 // Instructions
 #define A_0REG(O,I) ((((I)&7)<<3) + ((O)&7))
 #define A_REG(O,I) (0xC0 + A_0REG(O,I))
 #define REX8(O,I) (0x48 + ((O)>7)+(((I)>7)<<2))
+#define REX4(O,I) (0x40 + ((O)>7)+(((I)>7)<<2))
 
 #define MOV(O,I)  {REX8(O,I),0x89,A_REG(O,I)}
 #define ADD(O,I)  {REX8(O,I),0x01,A_REG(O,I)}
@@ -74,8 +80,8 @@ typedef unsigned short RegM;
 #define MOV_RM0(I,O)    {REX8(O,I),0x8B,A_0REG(O,I)}
 #define MOV_RI(O,I)     {REX8(O,0),0xB8+(O) , BYTES8(I)}
 
-#define MOV4_MI(O,I,OFF) {0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
-#define MOV4_RI(O,I)     {0xB8+(O) , BYTES4(I)}
+#define MOV4_MI(O,I,OFF) {REX4(O,0), 0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
+#define MOV4_RI(O,I)     {REX4(O,0), 0xB8+((O)&7) , BYTES4(I)}
 
 // TODO REX
 #define MOV1_MR(O,I,OFF) {0x88,0x40+A_0REG(O,I),OFF}
@@ -89,7 +95,7 @@ typedef unsigned short RegM;
 #define MOVSD_RM(I,O,OFF) {0xF2,0x0F,0x10,0x40+A_0REG(O,I),OFF}
 #define MOVSD_RM0(I,O)    {0xF2,0x0F,0x10,A_0REG(O,I)}
 
-#define CALL(O,I) {0xFF,A_REG(O,2)}
+#define CALL(O,I) {REX4(O,0),0xFF,A_REG(O,2)}
 
 #define JO(O,I)  {0x70,((UC)(O)-2)}
 #define JNO(O,I) {0x71,((UC)(O)-2)}
