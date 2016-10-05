@@ -87,8 +87,8 @@ void a_malloc(A a, I l, Reg res, RegM keep) {
   ASM(a, MOV4_RI, res,(I)(Z)&malloc);
   ASM(a, MOV4_RI, REG_ARG0,l);
   ASM(a, CALL, res,-);
-  pop_regs(a, pop);
   if (res!=REG_RES) ASM(a, MOV, res,REG_RES);
+  pop_regs(a, pop);
 }
 
 void apply_A_L(A a, L f, I n, T* x) {
