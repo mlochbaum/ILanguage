@@ -42,7 +42,7 @@ typedef unsigned short RegM;
 
 #define XOR4(O,I)  {0x31,A_REG(O,I)}
 
-#define LEA1(O,A,B)  {REX8(A,O)+(((B)>7)<<2),0x8D,A_0REG(4,O),A_0REG(B,A)}
+#define LEA1(O,A,B)  {REX8(A,O)+(((B)>7)<<1),0x8D,A_0REG(4,O),A_0REG(A,B)}
 
 #define CVTSI2SD(O,I)  {0xF2,REX8(I,0),0x0F,0x2A,A_REG(I,O)}
 #define CVTTSD2SI(O,I) {0xF2,REX8(I,0),0x0F,0x2C,A_REG(I,O)}
