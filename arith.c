@@ -214,11 +214,11 @@ D_A2(max) { CMPZ(1-ii,MAX) }
 // EXPORT DEFINITIONS
 void arith_init() {
 #define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
-                  B_d1[c] = &arith_d1; B_s1[c] = &f##_s1
-  SET('-', negate); B_a1['-'] = &negate_a1;
-  SET('/', reciprocal); B_a1['/'] = &reciprocal_a1; DB(t1,'/',R);
-  SET('m', floor); B_a1['m'] = &floor_a1; DB(t1,'m',Z);
-  SET('M', ceiling); B_a1['M'] = &ceiling_a1; DB(t1,'M',Z);
+                  B_d1[c] = &arith_d1; B_s1[c] = &f##_s1; B_a1[c] = &f##_a1
+  SET('-', negate);
+  SET('/', reciprocal); DB(t1,'/',R);
+  SET('m', floor); DB(t1,'m',Z);
+  SET('M', ceiling); DB(t1,'M',Z);
 #undef SET
 
 #define SET(c, f) B_l2[c] = B_u2[c] = &arith_l2; B_t2[c] = &arith##_t2; \
