@@ -170,7 +170,31 @@ D_A2(divide) {
   if (r==Z_t) ASM(a, CVTSI2SD,ai1,a->i[1]);
   ASM(a, DIVSD,a->o,a->i[1]);
 }
-D_A2(mod) {}
+D_A2(mod) {
+  if ((l|r)&~(Z_t)) return;
+  Reg r_=REG_IDIV_0, r1=REG_IDIV_1;
+  C shortcut = a->i[0]==r_;
+  PROTECT_1of3(1<<r_|1<<r1);
+  if (!shortcut) ASM(a, MOV,r_,a->i[0]);
+  ASM(a, CQO,-,-);
+  ASM(a, IDIV,a->i[1],-);
+  PROTECT_2of3; // TODO what if r1 moves?
+
+  ASM(a, MOV,r_,a->i[1]);
+  ASM(a, XOR,r_,r1);
+  ASM(a, JNS,0,-); I j=a->l;
+  Reg rt;
+  if (a->u&1<<a->i[1]) ASM(a, MOV,rt=a_first_reg(a->u|1<<r_|1<<r1),a->i[1]);
+  else rt = a->i[1];
+  ASM(a, ADD,rt,r1);
+  ASM(a, TEST,r1,r1);
+  ASM(a, CMOVNE,r1,rt);
+  ((C*)a->a)[j-1] = a->l-j;
+
+  if (a->o==NO_REG) a->o = a->u&1<<r1 ? a_first_reg(a->u) : r1;
+  if (a->o!=r1) ASM(a, MOV,a->o,r1);
+  PROTECT_3of3; a->t=Z_t; return;
+}
 
 #define CMPZ(jj,OP) \
   if ((l|r)&~(Z_t|R_t)) return;                      \

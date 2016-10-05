@@ -41,14 +41,26 @@ typedef unsigned short RegM;
 #define MOV(O,I)  {REX8(O,I),0x89,A_REG(O,I)}
 #define ADD(O,I)  {REX8(O,I),0x01,A_REG(O,I)}
 #define SUB(O,I)  {REX8(O,I),0x29,A_REG(O,I)}
+#define XOR(O,I)  {REX8(O,I),0x31,A_REG(O,I)}
+#define TEST(O,I) {REX8(O,I),0x85,A_REG(O,I)}
 #define IMUL(I,O) {REX8(O,I),0x0F,0xAF,A_REG(O,I)}
 #define CMP(O,I)  {REX8(O,I),0x39,A_REG(O,I)}
-#define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
 #define NEG(I,O)  {REX8(O,0),0xF7,A_REG(O,3)}
+
+#define CMOVNE(I,O) {REX8(O,I),0x0F,0x45,A_REG(O,I)}
+#define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
+
+#define ADDI(O,I) {REX8(O,0),0x83,A_REG(O,0),I}
+#define SHRI(O,I) {REX8(O,0),0xC1,A_REG(O,5),I}
 
 #define XOR4(O,I)  {0x31,A_REG(O,I)}
 
 #define LEA1(O,A,B)  {REX8(A,O)+(((B)>7)<<1),0x8D,A_0REG(4,O),A_0REG(A,B)}
+
+#define CQO(O,I)   {0x48,0x99}
+#define IDIV(O,I)  {REX8(O,0),0xF7,A_REG(O,7)}
+#define REG_IDIV_0  REG_RES
+#define REG_IDIV_1  REG_ARG2
 
 #define CVTSI2SD(O,I)  {0xF2,REX8(I,0),0x0F,0x2A,A_REG(I,O)}
 #define CVTTSD2SI(O,I) {0xF2,REX8(I,0),0x0F,0x2C,A_REG(I,O)}
@@ -64,8 +76,6 @@ typedef unsigned short RegM;
 #define PXOR(O,I)   {0x66,0x0F,0xEF,A_REG(I,O)}
 
 #define UCOMISD(O,I)  {0x66,0x0F,0x2E,A_REG(I,O)}
-
-#define ADDI(O,I) {REX8(O,0),0x83,A_REG(O,0),I}
 
 #define PUSH(O,I) {0x50+O}
 #define POP(O,I)  {0x58+O}
