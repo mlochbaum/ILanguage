@@ -81,7 +81,7 @@ void pop_regs_2(A a, RegM pop, Reg o) {
 
 Prot3State clear_regs_3(A a, RegM u) {
   RegM ui=0; DDO(ii,a->n) ui|=1<<a->i[ii];
-  RegM p1 = ui&u&a->u, p2 = (ui&u)^p1, uu = a->u|u|ui;
+  RegM p1 = ui&u&a->u, p2 = ((ui|a->u)&u)^p1, uu = a->u|u|ui;
   DO(ii,a->n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || p2&si) {
