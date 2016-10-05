@@ -25,7 +25,7 @@ typedef unsigned char Reg;
 #define NO_REG_NM 17
 typedef unsigned short RegM;
 #define REG_MASK 48 // Don't modify rsp or rbp
-#define REG_SAVE 4087 // Registers which function calls may modify
+#define REG_SAVE 4039 // Registers which function calls may modify
 
 // Instructions
 #define A_0REG(O,I) ((((I)&7)<<3) + ((O)&7))
