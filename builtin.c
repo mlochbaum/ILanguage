@@ -107,6 +107,21 @@ void apply_A_B(A a, B b, I n, T* x) {
   }
 }
 
+void apply_A11(A a, A11 f, V* x, T* xx) { return f(a, x[0], xx[0]); }
+void apply_A12(A a, A12 f, V* x, T* xx) { return f(a, x[0], xx[0], xx[1]); }
+void apply_A21(A a, A21 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0]); }
+void apply_A22(A a, A22 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0], xx[1]); }
+
+void apply_A_FB(A a, F f, I n, T* xx) {
+#define LINE1(y,z,yz) case (2*y+z): { \
+  B b=B(f->f); A##yz ff=B_a##yz[b]; \
+  if(ff) return apply_A##yz(a, ff, f->x, xx); }
+#define LINE(a,b) LINE1(a,b,a##b)
+  switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
+#undef LINE
+#undef LINE1
+}
+
 I dom_B(B b, I n, V* x) {
   switch (n) {
     case 1: return B_d1[b](x[0]);

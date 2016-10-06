@@ -95,6 +95,52 @@ D_P22(while) {
   del(rr); mv_P(p,ll); FREE(P(ll));
 }
 
+D_A11(flip) {
+  AS ax=*a; ax.n=2; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
+  T t[2]={ll,ll};
+  apply_A(&ax, l, 2, t);
+  a->t=ax.t; a->o=ax.o; a->i[0]=axi[0]; a->l=ax.l; a->a=ax.a;
+  return;
+}
+D_A21(hook) {
+  AS ax=*a; ax.n=1; ax.o=NO_REG; protect_input(ax.i, &ax.u);
+  apply_A(&ax, l, 1, &ll);
+
+  ax.n=2; Reg axi[2]={ax.o,ax.i[0]}; ax.i=axi; ax.o=a->o; ax.u=a->u;
+  T t[2]={ax.t,ll};
+  apply_A(&ax, r, 2, t);
+
+  a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
+  return;
+}
+D_A22(hook) {
+  AS ax=*a; ax.n=1; ax.o=NO_REG; ax.u|=1<<a->i[1];
+  apply_A(&ax, l, 1, &ll);
+
+  ax.n=2; I i=a->i[0]; ax.i[0]=ax.o; ax.o=a->o; ax.u=a->u;
+  T t[2]={ax.t,rr};
+  apply_A(&ax, r, 2, t);
+  a->i[0]=i;
+
+  a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
+  return;
+}
+D_A22(compose) {
+  AS ax=*a, af=*a; Reg afi[2]; T tf[2];
+
+  ax.n=1; ax.i=a->i; ax.o=NO_REG; ax.u|=1<<a->i[1];
+  apply_A(&ax, l, 1, &ll); afi[0]=ax.o; tf[0]=ax.t;
+
+  ax.i=a->i+1; ax.u=a->u|1<<ax.o; ax.o=NO_REG;
+  apply_A(&ax, l, 1, &rr); afi[1]=ax.o; tf[1]=ax.t;
+
+  ax.n=2; ax.i=afi; ax.o=a->o; ax.u=a->u;
+  apply_A(&ax, r, 2, tf);
+
+  a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
+  return;
+}
+
 void compose_init() {
 #define D(n,c,f) DB(t##n,c,f); DB(p##n,c,f)
   DB(t1,'[',l); DB(p1,'[',left);
@@ -106,19 +152,19 @@ void compose_init() {
   DB(t12,'k',l); DB(p12,'k',constant);
 
   DB(t2,'~',V); DB(p2,'~',flip);
-  D(11,'~',flip);
+  D(11,'~',flip); DB(a11,'~',flip);
   D(12,'~',flip);
 
   D(21,'b',bind);
   D(21,'B',backbind);
 
-  D(21,'h',hook);
-  D(22,'h',hook);
+  D(21,'h',hook); DB(a21,'h',hook);
+  D(22,'h',hook); DB(a22,'h',hook);
   D(21,'H',backhook);
   D(22,'H',backhook);
 
   D(21,'O',compose);
-  D(22,'O',compose);
+  D(22,'O',compose); DB(a22,'O',compose);
 
   DB(t11,'w',V); DB(p11,'w',doubleu);
   DB(t12,'w',V); DB(p12,'w',doubleu);

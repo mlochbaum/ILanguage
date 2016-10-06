@@ -175,56 +175,10 @@ void apply_A_N(A a, N f, I n, T* x) {
 
 // builtin.c
 void apply_A_B(A a, B b, I n, T* x);
+void apply_A_FB(A a, F f, I n, T* x);
 
 void apply_A_F(A a, F f, I n, T* x) {
-  // flip
-  if (f->l==1 && T(f->f)==B_t && B(f->f)=='~' && n==1) {
-    AS ax=*a; ax.n=2; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
-    T t[2]={x[0],x[0]};
-    apply_A(&ax, f->x[0], 2, t);
-    a->t=ax.t; a->o=ax.o; a->i[0]=axi[0]; a->l=ax.l; a->a=ax.a;
-    return;
-  }
-  // hook 1
-  if (f->l==2 && T(f->f)==B_t && B(f->f)=='h' && n==1) {
-    AS ax=*a; ax.n=1; ax.o=NO_REG; protect_input(ax.i, &ax.u);
-    apply_A(&ax, f->x[0], 1, x);
-
-    ax.n=2; Reg axi[2]={ax.o,ax.i[0]}; ax.i=axi; ax.o=a->o; ax.u=a->u;
-    T t[2]={ax.t,x[0]};
-    apply_A(&ax, f->x[1], 2, t);
-
-    a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
-    return;
-  }
-  // hook 2
-  if (f->l==2 && T(f->f)==B_t && B(f->f)=='h' && n==2) {
-    AS ax=*a; ax.n=1; ax.o=NO_REG; ax.u|=1<<a->i[1];
-    apply_A(&ax, f->x[0], 1, x);
-
-    ax.n=2; I i=a->i[0]; ax.i[0]=ax.o; ax.o=a->o; ax.u=a->u; x[0]=ax.t;
-    apply_A(&ax, f->x[1], 2, x);
-    a->i[0]=i;
-
-    a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
-    return;
-  }
-  // compose
-  if (f->l==2 && T(f->f)==B_t && B(f->f)=='O' && n==2) {
-    AS ax=*a, af=*a; Reg afi[2]; T tf[2];
-
-    ax.n=1; ax.i=a->i; ax.o=NO_REG; ax.u|=1<<a->i[1];
-    apply_A(&ax, f->x[0], 1, x); afi[0]=ax.o; tf[0]=ax.t;
-
-    ax.i=a->i+1; ax.u=a->u|1<<ax.o; ax.o=NO_REG;
-    apply_A(&ax, f->x[0], 1, x+1); afi[1]=ax.o; tf[1]=ax.t;
-
-    ax.n=2; ax.i=afi; ax.o=a->o; ax.u=a->u;
-    apply_A(&ax, f->x[1], 2, tf);
-
-    a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
-    return;
-  }
+  if (T(f->f)==B_t) return apply_A_FB(a, f, n, x);
 }
 
 void apply_A(A a, V f, I n, T* x) {
