@@ -217,7 +217,7 @@ each element of the collection and give the collection of results. Like
 Once sets are implemented, you'll also be able to take a set like `{_2,2}`
 (not the actual notation) and square it, obtaining `{4}`.
 For a more in-depth treatment of the subject, see
-[the informal paper I wrote on it](https://docs.google.com/open?id=0B9JcSIlTRG6FZjA1NjE4ZTgtYzhiYy00YzA0LTkxODUtZDUwODg5OGEwYmE5).
+[the informal paper I wrote on it](doc/BuiltInMapping/BuiltInMapping.pdf).
 
 Data structures and their mapping methods are described in the relevant
 documentation files here.
