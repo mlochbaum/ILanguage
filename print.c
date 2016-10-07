@@ -23,11 +23,11 @@ Str quote(const char q, Str s) {
 
 Str Zfmt(Z z) {
   DECL_STR(s, SZ);
-  snprintf(s, SZ, "%ld", z); return s;
+  snprintf(s, SZ, "%ld", z); if (s[0]=='-') s[0]='_'; return s;
 }
 Str Rfmt(R r) {
   DECL_STR(s, SR);
-  snprintf(s, SR, "%f", r); return s;
+  snprintf(s, SR, "%f", r); if (s[0]=='-') s[0]='_'; return s;
 }
 
 Str Ffmt(F f) {
