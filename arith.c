@@ -9,6 +9,16 @@ D_D2(arith) { return arith_l2(T(l),T(r)); }
 D_T2(arith) { return max(l,r); }
 
 // Monads
+#define OP(op) { switch (T(l)) { M_L(Z,op); M_L(R,op); } del(l); }
+#define M_L(T, op) case T##_t: set##T(p, op T(l)); break
+D_P1(negate) OP(-);
+#undef M_L
+#define M_L(T, op) case T##_t: set##T(p, op(T(l))); break
+D_P1(floor) OP(floor);
+D_P1(ceiling) OP(ceiling);
+#undef M_L
+#undef OP
+
 D_A1(negate) {
   switch (l) {
     case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
@@ -66,6 +76,17 @@ D_A1(square) {
 
 
 // Dyads
+#define OP(op) { switch (max(T(l),T(r))) { DL(Z,op); DL(R,op); } del(l);del(r); }
+#define DL(T, op) case T##_t: set##T(p, get##T(l)op get##T(r)); break
+D_P2(plus) OP(+);
+D_P2(minus) OP(-);
+D_P2(times) OP(*);
+#undef DL
+#define DL(T, op) case T##_t: set##T(p, op(get##T(l), get##T(r))); break
+D_P2(min) OP(min);
+D_P2(max) OP(max);
+#undef DL
+#undef OP
 
 // Make sure both arguments are in xmm registers. Cast if not.
 // Move one argument to the result, and return its index in a->i.
@@ -201,22 +222,22 @@ D_A2(max) { CMPZ(1-ii,MAX) }
 void arith_init() {
 #define SET(c, t, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &t##_t1; \
                   B_d1[c] = &arith_d1; B_a1[c] = &f##_a1
-  SET('-', l, negate);
+  SET('-', l, negate); DB(p1,'-',negate);
   SET('/', R, reciprocal);
-  SET('m', Z, floor);
-  SET('M', Z, ceiling);
+  SET('m', Z, floor); DB(p1,'m',floor);
+  SET('M', Z, ceiling); DB(p1,'M',ceiling);
   SET('q', l, square);
   SET('Q', R, sqroot);
 #undef SET
 
 #define SET(c, f) B_l2[c] = B_u2[c] = &arith_l2; B_t2[c] = &arith_t2; \
                   B_d2[c] = &arith_d2; B_a2[c] = &f##_a2
-  SET('+', plus);
-  SET('-', minus);
-  SET('*', times);
+  SET('+', plus); DB(p2,'+',plus);
+  SET('-', minus); DB(p2,'-',minus);
+  SET('*', times); DB(p2,'*',times);
   SET('/', divide); DB(t2,'/',R);
   SET('%', mod);
-  SET('m', min);
-  SET('M', max);
+  SET('m', min); DB(p2,'m',min);
+  SET('M', max); DB(p2,'M',max);
 #undef SET
 }
