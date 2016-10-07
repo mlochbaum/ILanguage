@@ -34,13 +34,8 @@ D_A1(negate) {
 }
 D_A1(reciprocal) {
   if (l&~(Z_t|R_t)) return;
-  Reg i=a->i[0];
-  if (!choose_reg(a)) {
-    i=a_first_reg(a->u|1<<i);
-    if (l==R_t) ASM(a, MOVSD,i,a->i[0]);
-  }
-  if (l==Z_t) ASM(a, CVTSI2SD,i,a->i[0]);
-  else if (IMPURE(l)) a_RfromV(a,i,a->i[0]);
+  Reg i = choose_reg(a) ? a->i[0] : a_first_reg(a->u|1<<i);
+  a_RfromT(a,l,i,a->i[0]);
   ASM(a, MOV4_RI,a->o,1);
   ASM(a, CVTSI2SD,a->o,a->o);
   ASM(a, DIVSD,a->o,i);

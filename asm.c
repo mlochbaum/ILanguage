@@ -227,6 +227,11 @@ void a_RfromV(A a, Reg o, Reg i) {
   ASM(a, CVTSI2SD,o,i);
   ((C*)a->a)[j-1] = a->l-j;
 }
+void a_RfromT(A a, T t, Reg o, Reg i) {
+  if (IMPURE(t)) a_RfromV(a,o,i);
+  else if (t==Z_t) ASM(a, CVTSI2SD,o,i);
+  else if (t==R_t && o!=i) ASM(a, MOVSD,o,i);
+}
 
 S apply_SA(V f, I n, T* x) {
   AS as; A a=&as; a->n=n; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
