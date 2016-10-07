@@ -10,5 +10,5 @@ Each of the following operations has only numbers in its domain.
   between `0` and `r` (can be `0`, cannot be `r`) congruent to `l`, modulo
   `r`.
 * `-`, `/` monad: negation and reciprocal.
-* `q`, `Q` monad: square and square root (unimplemented).
+* `q`, `Q` monad: square and square root.
 * `m`, `M` dyad: minimum and maximum; monad: floor and ceiling.

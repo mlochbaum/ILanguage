@@ -16,11 +16,8 @@ For operations like the standard four of arithmetic, this looks just like
 normal math.
 ```
 3*4 - 6/3
-10
+10.000000
 ```
-_SMALL NOTE: currently `/` on integers is integer division, i.e. divide, and
-round to an integer. This is wrong, and will be fixed. Use floats like 3.0 for
-the time being._
 
 Numbers are also operators. They return themselves:
 ```
@@ -39,7 +36,7 @@ That `_3` is a shorthand for negative three, which isn't constrained by
 our operator notation. It's useful.
 Note that we just took `-` as an argument to another operator.
 That's completely ordinary, because everything is an operator.
-It's not any different from writing `3+4`, or `3.4`, which yields `4`
+It's not any different from writing `3+4`, or `3 . 4`, which yields `4`
 because `4` is a constant operator.
 Look out: this is opposite from the order of evaluation in most languages!
 Everthing goes left to right in I. Like telling a story.
@@ -80,7 +77,7 @@ Um. If you're willing to do the math, you'll notice that this should be
 `(9-1)/2 = 4`. What happened?
 ```
 (27 / 1+2)-1/2
-4
+4.000000
 (27 / 1+2)(-1/)2
 1
 ```
@@ -148,9 +145,9 @@ Another composition is `O`, which makes sure the _left_ operand is applied
 as a single-argument function by applying it to each operand.
 For example,
 ```
-2.0 /O+ 0.4
+2 /O+ 0.4
 3.000000
-2.0./ + 0.4./
+2./ + 0.4./
 3.000000
 ```
 The reason we use compositions like this is to compress a function that
