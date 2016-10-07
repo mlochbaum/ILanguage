@@ -75,6 +75,8 @@ typedef unsigned short RegM;
 #define MAXSD(O,I)  {0xF2,0x0F,0x5F,A_REG(I,O)}
 #define PXOR(O,I)   {0x66,0x0F,0xEF,A_REG(I,O)}
 
+#define SQRTSD(O,I) {0xF2,0x0F,0x51,A_REG(I,O)}
+
 #define UCOMISD(O,I)  {0x66,0x0F,0x2E,A_REG(I,O)}
 
 #define PUSH(O,I) {0x50+O}

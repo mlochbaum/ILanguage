@@ -49,6 +49,20 @@ D_A1(reciprocal) {
   } else if (c) ASM(a, MOV,a->o,a->i[0]);
 D_A1(floor) { ROUND(A,SUB) }
 D_A1(ceiling) { ROUND(B,ADD) }
+D_A1(sqroot) {
+  if (l!=Z_t && l!=R_t) return;
+  a->t=R_t; C c=choose_reg(a);
+  if (l==Z_t) ASM(a, CVTSI2SD,a->i[0],a->i[0]);
+  ASM(a, SQRTSD,a->o,a->i[0]);
+}
+D_A1(square) {
+  switch (l) {
+    case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
+              ASM(a, IMUL,a->o,a->o); a->t=Z_t; return;
+    case R_t: if (choose_reg(a)) ASM(a, MOVSD,a->o,a->i[0]);
+              ASM(a, MULSD,a->o,a->o); a->t=R_t; return;
+  }
+}
 
 #define D_S(name) void name##_s(P p, V v, I n, V* vs)
 //Dyads
@@ -207,6 +221,8 @@ void arith_init() {
   SET('/', reciprocal); DB(t1,'/',R);
   SET('m', floor); DB(t1,'m',Z);
   SET('M', ceiling); DB(t1,'M',Z);
+  SET('q', square); DB(t1,'q',R);
+  SET('Q', sqroot); DB(t1,'Q',R);
 #undef SET
 
 #define SET(c, f) B_l2[c] = B_u2[c] = &arith_l2; B_t2[c] = &arith##_t2; \
