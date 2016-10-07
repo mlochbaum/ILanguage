@@ -6,11 +6,9 @@ preamble =: 0 : 0
 // Generated; see builtin.ijs
 
 #undef T
-#undef S
 )
 post =: 0 : 0
 #define T(v) ((v).t)
-#define S(v) (*(S*)((v).p))
 )
 
 chart =: ;:;._2 ]0 : 0
@@ -19,7 +17,6 @@ U  I     T
 T  T     T
 D  I
 P  void  P
-S  S     T
 A  void  A
 )
 temptemp =: <;._2 ] 0 : 0
