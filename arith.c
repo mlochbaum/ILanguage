@@ -87,28 +87,26 @@ D_P2(max) OP(max);
 // Make sure both arguments are in xmm registers. Cast if not.
 // Move one argument to the result, and return its index in a->i.
 I prepR(A a, I ii, T l, T r) {
-  I zr = 2 - 2*(l==Z_t) - (r==Z_t);
-  if (ii==2) {
-    if (zr==2) ASM(a, MOVSD,a->o,a->i[ii=0]);
-    else ASM(a, CVTSI2SD,a->o,a->i[ii=zr]);
-  } else if (zr!=2) {
-    ASM(a, CVTSI2SD,a->i[zr],a->i[zr]);
-  }
+  I zr = 2*(l==R_t) + (r==R_t) - 1;
+  if (ii==2) ii = zr>=0&&zr<2 ? zr : 0;
+  a_RfromT(a,ii?r:l,a->o,a->i[ii]);
+  a_RfromT(a,ii?l:r,a->i[1-ii],a->i[1-ii]);
   return ii;
 }
 
 D_A2(plus) {
-  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
+  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM3(a, LEA1,a->o,a->i[0],a->i[1]);
               else ASM(a, ADD,a->o,a->i[1-ii]); break;
     case R_t: ii=prepR(a,ii,l,r);
               ASM(a, ADDSD,a->o,a->i[1-ii]); break;
+    default: a->t=0; return;
   }
 }
 D_A2(minus) {
-  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
+  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
@@ -125,16 +123,18 @@ D_A2(minus) {
                 ASM(a, SUBSD,a->o,a->i[1]);
               }
               break;
+    default: a->t=0; return;
   }
 }
 D_A2(times) {
-  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
+  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
               ASM(a, IMUL,a->o,a->i[1-ii]); break;
     case R_t: ii=prepR(a,ii,l,r);
               ASM(a, MULSD,a->o,a->i[1-ii]); break;
+    default: a->t=0; return;
   }
 }
 D_A2(divide) {
@@ -147,7 +147,7 @@ D_A2(divide) {
   a->t=R_t;
 }
 D_A2(mod) {
-  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
+  if ((l|r)&~(Z_t|R_t)) return;
   switch (a->t=arith_t2(l,r)) {
     case Z_t: {
       Reg r_=REG_IDIV_0, r1=REG_IDIV_1;
@@ -192,6 +192,7 @@ D_A2(mod) {
       if (a->i[0]!=a->o) ASM(a, MOVSD,a->o,a->i[0]);
       ASM(a, SUBSD,a->o,rd);
     }
+    default: a->t=0; return;
   }
 }
 
@@ -205,6 +206,7 @@ D_A2(mod) {
                 ASM(a, CMOVLE,a->o,a->i[1-ii]); }    \
     case R_t: ii=prepR(a,ii,l,r);                    \
               ASM(a, OP##SD,a->o,a->i[1-ii]); break; \
+    default: a->t=0; return;                         \
   }
 D_A2(min) { CMPZ(ii,  MIN) }
 D_A2(max) { CMPZ(1-ii,MAX) }
