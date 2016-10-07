@@ -41,6 +41,7 @@ void *asm_mmap(size_t);
 
 void asm_load(A a, T t, Reg o, Reg i);
 void asm_write(A a, T t, Reg o, Reg i);
+void a_RfromV(A a, Reg o, Reg i);
 
 // Mark input *i as not writeable
 void protect_input(Reg *i, RegM *u);

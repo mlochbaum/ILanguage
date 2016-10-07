@@ -217,6 +217,17 @@ void asm_write(A a, T t, Reg o, Reg i) {
 }
 #undef A
 
+void a_RfromV(A a, Reg o, Reg i) {
+  V*v=NULL;
+  ASM(a, CMP4_MI,i,R_t);
+  ASM3(a, MOV_RM,i,i,(UI)(Z)&P(*v));
+  ASM(a, MOVSD_RM0,o,i);
+  ASM(a, JE,0,-); I j=a->l;
+  ASM(a, MOVQ,i,o);
+  ASM(a, CVTSI2SD,o,i);
+  ((C*)a->a)[j-1] = a->l-j;
+}
+
 S apply_SA(V f, I n, T* x) {
   AS as; A a=&as; a->n=n; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
   Reg ai[n]; a->i=ai; DDO(i,n) ai[i]=7-i; // TODO More than 2 args
