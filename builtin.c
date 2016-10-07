@@ -76,13 +76,48 @@ void FfromB_P(V p, B b, I n, V* x) {
   setF(p, wrapF(newB(b),n,xx));
 }
 
+Asm finish_asm_B(A a, V p, P* vp) {
+  if (!a->t) { FREE(a->a); return NULL; }
+  ASM(a,POP,REG_ARG0,-);
+  asm_write(a,a->t,REG_ARG0,REG_RES);
+  ASM_RAW(a,RET);
+
+  Asm aa = asm_mmap(a->l); memcpy(aa,a->a,a->l); FREE(a->a);
+  *vp=P(p);
+  if (IMPURE(T(p)) && PURE(a->t)) {
+    V *v=*vp; T(*v)=a->t; *vp=P(*v)=MALLOC(t_sizeof(a->t));
+  }
+  return aa;
+}
 void apply_P_B1(V p, B b, V* x) {
-  S1 s=B_s1[b]; S ss; if (s&&(ss=s(T(x[0]))).f) return ss.f(ss.a,p,1,x);
+  A1 ab=B_a1[b]; if (ab) {
+    AS as; A a=&as; a->n=1; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
+    Reg ai=REG_ARG1; a->i=&ai;
+
+    ASM(a,PUSH,REG_ARG0,-);
+    asm_load(a,T(x[0]),ai,ai);
+
+    ab(a, T(x[0]));
+    P vp; Asm aa=finish_asm_B(a,p,&vp);
+    if (aa) return ((void(*)(P,P))aa)(vp, P(x[0]));
+  }
   P1 f=B_p1[b]; if(!f) return FfromB_P(p,b,1,x);
   else return f(p,x[0]);
 }
 void apply_P_B2(V p, B b, V* x) {
-  S2 s=B_s2[b]; S ss; if (s&&(ss=s(T(x[0]),T(x[1]))).f) return ss.f(ss.a,p,2,x);
+  A2 ab=B_a2[b]; if (ab) {
+    AS as; A a=&as; a->n=2; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
+    Reg ai[2]={REG_ARG1,REG_ARG2}; a->i=ai;
+
+    ASM(a,PUSH,REG_ARG0,-);
+    asm_load(a,T(x[0]),ai[0],ai[0]);
+    asm_load(a,T(x[1]),ai[1],ai[1]);
+
+    ab(a, T(x[0]), T(x[1]));
+
+    P vp; Asm aa=finish_asm_B(a,p,&vp);
+    if (aa) return ((void(*)(P,P,P))aa)(vp, P(x[0]), P(x[1]));
+  }
   P2 f=B_p2[b]; if(!f) return FfromB_P(p,b,2,x);
   else return f(p,x[0],x[1]);
 }
