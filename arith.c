@@ -8,20 +8,7 @@ D_D2(arith) { return arith_l2(T(l),T(r)); }
 
 D_T2(arith) { return max(l,r); }
 
-#define D_S(name) void name##_s(P p, V v, I n, V* vs)
 //Monads
-#define DF(n, T, op) D_S(n##T) { return set##T(v,op(T(vs[0]))); }
-#define LINE(n, T) case T##_t: s.t=T##_t; s.f=&n##T##_s; break;
-#define OP(n,op) DF(n,Z,op); DF(n,R,op); \
-  D_S1(n) { S s; s.f=NULL; switch(l){ LINE(n,Z); LINE(n,R); } return s; }
-OP(negate, -);
-OP(reciprocal, 1/);
-OP(floor, floor);
-OP(ceiling, ceiling);
-#undef DF
-#undef LINE
-#undef OP
-
 D_A1(negate) {
   switch (l) {
     case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
@@ -63,6 +50,7 @@ D_A1(reciprocal) {
 D_A1(floor) { ROUND(A,SUB) }
 D_A1(ceiling) { ROUND(B,ADD) }
 
+#define D_S(name) void name##_s(P p, V v, I n, V* vs)
 //Dyads
 #define ON(op,l,r) (l) op (r)
 #define DFZZ(n, op) D_S(n##ZZ) { return setZ(v,ON(op,Z(vs[0]),Z(vs[1]))); }
@@ -214,7 +202,7 @@ D_A2(max) { CMPZ(1-ii,MAX) }
 // EXPORT DEFINITIONS
 void arith_init() {
 #define SET(c, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &l_t1; \
-                  B_d1[c] = &arith_d1; B_s1[c] = &f##_s1; B_a1[c] = &f##_a1
+                  B_d1[c] = &arith_d1; B_a1[c] = &f##_a1
   SET('-', negate);
   SET('/', reciprocal); DB(t1,'/',R);
   SET('m', floor); DB(t1,'m',Z);
