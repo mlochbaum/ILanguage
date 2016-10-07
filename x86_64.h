@@ -47,13 +47,15 @@ typedef unsigned short RegM;
 #define CMP(O,I)  {REX8(O,I),0x39,A_REG(O,I)}
 #define NEG(I,O)  {REX8(O,0),0xF7,A_REG(O,3)}
 
+#define CMP4_MI(O,I) {REX4(O,0),0x81,A_0REG(O,7),BYTES4(I)}
+
 #define CMOVNE(I,O) {REX8(O,I),0x0F,0x45,A_REG(O,I)}
 #define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
 
 #define ADDI(O,I) {REX8(O,0),0x83,A_REG(O,0),I}
 #define SHRI(O,I) {REX8(O,0),0xC1,A_REG(O,5),I}
 
-#define XOR4(O,I)  {0x31,A_REG(O,I)}
+#define XOR4(O,I)  {REX4(O,I),0x31,A_REG(O,I)}
 
 #define LEA1(O,A,B)  {REX8(A,O)+(((B)>7)<<1),0x8D,A_0REG(4,O),A_0REG(A,B)}
 
@@ -65,6 +67,9 @@ typedef unsigned short RegM;
 #define CVTSI2SD(O,I)  {0xF2,REX8(I,0),0x0F,0x2A,A_REG(I,O)}
 #define CVTTSD2SI(O,I) {0xF2,REX8(I,0),0x0F,0x2C,A_REG(I,O)}
 #define MOVQ(O,I)  {0x66,REX8(O,0),0x0F,0x7E,A_REG(O,I)}
+
+#define CVTSI2SD_RM(O,I,OFF) {0xF2,REX8(I,0),0x0F,0x2A,0x40+A_0REG(I,O),OFF}
+#define CVTSI2SD_RM0(O,I)    {0xF2,REX8(I,0),0x0F,0x2A,A_0REG(I,O)}
 
 #define MOVSD(O,I)  {0xF2,0x0F,0x10,A_REG(I,O)}
 #define ADDSD(O,I)  {0xF2,0x0F,0x58,A_REG(I,O)}
@@ -92,8 +97,12 @@ typedef unsigned short RegM;
 #define MOV_RM0(I,O)    {REX8(O,I),0x8B,A_0REG(O,I)}
 #define MOV_RI(O,I)     {REX8(O,0),0xB8+(O) , BYTES8(I)}
 
-#define MOV4_MI(O,I,OFF) {REX4(O,0), 0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
-#define MOV4_RI(O,I)     {REX4(O,0), 0xB8+((O)&7) , BYTES4(I)}
+#define MOV4_MI(O,I,OFF) {REX4(O,0),0xC7,0x40+A_0REG(O,0),OFF,BYTES4(I)}
+#define MOV4_RI(O,I)     {REX4(O,0),0xB8+((O)&7) , BYTES4(I)}
+#define MOV4_MR(O,I,OFF) {REX4(O,I),0x89,0x40+A_0REG(O,I),OFF}
+#define MOV4_MR0(O,I)    {REX4(O,I),0x89,A_0REG(O,I)}
+#define MOV4_RM(I,O,OFF) {REX4(O,I),0x8B,0x40+A_0REG(O,I),OFF}
+#define MOV4_RM0(I,O)    {REX4(O,I),0x8B,A_0REG(O,I)}
 
 // TODO REX
 #define MOV1_MR(O,I,OFF) {0x88,0x40+A_0REG(O,I),OFF}

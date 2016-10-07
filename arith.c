@@ -33,17 +33,26 @@ D_A1(negate) {
   }
 }
 D_A1(reciprocal) {
-  if (l!=Z_t && l!=R_t) return;
-  a->t=R_t;
+  if (l&~(Z_t|R_t)) return;
   Reg i=a->i[0];
   if (!choose_reg(a)) {
     i=a_first_reg(a->u|1<<i);
-    if (l!=Z_t) ASM(a, MOVSD,i,a->i[0]);
+    if (l==R_t) ASM(a, MOVSD,i,a->i[0]);
   }
-  if (l==Z_t) ASM(a, CVTSI2SD,a->i[0],a->i[0]);
+  if (l==Z_t) ASM(a, CVTSI2SD,i,a->i[0]);
+  else if (IMPURE(l)) { V*v=NULL;
+    ASM(a, CMP4_MI,a->i[0],R_t);
+    ASM3(a, MOV_RM,a->i[0],a->i[0],(UI)(Z)&P(*v));
+    ASM(a, MOVSD_RM0,i,a->i[0]);
+    ASM(a, JE,0,-); I j=a->l;
+    ASM(a, MOVQ,a->i[0],i);
+    ASM(a, CVTSI2SD,i,a->i[0]);
+    ((C*)a->a)[j-1] = a->l-j;
+  }
   ASM(a, MOV4_RI,a->o,1);
   ASM(a, CVTSI2SD,a->o,a->o);
   ASM(a, DIVSD,a->o,i);
+  a->t=R_t;
 }
 #define ROUND(CMP,OP) \
   if (l!=Z_t && l!=R_t) return;                      \
