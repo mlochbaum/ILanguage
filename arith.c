@@ -118,7 +118,7 @@ I prepR(A a, I ii, T l, T r) {
 }
 
 D_A2(plus) {
-  if ((l|r)&~(Z_t|R_t)) return;
+  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM3(a, LEA1,a->o,a->i[0],a->i[1]);
@@ -128,7 +128,7 @@ D_A2(plus) {
   }
 }
 D_A2(minus) {
-  if ((l|r)&~(Z_t|R_t)) return;
+  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
@@ -148,7 +148,7 @@ D_A2(minus) {
   }
 }
 D_A2(times) {
-  if ((l|r)&~(Z_t|R_t)) return;
+  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
@@ -158,7 +158,7 @@ D_A2(times) {
   }
 }
 D_A2(divide) {
-  if ((l|r)&~(Z_t|R_t)) return;
+  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
   I ii=choose_regs(a); a->t=R_t;
   Reg ai1=a->i[1];
   if (ii==1) {
