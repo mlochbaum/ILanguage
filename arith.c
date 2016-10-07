@@ -138,17 +138,13 @@ D_A2(times) {
   }
 }
 D_A2(divide) {
-  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
-  I ii=choose_regs(a); a->t=R_t;
-  Reg ai1=a->i[1];
-  if (ii==1) {
-    ai1=a_first_reg(a->u|1<<a->o|1<<a->i[0]);
-    if (r==R_t) ASM(a, MOVSD,ai1,a->o);
-  }
-  if (l==Z_t) ASM(a, CVTSI2SD,a->o,a->i[0]);
-  else if (a->i[0]!=a->o) ASM(a, MOVSD,a->o,a->i[0]);
-  if (r==Z_t) ASM(a, CVTSI2SD,ai1,a->i[1]);
-  ASM(a, DIVSD,a->o,a->i[1]);
+  if ((l|r)&~(Z_t|R_t)) return;
+  Reg i1 = (choose_regs(a)==1) ? a->i[1]
+                               : a_first_reg(a->u|1<<a->o|1<<a->i[0]);
+  a_RfromT(a,r,i1,a->i[1]);
+  a_RfromT(a,l,a->o,a->i[0]);
+  ASM(a, DIVSD,a->o,i1);
+  a->t=R_t;
 }
 D_A2(mod) {
   if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
