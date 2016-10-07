@@ -49,6 +49,8 @@ typedef unsigned short RegM;
 
 #define CMP4_MI(O,I) {REX4(O,0),0x81,A_0REG(O,7),BYTES4(I)}
 
+#define MOVZX4(I,O) {REX4(O,I),0x0F,0xB6,A_REG(O,I)}
+
 #define CMOVNE(I,O) {REX8(O,I),0x0F,0x45,A_REG(O,I)}
 #define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
 
@@ -135,6 +137,24 @@ typedef unsigned short RegM;
 #define JLE(O,I) {0x7E,((UC)(O)-2)}
 #define JG(O,I)  {0x7F,((UC)(O)-2)}
 
+#define C_O   0x0
+#define C_NO  0x1
+#define C_B   0x2
+#define C_AE  0x3
+#define C_E   0x4
+#define C_NE  0x5
+#define C_BE  0x6
+#define C_A   0x7
+#define C_S   0x8
+#define C_NS  0x9
+#define C_P   0xA
+#define C_NP  0xB
+#define C_L   0xC
+#define C_GE  0xD
+#define C_LE  0xE
+#define C_G   0xF
+
+#define SETX(O,C)  {0x0F,0x90+(C),A_REG(O,0)}
 #define SETO(O,I)  {0x0F,0x90,A_REG(O,0)}
 #define SETNO(O,I) {0x0F,0x91,A_REG(O,0)}
 #define SETB(O,I)  {0x0F,0x92,A_REG(O,0)}
