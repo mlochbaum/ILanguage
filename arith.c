@@ -6,7 +6,7 @@ D_L2(arith) { return 2*IS_ARITH(r) + IS_ARITH(l); }
 D_D1(arith) { return arith_l1(T(l)); }
 D_D2(arith) { return arith_l2(T(l),T(r)); }
 
-D_T2(arith) { return max(l,r); }
+D_T2(arith) { return (l&r&Z_t) | ((l|r)&(Z_t|R_t) ? (l|r)&R_t : 0); }
 
 // Monads
 #define OP(op) { switch (T(l)) { M_L(Z,op); M_L(R,op); } del(l); }
