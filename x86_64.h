@@ -126,8 +126,22 @@ typedef unsigned short RegM;
 #define JLE(O,I) {0x7E,((UC)(O)-2)}
 #define JG(O,I)  {0x7F,((UC)(O)-2)}
 
+#define SETO(O,I)  {0x0F,0x90,A_REG(O,0)}
+#define SETNO(O,I) {0x0F,0x91,A_REG(O,0)}
 #define SETB(O,I)  {0x0F,0x92,A_REG(O,0)}
+#define SETAE(O,I) {0x0F,0x93,A_REG(O,0)}
+#define SETE(O,I)  {0x0F,0x94,A_REG(O,0)}
+#define SETNE(O,I) {0x0F,0x95,A_REG(O,0)}
+#define SETBE(O,I) {0x0F,0x96,A_REG(O,0)}
 #define SETA(O,I)  {0x0F,0x97,A_REG(O,0)}
+#define SETS(O,I)  {0x0F,0x98,A_REG(O,0)}
+#define SETNS(O,I) {0x0F,0x99,A_REG(O,0)}
+#define SETP(O,I)  {0x0F,0x9A,A_REG(O,0)}
+#define SETNP(O,I) {0x0F,0x9B,A_REG(O,0)}
+#define SETL(O,I)  {0x0F,0x9C,A_REG(O,0)}
+#define SETGE(O,I) {0x0F,0x9D,A_REG(O,0)}
+#define SETLE(O,I) {0x0F,0x9E,A_REG(O,0)}
+#define SETG(O,I)  {0x0F,0x9F,A_REG(O,0)}
 
 #define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
 

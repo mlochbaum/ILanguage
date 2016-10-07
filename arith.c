@@ -173,29 +173,52 @@ D_A2(divide) {
   ASM(a, DIVSD,a->o,a->i[1]);
 }
 D_A2(mod) {
-  if ((l|r)&~(Z_t)) return;
-  Reg r_=REG_IDIV_0, r1=REG_IDIV_1;
-  C shortcut = a->i[0]==r_;
-  PROTECT_1of3(1<<r_|1<<r1);
-  if (!shortcut) ASM(a, MOV,r_,a->i[0]);
-  ASM(a, CQO,-,-);
-  ASM(a, IDIV,a->i[1],-);
-  PROTECT_2of3; // TODO what if r1 moves?
+  if (((l|r)&~(Z_t|R_t)) || IMPURE(l) || IMPURE(r)) return;
+  switch (a->t=arith_t2(l,r)) {
+    case Z_t: {
+      Reg r_=REG_IDIV_0, r1=REG_IDIV_1;
+      C shortcut = a->i[0]==r_;
+      PROTECT_1of3(1<<r_|1<<r1);
+      if (!shortcut) ASM(a, MOV,r_,a->i[0]);
+      ASM(a, CQO,-,-);
+      ASM(a, IDIV,a->i[1],-);
+      PROTECT_2of3; // TODO what if r1 moves?
 
-  ASM(a, MOV,r_,a->i[1]);
-  ASM(a, XOR,r_,r1);
-  ASM(a, JNS,0,-); I j=a->l;
-  Reg rt;
-  if (a->u&1<<a->i[1]) ASM(a, MOV,rt=a_first_reg(a->u|1<<r_|1<<r1),a->i[1]);
-  else rt = a->i[1];
-  ASM(a, ADD,rt,r1);
-  ASM(a, TEST,r1,r1);
-  ASM(a, CMOVNE,r1,rt);
-  ((C*)a->a)[j-1] = a->l-j;
+      ASM(a, MOV,r_,a->i[1]);
+      ASM(a, XOR,r_,r1);
+      ASM(a, JNS,0,-); I j=a->l;
+      Reg rt;
+      if (a->u&1<<a->i[1]) ASM(a, MOV,rt=a_first_reg(a->u|1<<r_|1<<r1),a->i[1]);
+      else rt = a->i[1];
+      ASM(a, ADD,rt,r1);
+      ASM(a, TEST,r1,r1);
+      ASM(a, CMOVNE,r1,rt);
+      ((C*)a->a)[j-1] = a->l-j;
 
-  if (a->o==NO_REG) a->o = a->u&1<<r1 ? a_first_reg(a->u) : r1;
-  if (a->o!=r1) ASM(a, MOV,a->o,r1);
-  PROTECT_3of3; a->t=Z_t; return;
+      if (a->o==NO_REG) a->o = a->u&1<<r1 ? a_first_reg(a->u) : r1;
+      if (a->o!=r1) ASM(a, MOV,a->o,r1);
+      PROTECT_3of3; return;
+    }
+    case R_t: {
+      I ii=prepR(a,ii,l,r);
+      RegM u = a->u|1<<a->o|1<<a->i[0]|1<<a->i[1];
+      Reg rd = a_first_reg(u), rs = a_first_reg(u|1<<rd);
+      ASM(a, MOVSD,rd,a->i[0]);
+      ASM(a, DIVSD,rd,a->i[1]);
+      // Floor of rd (TODO: large values of rd)
+      ASM(a, CVTTSD2SI,rd,rd);
+      ASM(a, CVTSI2SD,rd,rd);
+      ASM(a, XOR4,rs,rs);
+      ASM(a, TEST,rd,rd);
+      ASM(a, SETS,rs,-);
+      ASM(a, CVTSI2SD,rs,rs);
+      ASM(a, SUBSD,rd,rs);
+
+      ASM(a, MULSD,rd,a->i[1]);
+      if (a->i[0]!=a->o) ASM(a, MOVSD,a->o,a->i[0]);
+      ASM(a, SUBSD,a->o,rd);
+    }
+  }
 }
 
 #define CMPZ(jj,OP) \
