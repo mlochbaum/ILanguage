@@ -21,6 +21,7 @@ typedef unsigned char Reg;
 #define REG_ARG3 1
 #define REG_ARG4 8
 #define REG_ARG5 9
+#define REG_SP 4
 #define NO_REG 16
 #define NO_REG_NM 17
 typedef unsigned short RegM;
@@ -56,6 +57,10 @@ typedef unsigned short RegM;
 
 #define ADDI(O,I) {REX8(O,0),0x83,A_REG(O,0),I}
 #define SHRI(O,I) {REX8(O,0),0xC1,A_REG(O,5),I}
+
+#define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
+#define ADDI1(O,I) {REX8(O,0),0x83,A_REG(O,0),(UI)(I)}
+#define SUBI1(O,I) {REX8(O,0),0x83,A_REG(O,5),(UI)(I)}
 
 #define XOR4(O,I)  {REX4(O,I),0x31,A_REG(O,I)}
 
@@ -171,7 +176,5 @@ typedef unsigned short RegM;
 #define SETGE(O,I) {0x0F,0x9D,A_REG(O,0)}
 #define SETLE(O,I) {0x0F,0x9E,A_REG(O,0)}
 #define SETG(O,I)  {0x0F,0x9F,A_REG(O,0)}
-
-#define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
 
 #define RET {0xC3}

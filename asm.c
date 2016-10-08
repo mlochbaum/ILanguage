@@ -124,6 +124,26 @@ void a_malloc(A a, I l, Reg res, RegM keep) {
   pop_regs(a, pop);
 }
 
+typedef void (*del_t)(V); del_t del_S(T);
+void a_del(A a, T t, Reg i) {
+  del_t del=del_S(t); if (!del) return;
+  RegM pop = push_regs(a, a->u);
+  if (i!=REG_ARG1) ASM(a, MOV, REG_ARG1,i);
+  if (PURE(t)) {
+    ASM(a, SUBI1,REG_SP,8);
+    ASM(a, MOV_MR0,REG_SP,REG_ARG1);
+    ASM_RAW(a, {0x24});
+    ASM(a, MOV,REG_ARG1,REG_SP);
+  }
+  ASM(a, MOV4_RI, REG_ARG0,t);
+  ASM(a, MOV4_RI, REG_RES,(I)(Z)del);
+  ASM(a, CALL, REG_RES,-);
+  if (PURE(t)) {
+    ASM(a, ADDI1,REG_SP,8);
+  }
+  pop_regs(a, pop);
+}
+
 void apply_A_L(A a, L f, I n, T* x) {
   I l=f->l; T t[l], tt=0; Reg o[l]; RegM au=a->u;
 
@@ -181,10 +201,19 @@ void apply_A_F(A a, F f, I n, T* x) {
   if (T(f->f)==B_t) return apply_A_FB(a, f, n, x);
 }
 
+void apply_A_Z(A a, Z z, I n, T* x) {
+  if (a->o==NO_REG) a->o=a_first_reg(a->u);
+  RegM ui=0; DDO(i,n) ui|=1<<a->i[i]; ui&=~a->u; a->u|=ui;
+  DO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
+  if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, a->o, z);
+  else ASM(a, MOV4_RI, a->o, z);
+  a->t=Z_t;
+}
+
 void apply_A(A a, V f, I n, T* x) {
 #define LINE(T) case T##_t: return apply_A_##T(a,T(f),n,x);
   PURIFY(f); T t=T(f);
-  switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) }
+  switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) LINE(Z) }
   //Asm call apply(f,n,...)
 #undef LINE
 }
