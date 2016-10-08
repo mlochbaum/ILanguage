@@ -212,7 +212,7 @@ D_P11(reduce) {
     asm_load(a,t[1],ai[1],REG_ARG0);
     apply_A(a,l,2,t);
     if (a->t) {
-      ASM(a, ADDI,REG_ARG0,s);
+      ASM(a, ADDI1,REG_ARG0,s);
       ASM(a, CMP,REG_ARG0,REG_ARG1);
       ASM(a, JB,label-a->l,-);
       I c=L(ll)->c, o=L(ll)->o;

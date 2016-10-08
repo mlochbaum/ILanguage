@@ -55,12 +55,11 @@ typedef unsigned short RegM;
 #define CMOVNE(I,O) {REX8(O,I),0x0F,0x45,A_REG(O,I)}
 #define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
 
-#define ADDI(O,I) {REX8(O,0),0x83,A_REG(O,0),I}
-#define SHRI(O,I) {REX8(O,0),0xC1,A_REG(O,5),I}
-
 #define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
+
 #define ADDI1(O,I) {REX8(O,0),0x83,A_REG(O,0),(UI)(I)}
 #define SUBI1(O,I) {REX8(O,0),0x83,A_REG(O,5),(UI)(I)}
+#define SHRI1(O,I) {REX8(O,0),0xC1,A_REG(O,5),(UI)(I)}
 
 #define XOR4(O,I)  {REX4(O,I),0x31,A_REG(O,I)}
 
