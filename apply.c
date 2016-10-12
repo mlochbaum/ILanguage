@@ -71,10 +71,9 @@ void apply_P(V v, V f, I n, V* x) {
 V apply(V f, I n, V* x) {
   T t[n]; DDO(i,n) t[i]=T(x[i]);
   V v; T(v)=apply_T(f, n, t); P(v)=MALLOC(t_sizeof(T(v)));
-  f=apply_S(f, n, t);
   apply_P(v, f, n, x);
   if (err) { FREE(P(v)); v=newE(err); err=NULL; } else { PURIFY_D(v); }
-  ddel(f); return v;
+  return v;
 }
 
 
