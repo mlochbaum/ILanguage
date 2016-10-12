@@ -125,12 +125,18 @@ void apply_P_Q(V v, Q q, I n, V* x) {
 }
 
 T apply_T_L(L l, I n, T* x) { return L_t; }
+V list_at_pure(L l, I i) { V r=list_at(l,i); PURIFY(r); return r; }
 void apply_P_L(V p, L l, I n, V* x) {
-  if (!(l->t & (NCONST_t))) { DDO(i,n) del(x[i]); l->r++; setL(p,l); return; }
-  V xt[n]; DECL_ARR(V, vs, l->c);
-  DDO(i, l->l-1) {
-    DDO(j,n)xt[j]=cpy(x[j]); vs[i] = apply(list_at(l,i), n, xt);
-    DO(j,n)FREE(P(xt[j]));
-  } vs[l->l-1] = apply(list_at(l,i), n, x);
-  setL(p, wrapList(l->l, vs));
+  if (!(l->t & NCONST_t)) { DDO(i,n) del(x[i]); l->r++; setL(p,l); return; }
+  T tx[n]; DDO(i,n) tx[i]=T(x[i]);
+  T tr=0; DO(i,l->l) tr|=apply_T(list_at_pure(l,i),n,tx);
+  I s=t_sizeof(tr); P lp=MALLOC(l->l*s);
+  V xt[n];
+  L ll = wrapL(tr,next_pow_2(l->l),l->l,0,lp);
+  DO(i, l->l-1) {
+    DDO(j,n) xt[j]=cpy(x[j]);
+    apply_P(TP(tr, lp+s*i), list_at_pure(l,i), n, xt);
+    DO(j,n) FREE(P(xt[j]));
+  } apply_P(TP(tr, lp+s*(l->l-1)), list_at_pure(l,l->l-1), n, x);
+  if (!err) setL(p, ll);
 }
