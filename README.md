@@ -1,3 +1,9 @@
+## Version 0.0
+
+This branch contains I, version 0.0. It does not have the speed of the
+JIT-compiled features from version 0.1, but is less architecture-dependent
+and relatively stable, with very few memory bugs.
+
 # The I programming language
 
 I is a language which generalizes the array and functional capabilities of
