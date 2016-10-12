@@ -13,7 +13,7 @@ D_T2(arith) { return (l&r&Z_t) | ((l|r)&(Z_t|R_t) ? (l|r)&R_t : 0); }
 #define M_L(T, op) case T##_t: set##T(p, op T(l)); break
 D_P1(negate) OP(-);
 #undef M_L
-#define M_L(T, op) case T##_t: set##T(p, op(T(l))); break
+#define M_L(T, op) case T##_t: setZ(p, op(T(l))); break
 D_P1(floor) OP(floor);
 D_P1(ceiling) OP(ceiling);
 #undef M_L
