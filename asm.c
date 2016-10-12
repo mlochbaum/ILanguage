@@ -280,3 +280,6 @@ S apply_SA(V f, I n, T* x) {
   Asm aa = asm_mmap(a->l); memcpy(aa,a->a,a->l); FREE(a->a);
   return (S){a->t,aa,NULL};
 }
+V apply_S(V f, I n, T* x) {
+  S s=apply_SA(f, n, x); return (s.f) ? newS(s) : cpy(f);
+}

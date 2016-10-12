@@ -193,14 +193,12 @@ D_P11(reduce) {
   if (!(T(ll)&L_t)) { return mv_P(p, ll); }
   I len=L(ll)->l;
   if (len==0) { del(ll); return identity_of_p1(p,l); }
-  T t[3]; t[1]=t[2]=L(ll)->t; I s=t_sizeof(t[1]); V ls;
+  T t[3]; t[1]=t[2]=L(ll)->t; I s=t_sizeof(t[1]);
   get(ll); I i; V vt,v=cpy1(listV_ats(ll,0,s));
   for(i=1;i<len&&(!err);i++) {
     t[0]=t[2]; t[2]=apply_T(l,2,t); if(t[0]==t[2]) break;
     vt=v; T(v)=t[2]; P(v)=MALLOC(t_sizeof(T(v)));
-    ls=apply_S(l,2,t);
-    apply2_P(v, ls, vt, listV_ats(ll,i,s)); FREE(P(vt));
-    ddel(ls);
+    apply2_P(v, l, vt, listV_ats(ll,i,s)); FREE(P(vt));
   }
   if (i<len && !err) {
     AS as; A a=&as; a->n=2; a->l=0; a->t=0;
@@ -231,9 +229,7 @@ D_P11(reduce) {
       void (*f)(P,P,P); f=asm_mmap(a->l); memcpy(f,a->a,a->l);
       f(lp+s*(o+i), end, v.p);
     } else {
-      ls=apply_S(l,2,t);
-      do { apply2_P(v, ls, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
-      ddel(ls);
+      do { apply2_P(v, l, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
     }
     FREE(a->a);
   }
