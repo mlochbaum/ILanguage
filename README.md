@@ -14,6 +14,16 @@ Some features and design goals of I include:
 * Near-nonexistent syntax. Everything is function application.
 * Whitespace defines the order of precedence in a visually intuitive way.
 
+## Portability
+
+The master branch contains version 0.1, which uses JIT compilation to do
+some operations very quickly. The compilation currently targets only the
+x86-64 architecture. Nearly all 64-bit desktop or laptop processors should
+use this architecture, but if your machine does not, you may want to use
+version 0.0, branch `v0.0`. All versions of I have only been tested on
+Linux and would probably require a small amount of modification to work
+with other operating systems.
+
 ## Building I
 
 To build, run `gcc *.c -o I`. Then `./I` is a command-line interpreter.
