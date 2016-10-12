@@ -26,8 +26,8 @@ typedef AS* A;
 void apply_A(A a, V f, I n, T* x);
 
 
-// Given a mask, find the first unmarked register.
-Reg a_first_reg(RegM);
+// Given a mask, get an unmarked register.
+Reg get_reg(RegM);
 
 // Choose a->i and a->o (ensuring that neither is NO_REG or NO_REG_NM)
 I choose_reg(A); // One input

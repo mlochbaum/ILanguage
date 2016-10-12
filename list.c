@@ -204,7 +204,7 @@ D_P11(reduce) {
     AS as; A a=&as; a->n=2; a->l=0; a->t=0;
     a->u=REG_MASK|1<<REG_ARG0|1<<REG_ARG1;
     Reg ai[2]; a->i=ai;
-    a->o=ai[0]=REG_RES; ai[1]=a_first_reg(a->u|1<<ai[0]);
+    a->o=ai[0]=REG_RES; ai[1]=get_reg(a->u|1<<ai[0]);
     ASM(a, PUSH,REG_ARG2,-);
     asm_load(a,t[0],ai[0],REG_ARG2); I label=a->l;
     asm_load(a,t[1],ai[1],REG_ARG0);

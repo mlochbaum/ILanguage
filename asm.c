@@ -5,21 +5,21 @@
 #include "asm.h"
 
 // TODO support for compilers other than gcc
-Reg a_first_reg(RegM u) { return __builtin_ctz(~u); }
+Reg get_reg(RegM u) { return __builtin_ctz(~u); }
 I choose_reg(A a) {
   Reg i=a->i[0], o=a->o;
-  if (i==NO_REG_NM) a->u|=1<< (i = a_first_reg(a->u | 1<<o));
-  if (o==NO_REG) o = (i<NO_REG && !(a->u&1<<i)) ? i : a_first_reg(a->u);
+  if (i==NO_REG_NM) a->u|=1<< (i = get_reg(a->u | 1<<o));
+  if (o==NO_REG) o = (i<NO_REG && !(a->u&1<<i)) ? i : get_reg(a->u);
   if (i==NO_REG) i = o;
   a->i[0]=i; a->o=o; return i!=o;
 }
 I choose_regs(A a) {
   I n=a->n; Reg *i=a->i, o=a->o;
-  DDO(j,n) if (i[j]==NO_REG_NM) { a->u|=1<< (i[j] = a_first_reg(a->u|1<<o)); }
-  RegM ui=a->u; DO(j,n) if (i[j]==NO_REG) { ui|=1<< (i[j] = a_first_reg(ui)); }
+  DDO(j,n) if (i[j]==NO_REG_NM) { a->u|=1<< (i[j] = get_reg(a->u|1<<o)); }
+  RegM ui=a->u; DO(j,n) if (i[j]==NO_REG) { ui|=1<< (i[j] = get_reg(ui)); }
   I ii=0; if (o==NO_REG) {
     while (ii<n  &&  a->u & 1<<a->i[ii]) ii++;
-    a->o = (ii==n) ? a_first_reg(a->u) : i[ii];
+    a->o = (ii==n) ? get_reg(a->u) : i[ii];
   } else {
     while (ii<n && o!=a->i[ii]) ii++;
   }
@@ -56,7 +56,7 @@ void apply_A_O(A a, O f, I n, T* x) {
   a->o=af.o; a->t=af.t; a->l=af.l; a->a=af.a;
 }
 
-#define EACH_REG(U,R) for (RegM ui=U; R=a_first_reg(~ui), ui; ui-=1<<R)
+#define EACH_REG(U,R) for (RegM ui=U; R=get_reg(~ui), ui; ui-=1<<R)
 #define DEACH_REG(U,R) Reg R; EACH_REG(U,R)
 Prot2State clear_regs(A a, RegM u) {
   RegM uc = u&a->u, ui=0; DDO(ii,a->n) ui|=1<<a->i[ii];
@@ -64,13 +64,13 @@ Prot2State clear_regs(A a, RegM u) {
   DO(ii,a->n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || u&si) {
-      Reg i_ = a->i[ii] = a_first_reg(uu);
+      Reg i_ = a->i[ii] = get_reg(uu);
       uu |= 1<<i_;
       if (u&si) ASM(a, MOV,i_,i);
       else if (i==NO_REG_NM) a->u|=1<<i_;
     }
   }
-  Reg o=a->o; if (u&1<<o) a->o=a_first_reg(uu);
+  Reg o=a->o; if (u&1<<o) a->o=get_reg(uu);
   DEACH_REG(uc,r) { ASM(a,PUSH,r,-); }
   return (Prot2State){uc,o};
 }
@@ -85,7 +85,7 @@ Prot3State clear_regs_3(A a, RegM u) {
   DO(ii,a->n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || p2&si) {
-      Reg i_ = a->i[ii] = a_first_reg(uu);
+      Reg i_ = a->i[ii] = get_reg(uu);
       uu |= 1<<i_;
       if (p2&si) ASM(a, MOV,i_,i);
       else if (i==NO_REG_NM) a->u|=1<<i_;
@@ -93,13 +93,13 @@ Prot3State clear_regs_3(A a, RegM u) {
   }
   Reg r; RegM m=0;
   EACH_REG(p2,r) { ASM(a,PUSH,r,-); }
-  EACH_REG(p1,r) { ASM(a,PUSH,r,-); m|=a_first_reg(uu|m); }
+  EACH_REG(p1,r) { ASM(a,PUSH,r,-); m|=get_reg(uu|m); }
   return (Prot3State){p1,m,p2};
 }
 void clear_regs_post(A a, RegM mov, RegM pop) {
   Reg rs[8*sizeof(RegM)]; I i=0;
   DEACH_REG(pop,r) {
-    Reg m=a_first_reg(mov); mov-=1<<m;
+    Reg m=get_reg(mov); mov-=1<<m;
     ASM(a, MOV,m,r); rs[i++]=r;
   }
   while(--i>=0) { ASM(a,POP,rs[i],-); }
@@ -151,7 +151,7 @@ void apply_A_L(A a, L f, I n, T* x) {
 
   // Don't add any code to a; store in as
   AS ax=*a; DDO(i,n) protect_input(&a->i[i],&ax.u);
-  Reg vals = a_first_reg(ax.u);
+  Reg vals = get_reg(ax.u);
   a->u |= 1<<vals; ax.u |= 1<<vals;
   Asm as[l]; I al[l];
   DO(i, l) {
@@ -202,7 +202,7 @@ void apply_A_F(A a, F f, I n, T* x) {
 }
 
 void apply_A_Z(A a, Z z, I n, T* x) {
-  if (a->o==NO_REG) a->o=a_first_reg(a->u);
+  if (a->o==NO_REG) a->o=get_reg(a->u);
   RegM ui=0; DDO(i,n) ui|=1<<a->i[i]; ui&=~a->u; a->u|=ui;
   DO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
   if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, a->o, z);

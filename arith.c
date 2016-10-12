@@ -25,7 +25,7 @@ D_A1(negate) {
               ASM(a, NEG,-,a->o); a->t=Z_t; return;
     case R_t: { Reg i=a->i[0];
                 if (!choose_reg(a)) {
-                  i=a_first_reg(a->u|1<<i);
+                  i=get_reg(a->u|1<<i);
                   ASM(a, MOVSD,i,a->i[0]);
                 }
                 ASM(a, PXOR,a->o,a->o);
@@ -34,7 +34,7 @@ D_A1(negate) {
 }
 D_A1(reciprocal) {
   if (l&~(Z_t|R_t)) return;
-  Reg i = choose_reg(a) ? a->i[0] : a_first_reg(a->u|1<<i);
+  Reg i = choose_reg(a) ? a->i[0] : get_reg(a->u|1<<i);
   a_RfromT(a,l,i,a->i[0]);
   ASM(a, MOV4_RI,a->o,1);
   ASM(a, CVTSI2SD,a->o,a->o);
@@ -42,16 +42,16 @@ D_A1(reciprocal) {
   a->t=R_t;
 }
 #define ROUND(CMP,OP) \
-  if (l!=Z_t && l!=R_t) return;                      \
-  a->t=Z_t; I c=choose_reg(a);                       \
-  if (l==R_t) {                                      \
-    Reg i=a->i[0], o=a->o, r=a_first_reg(a->u|1<<o); \
-    ASM(a, CVTTSD2SI,o,i);                           \
-    ASM(a, XOR4,r,r);                                \
-    ASM(a, CVTSI2SD,r,o);                            \
-    ASM(a, UCOMISD,r,i);                             \
-    ASM(a, SET##CMP,r,-);                            \
-    ASM(a, OP,o,r);                                  \
+  if (l!=Z_t && l!=R_t) return;                  \
+  a->t=Z_t; I c=choose_reg(a);                   \
+  if (l==R_t) {                                  \
+    Reg i=a->i[0], o=a->o, r=get_reg(a->u|1<<o); \
+    ASM(a, CVTTSD2SI,o,i);                       \
+    ASM(a, XOR4,r,r);                            \
+    ASM(a, CVTSI2SD,r,o);                        \
+    ASM(a, UCOMISD,r,i);                         \
+    ASM(a, SET##CMP,r,-);                        \
+    ASM(a, OP,o,r);                              \
   } else if (c) ASM(a, MOV,a->o,a->i[0]);
 D_A1(floor) { ROUND(A,SUB) }
 D_A1(ceiling) { ROUND(B,ADD) }
@@ -115,7 +115,7 @@ D_A2(minus) {
               break;
     case R_t: ii=prepR(a,ii,l,r);
               if (ii) {
-                Reg r=a_first_reg(a->u|1<<a->o);
+                Reg r=get_reg(a->u|1<<a->o);
                 if (r!=a->i[0]) ASM(a, MOVSD,r,a->i[0]);
                 ASM(a, SUBSD,r,a->o);
                 ASM(a, MOVSD,a->o,r);
@@ -140,7 +140,7 @@ D_A2(times) {
 D_A2(divide) {
   if ((l|r)&~(Z_t|R_t)) return;
   Reg i1 = (choose_regs(a)==1) ? a->i[1]
-                               : a_first_reg(a->u|1<<a->o|1<<a->i[0]);
+                               : get_reg(a->u|1<<a->o|1<<a->i[0]);
   a_RfromT(a,r,i1,a->i[1]);
   a_RfromT(a,l,a->o,a->i[0]);
   ASM(a, DIVSD,a->o,i1);
@@ -162,21 +162,21 @@ D_A2(mod) {
       ASM(a, XOR,r_,r1);
       ASM(a, JNS,0,-); I j=a->l;
       Reg rt;
-      if (a->u&1<<a->i[1]) ASM(a, MOV,rt=a_first_reg(a->u|1<<r_|1<<r1),a->i[1]);
+      if (a->u&1<<a->i[1]) ASM(a, MOV,rt=get_reg(a->u|1<<r_|1<<r1),a->i[1]);
       else rt = a->i[1];
       ASM(a, ADD,rt,r1);
       ASM(a, TEST,r1,r1);
       ASM(a, CMOVNE,r1,rt);
       ((C*)a->a)[j-1] = a->l-j;
 
-      if (a->o==NO_REG) a->o = a->u&1<<r1 ? a_first_reg(a->u) : r1;
+      if (a->o==NO_REG) a->o = a->u&1<<r1 ? get_reg(a->u) : r1;
       if (a->o!=r1) ASM(a, MOV,a->o,r1);
       PROTECT_3of3; return;
     }
     case R_t: {
       I ii=prepR(a,ii,l,r);
       RegM u = a->u|1<<a->o|1<<a->i[0]|1<<a->i[1];
-      Reg rd = a_first_reg(u), rs = a_first_reg(u|1<<rd);
+      Reg rd = get_reg(u), rs = get_reg(u|1<<rd);
       ASM(a, MOVSD,rd,a->i[0]);
       ASM(a, DIVSD,rd,a->i[1]);
       // Floor of rd (TODO: large values of rd)
