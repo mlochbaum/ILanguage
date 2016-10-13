@@ -46,6 +46,8 @@ void *asm_mmap(size_t);
 
 void asm_load(A a, T t, Reg o, Reg i);
 void asm_write(A a, T t, Reg o, Reg i);
+void asm_load_at(A a, T t, Reg o, Reg i, Reg e);
+void asm_write_at(A a, T t, Reg o, Reg i, Reg e);
 void a_RfromV(A a, Reg o, Reg i);
 void a_RfromT(A a, T t, Reg o, Reg i);
 

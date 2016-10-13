@@ -265,6 +265,26 @@ void asm_write(A a, T t, Reg o, Reg i) {
     ASM(a, AD_MR0,o,i);
   }
 }
+void asm_load_at(A a, T t, Reg o, Reg i, Reg e) {
+  if (IMPURE(t)) {
+    ASM(a, MOV,o,e);
+    ASM(a, SHLI1,o,4);
+    ASM(a, ADD,o,i);
+  } else {
+    ASM_MOV_PRE(a, t);
+    UC s=asm_load_stub(a,t,o,i,e);
+    ASM_RAW(a, AD_RMRS(o,i,e,s));
+  }
+}
+void asm_write_at(A a, T t, Reg o, Reg i, Reg e) {
+  if (IMPURE(t)) {
+    // TODO
+  } else {
+    ASM_MOV_PRE(a, t);
+    UC s=asm_write_stub(a,t,o,i,e);
+    ASM_RAW(a, AD_MRRS(o,i,e,s));
+  }
+}
 
 void a_RfromV(A a, Reg o, Reg i) {
   V*v=NULL;

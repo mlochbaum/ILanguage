@@ -63,6 +63,7 @@ typedef unsigned short RegM;
 
 #define ADDI1(O,I) {REX8(O,0),0x83,A_REG(O,0),(UI)(I)}
 #define SUBI1(O,I) {REX8(O,0),0x83,A_REG(O,5),(UI)(I)}
+#define SHLI1(O,I) {REX8(O,0),0xC1,A_REG(O,4),(UI)(I)}
 #define SHRI1(O,I) {REX8(O,0),0xC1,A_REG(O,5),(UI)(I)}
 
 #define XOR4(O,I)  {REX4(O,I),0x31,A_REG(O,I)}
@@ -136,6 +137,8 @@ typedef unsigned short RegM;
 #define AD_RM0(I,O)      AD_MR0(O,I)
 #define AD_MR(O,I,OFF)   {0x40+A_0REG(O,I),OFF}
 #define AD_RM(I,O,OFF)   AD_MR(O,I,OFF)
+#define AD_MRRS(O,A,B,S) {A_0REG(4,A),(((S)&3)<<6)+A_0REG(O,B)}
+#define AD_RMRS(A,O,B,S) AD_MRRS(O,A,B,S)
 
 #define CALL(O,I) {REX4(O,0),0xFF,A_REG(O,2)}
 
