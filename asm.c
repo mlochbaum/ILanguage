@@ -9,6 +9,7 @@ Reg get_reg(RegM u) { return __builtin_ctz(~u); }
 Reg get_reg_mark(RegM *u, RegM v) {
   Reg r=get_reg(*u|v); *u|=1<<r; return r;
 }
+RegM input_mask(A a) { RegM u=0; DDO(i,a->n) u|=1<<a->i[i]; return u; }
 I choose_reg(A a) {
   Reg i=a->i[0], o=a->o;
   if (i==NO_REG_NM) i=get_reg_mark(&a->u, 1<<o);
@@ -62,9 +63,9 @@ void apply_A_O(A a, O f, I n, T* x) {
 #define EACH_REG(U,R) for (RegM ui=U; R=get_reg(~ui), ui; ui-=1<<R)
 #define DEACH_REG(U,R) Reg R; EACH_REG(U,R)
 Prot2State clear_regs(A a, RegM u) {
-  RegM uc = u&a->u, ui=0; DDO(ii,a->n) ui|=1<<a->i[ii];
+  RegM uc = u&a->u, ui=input_mask(a);
   RegM uu = a->u|u|ui;
-  DO(ii,a->n) {
+  DDO(ii,a->n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || u&si) {
       Reg i_ = a->i[ii] = get_reg(uu);
@@ -83,9 +84,9 @@ void pop_regs_2(A a, RegM pop, Reg o) {
 }
 
 Prot3State clear_regs_3(A a, RegM u) {
-  RegM ui=0; DDO(ii,a->n) ui|=1<<a->i[ii];
+  RegM ui=input_mask(a);
   RegM p1 = ui&u&a->u, p2 = ((ui|a->u)&u)^p1, uu = a->u|u|ui;
-  DO(ii,a->n) {
+  DDO(ii,a->n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || p2&si) {
       Reg i_ = a->i[ii] = get_reg(uu);
@@ -205,8 +206,8 @@ void apply_A_F(A a, F f, I n, T* x) {
 
 void apply_A_Z(A a, Z z, I n, T* x) {
   if (a->o==NO_REG) a->o=get_reg(a->u);
-  RegM ui=0; DDO(i,n) ui|=1<<a->i[i]; ui&=~a->u; a->u|=ui;
-  DO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
+  RegM ui=input_mask(a)&~a->u; a->u|=ui;
+  DDO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
   if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, a->o, z);
   else ASM(a, MOV4_RI, a->o, z);
   a->t=Z_t;

@@ -31,6 +31,9 @@ Reg get_reg(RegM);
 // Get an register not marked in *u|v and mark it in *u.
 Reg get_reg_mark(RegM *u, RegM v);
 
+// Get the mask of all input registers.
+RegM input_mask(A);
+
 // Choose a->i and a->o (ensuring that neither is NO_REG or NO_REG_NM)
 I choose_reg(A); // One input
 I choose_regs(A); // Multiple inputs
