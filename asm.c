@@ -6,17 +6,20 @@
 
 // TODO support for compilers other than gcc
 Reg get_reg(RegM u) { return __builtin_ctz(~u); }
+Reg get_reg_mark(RegM *u, RegM v) {
+  Reg r=get_reg(*u|v); *u|=1<<r; return r;
+}
 I choose_reg(A a) {
   Reg i=a->i[0], o=a->o;
-  if (i==NO_REG_NM) a->u|=1<< (i = get_reg(a->u | 1<<o));
+  if (i==NO_REG_NM) i=get_reg_mark(&a->u, 1<<o);
   if (o==NO_REG) o = (i<NO_REG && !(a->u&1<<i)) ? i : get_reg(a->u);
   if (i==NO_REG) i = o;
   a->i[0]=i; a->o=o; return i!=o;
 }
 I choose_regs(A a) {
   I n=a->n; Reg *i=a->i, o=a->o;
-  DDO(j,n) if (i[j]==NO_REG_NM) { a->u|=1<< (i[j] = get_reg(a->u|1<<o)); }
-  RegM ui=a->u; DO(j,n) if (i[j]==NO_REG) { ui|=1<< (i[j] = get_reg(ui)); }
+  DDO(j,n) if (i[j]==NO_REG_NM) i[j]=get_reg_mark(&a->u, 1<<o);
+  RegM ui=a->u; DO(j,n) if (i[j]==NO_REG) i[j]=get_reg_mark(&ui,0);
   I ii=0; if (o==NO_REG) {
     while (ii<n  &&  a->u & 1<<a->i[ii]) ii++;
     a->o = (ii==n) ? get_reg(a->u) : i[ii];
@@ -151,8 +154,7 @@ void apply_A_L(A a, L f, I n, T* x) {
 
   // Don't add any code to a; store in as
   AS ax=*a; DDO(i,n) protect_input(&a->i[i],&ax.u);
-  Reg vals = get_reg(ax.u);
-  a->u |= 1<<vals; ax.u |= 1<<vals;
+  Reg vals = get_reg_mark(&ax.u,0); a->u |= 1<<vals;
   Asm as[l]; I al[l];
   DO(i, l) {
     if (i==l-1) ax.u = a->u;

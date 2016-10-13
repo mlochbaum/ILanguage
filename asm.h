@@ -28,6 +28,8 @@ void apply_A(A a, V f, I n, T* x);
 
 // Given a mask, get an unmarked register.
 Reg get_reg(RegM);
+// Get an register not marked in *u|v and mark it in *u.
+Reg get_reg_mark(RegM *u, RegM v);
 
 // Choose a->i and a->o (ensuring that neither is NO_REG or NO_REG_NM)
 I choose_reg(A); // One input
