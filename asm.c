@@ -302,13 +302,16 @@ void a_RfromT(A a, T t, Reg o, Reg i) {
   else if (t==R_t && o!=i) ASM(a, MOVSD,o,i);
 }
 
+Reg reg_args[] = { REG_ARG0, REG_ARG1, REG_ARG2,
+                   REG_ARG3, REG_ARG4, REG_ARG5 };
+
 S apply_SA(V f, I n, T* x) {
   AS as; A a=&as; a->n=n; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
-  Reg ai[n]; a->i=ai; DDO(i,n) ai[i]=7-i; // TODO More than 2 args
+  a->i=reg_args;
 
   ASM(a,PUSH,REG_ARG2,-);
-  DO(i,n) { V*v=NULL; ASM3(a,MOV_RM,ai[i],REG_ARG4,(UI)(Z)&v[i].p); }
-  DO(i,n) { asm_load(a,x[i],ai[i],ai[i]); }
+  DDO(i,n) { V*v=NULL; ASM3(a,MOV_RM,a->i[i],REG_ARG4,(UI)(Z)&v[i].p); }
+  DO(i,n) { asm_load(a,x[i],a->i[i],a->i[i]); }
 
   apply_A(a,f,n,x);
   if (!a->t) { FREE(a->a); return (S){0,NULL,NULL}; }

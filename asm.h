@@ -26,6 +26,9 @@ typedef AS* A;
 void apply_A(A a, V f, I n, T* x);
 
 
+// Array of argument registers
+extern Reg reg_args[];
+
 // Given a mask, get an unmarked register.
 Reg get_reg(RegM);
 // Get an register not marked in *u|v and mark it in *u.
