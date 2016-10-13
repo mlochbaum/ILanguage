@@ -67,7 +67,7 @@ typedef unsigned short RegM;
 
 #define XOR4(O,I)  {REX4(O,I),0x31,A_REG(O,I)}
 
-#define LEA1(O,A,B)  {REX8(A,O)+(((B)>7)<<1),0x8D,A_0REG(4,O),A_0REG(A,B)}
+#define LEA1(O,A,B)  {REX8_3(A,O,B),0x8D,A_0REG(4,O),A_0REG(A,B)}
 
 #define CQO(O,I)   {0x48,0x99}
 #define IDIV(O,I)  {REX8(O,0),0xF7,A_REG(O,7)}
