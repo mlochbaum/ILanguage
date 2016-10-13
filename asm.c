@@ -227,27 +227,44 @@ void *asm_mmap(size_t length) {
   return (mem == MAP_FAILED) ? NULL : mem;
 }
 
-// Load a value of type t from the address i into o.
-#define A(op) ASM(a,op,o,i)
-void asm_load(A a, T t, Reg o, Reg i) {
+#define A(op) ASM3(a,op,o,i,e)
+C asm_load_stub(A a, T t, Reg o, Reg i, Reg e) {
   switch (t) {
-    case B_t: case C_t: A(MOV1_RM0); break;
+    case B_t: case C_t: A(MOV1_RM_STUB); return 0;
     case E_t: case O_t: case F_t: case N_t: case Q_t: case L_t:
-    case Z_t: A(MOV_RM0); break;
-    case R_t: A(MOVSD_RM0); break;
+    case Z_t: A(MOV_RM_STUB); return 3;
+    case R_t: A(MOVSD_RM_STUB); return 3;
     /* TODO K */
   }
 }
-void asm_write(A a, T t, Reg o, Reg i) {
+C asm_write_stub(A a, T t, Reg o, Reg i, Reg e) {
   switch (t) {
-    case B_t: case C_t: A(MOV1_MR0); break;
+    case B_t: case C_t: A(MOV1_MR_STUB); return 0;
     case E_t: case O_t: case F_t: case N_t: case Q_t: case L_t:
-    case Z_t: A(MOV_MR0); break;
-    case R_t: A(MOVSD_MR0); break;
+    case Z_t: A(MOV_MR_STUB); return 3;
+    case R_t: A(MOVSD_MR_STUB); return 3;
     /* TODO K */
   }
 }
 #undef A
+void asm_load(A a, T t, Reg o, Reg i) {
+  if (IMPURE(t)) {
+    // TODO
+  } else {
+    ASM_MOV_PRE(a, t);
+    asm_load_stub(a,t,o,i,0);
+    ASM(a, AD_RM0,o,i);
+  }
+}
+void asm_write(A a, T t, Reg o, Reg i) {
+  if (IMPURE(t)) {
+    // TODO
+  } else {
+    ASM_MOV_PRE(a, t);
+    asm_write_stub(a,t,o,i,0);
+    ASM(a, AD_MR0,o,i);
+  }
+}
 
 void a_RfromV(A a, Reg o, Reg i) {
   V*v=NULL;

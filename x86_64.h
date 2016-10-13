@@ -36,8 +36,12 @@ typedef unsigned short RegM;
 // Instructions
 #define A_0REG(O,I) ((((I)&7)<<3) + ((O)&7))
 #define A_REG(O,I) (0xC0 + A_0REG(O,I))
-#define REX8(O,I) (0x48 + ((O)>7)+(((I)>7)<<2))
-#define REX4(O,I) (0x40 + ((O)>7)+(((I)>7)<<2))
+#define REX0(O,I) (((O)>7)+(((I)>7)<<2))
+#define REX0_3(O,I,E) (REX0(O,I)+(((E)>7)<<1))
+#define REX8(O,I) (0x48 + REX0(O,I))
+#define REX4(O,I) (0x40 + REX0(O,I))
+#define REX8_3(O,I,E) (0x48 + REX0_3(O,I,E))
+#define REX4_3(O,I,E) (0x40 + REX0_3(O,I,E))
 
 #define MOV(O,I)  {REX8(O,I),0x89,A_REG(O,I)}
 #define ADD(O,I)  {REX8(O,I),0x01,A_REG(O,I)}
@@ -120,6 +124,18 @@ typedef unsigned short RegM;
 #define MOVSD_MR0(O,I)    {0xF2,0x0F,0x11,A_0REG(O,I)}
 #define MOVSD_RM(I,O,OFF) {0xF2,0x0F,0x10,0x40+A_0REG(O,I),OFF}
 #define MOVSD_RM0(I,O)    {0xF2,0x0F,0x10,A_0REG(O,I)}
+
+#define ASM_MOV_PRE(A,T)  if ((T)==R_t) ASM_RAW(A, {0xF2})
+#define MOV1_MR_STUB(O,I,E)   {REX4_3(O,I,E),0x88}
+#define MOV1_RM_STUB(I,O,E)   {REX4_3(O,I,E),0x0F,0xB6}
+#define MOV_MR_STUB(O,I,E)    {REX8_3(O,I,E),0x89}
+#define MOV_RM_STUB(I,O,E)    {REX8_3(O,I,E),0x8B}
+#define MOVSD_MR_STUB(O,I,E)  {REX4_3(O,I,E),0x0F,0x11}
+#define MOVSD_RM_STUB(I,O,E)  {REX4_3(O,I,E),0x0F,0x10}
+#define AD_MR0(O,I)      {A_0REG(O,I)}
+#define AD_RM0(I,O)      AD_MR0(O,I)
+#define AD_MR(O,I,OFF)   {0x40+A_0REG(O,I),OFF}
+#define AD_RM(I,O,OFF)   AD_MR(O,I,OFF)
 
 #define CALL(O,I) {REX4(O,0),0xFF,A_REG(O,2)}
 
