@@ -307,10 +307,10 @@ Reg reg_args[] = { REG_ARG0, REG_ARG1, REG_ARG2,
 
 S apply_SA(V f, I n, T* x) {
   AS as; A a=&as; a->n=n; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
-  a->i=reg_args;
+  Reg ai[n]; a->i=ai; DDO(i,n) a->i[i]=reg_args[i];
 
   ASM(a,PUSH,REG_ARG2,-);
-  DDO(i,n) { V*v=NULL; ASM3(a,MOV_RM,a->i[i],REG_ARG4,(UI)(Z)&v[i].p); }
+  DO(i,n) { V*v=NULL; ASM3(a,MOV_RM,a->i[i],REG_ARG4,(UI)(Z)&v[i].p); }
   DO(i,n) { asm_load(a,x[i],a->i[i],a->i[i]); }
 
   apply_A(a,f,n,x);
