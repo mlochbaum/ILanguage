@@ -1,16 +1,18 @@
 // 16 integer registers:
-// 0 rax  (result)
-// 1 rcx  (arg 3)
-// 2 rdx  (arg 2)
-// 3 rbx
-// 4 rsp
-// 5 rbp
-// 6 rsi  (arg 1)
-// 7 rdi  (arg 0)
-// 8 r8   (arg 4)
-// 9 r9   (arg 5)
-// ...
-// 15 r15
+//                0 1 2  (0: not saved, 1: callee saves, 2: caller saves)
+// 0 rax  result  x
+// 1 rcx  arg 4   x
+// 2 rdx  arg 3   x
+// 3 rbx            x
+// 4 rsp  stack     x
+// 5 rbp  base      x
+// 6 rsi  arg 2   x
+// 7 rdi  arg 1   x
+// 8 r8   arg 5   x
+// 9 r9   arg 6   x
+// . r10              x
+// . r11              x
+// . r12-r15        x
 
 typedef unsigned char UC;
 typedef unsigned char Reg;
@@ -25,7 +27,8 @@ typedef unsigned char Reg;
 #define NO_REG 16
 #define NO_REG_NM 17
 typedef unsigned short RegM;
-#define REG_MASK 48 // Don't modify rsp or rbp
+#define REG_NEVER 48 // Never modify rsp or rbp
+#define REG_MASK 48 // 61496 // Registers which must be pushed before use
 #define REG_SAVE 4039 // Registers which function calls may modify
 
 // Ignore leading 0x40
