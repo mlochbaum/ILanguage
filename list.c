@@ -100,7 +100,7 @@ D_P2(select) {
 void cropList(V p, V l, I a, I b) {
   L lv=L(l);
   if (lv->r > 1) {
-    I c=lv->c, nl=lv->l-a-b;
+    I nl=lv->l-a-b;
     T t=lv->t; I s=t_sizeof(t); P v=MALLOC(s*next_pow_2(nl));
     DO(i,nl) valcpy(v+s*i, LIST_PTR_ATS(lv,i+a,s), t);
     del(l); setL(p, wrapArray(t, nl, v));

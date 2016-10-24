@@ -139,7 +139,7 @@ D_A22(hook) {
   return;
 }
 D_A22(compose) {
-  AS ax=*a, af=*a; Reg afi[2]; T tf[2];
+  AS ax=*a; Reg afi[2]; T tf[2];
 
   ax.n=1; ax.i=a->i; ax.o=NO_REG; ax.u|=1<<a->i[1];
   apply_A(&ax, l, 1, &ll); afi[0]=ax.o; tf[0]=ax.t;

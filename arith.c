@@ -57,7 +57,7 @@ D_A1(floor) { ROUND(A,SUB) }
 D_A1(ceiling) { ROUND(B,ADD) }
 D_A1(sqroot) {
   if (l!=Z_t && l!=R_t) return;
-  a->t=R_t; C c=choose_reg(a);
+  a->t=R_t; choose_reg(a);
   if (l==Z_t) ASM(a, CVTSI2SD,a->i[0],a->i[0]);
   ASM(a, SQRTSD,a->o,a->i[0]);
 }

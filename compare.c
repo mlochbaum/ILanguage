@@ -20,7 +20,7 @@ D_P2(greater_than_or_eq) { setZ(p, compare_arith(l,r)>=0); }
 
 void compare_arith_a(A a, T l, T r, UC code) {
   if ((l|r)&~(Z_t|R_t)) return;
-  I ii=choose_regs(a);
+  choose_regs(a);
   switch (arith_t2(l,r)) {
     case Z_t: ASM(a, CMP,a->i[0],a->i[1]);
               break;
