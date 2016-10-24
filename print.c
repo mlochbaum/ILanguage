@@ -68,7 +68,7 @@ Str Lfmt(L l) {
   if (ll==0) return strdup("N");
   if (l->t == C_t) {
     DECL_NSTR(s, ll+2); s[0]=s[ll+1]='"';
-    DDO(i,ll) s[i+1] = ((C*)LP(l))[(i+l->o)%l->c];
+    DO(i,ll) s[i+1] = ((C*)LP(l))[(i+l->o)%l->c];
     return s;
   }
   DECL_STR(s, 1); s[0]=' '; Str st; I len;
@@ -77,7 +77,7 @@ Str Lfmt(L l) {
     s=realloc(s,len+4); strcpy(s+1,st); FREE(st);
     strcpy(s+len,".; "); return s;
   }
-  I e=1; DDO(i, ll) {
+  I e=1; DO(i, ll) {
     st=PToString(l->t, LIST_PTR_AT(l,i)); len=1+strlen(st);
     s=realloc(s,e+len+(i==ll-1)); strcpy(s+e,st); FREE(st); e+=len;
     if(i==0) s[e-1]=';';
@@ -129,12 +129,12 @@ Str TShow(T t) {
 // Append s to d with indent i and update e to point to the end of d.
 Str appendI(Str d, Str s, I* e, I indent) {
   I et=*e; d=realloc(d, *e = et+1+indent+strlen(s)); Str di=d+et-1;
-  *(di++)='\n'; DDO(j,indent) *(di++)=' ';
+  *(di++)='\n'; DO(j,indent) *(di++)=' ';
   strcpy(di,s); FREE(s); return d;
 }
 Str Lshow(L l, I indent) {
   DECL_STR(sp, 0); I in=indent+2, e=1;
-  DDO(i, l->l) sp=appendI(sp, PShowI(l->t, LIST_PTR_AT(l,i), in), &e, in);
+  DO(i, l->l) sp=appendI(sp, PShowI(l->t, LIST_PTR_AT(l,i), in), &e, in);
   Str st = TShow(l->t);
   DECL_STR(s, strlen(st)+23+4*SI+e);
   sprintf(s, "%s, ref %d, %d[%d] (%d allocated)%s",
@@ -145,7 +145,7 @@ Str Lshow(L l, I indent) {
 Str Fshow(F f, I indent) {
   DECL_STR(sp, 0); I in=indent+2, e=1;
   sp=appendI(sp, ShowI(f->f, in), &e, in);
-  DDO(i, f->l) sp=appendI(sp, ShowI(f->x[i], in), &e, in);
+  DO(i, f->l) sp=appendI(sp, ShowI(f->x[i], in), &e, in);
   DECL_STR(s, 11+2*SI+e);
   sprintf(s, "ref %d, %d args%s",
                 f->r,f->l,   sp);

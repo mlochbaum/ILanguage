@@ -92,8 +92,8 @@ void get(V); // Ensure that the input is safely modifiable. Do not copy.
 
 
 // For loop shortcuts
-#define DO(var, max) for(var=0; var<max; var++)
-#define DDO(var, max) I var; DO(var, max)
+#define DO(var, max) for(I var=0; var<max; var++)
+#define DDO(var, max) I var; for(var=0; var<max; var++)
 
 // Arithmetic utilities
 // Arguments must not have side effects

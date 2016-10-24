@@ -40,10 +40,10 @@ void listcpy(L d, L s, I i) {
     if (s->r && s->t&COMP_t) {
       // Increase reference count of source's children
       I ss=t_sizeof(s->t);
-      DDO(j,s->l) (**(I**)(LIST_PTR_ATS(s,j,ss)))++;
+      DO(j,s->l) (**(I**)(LIST_PTR_ATS(s,j,ss)))++;
     }
     if (PURE(d->t)==PURE(s->t)) listcpy1(d,s,i);
-    else { DDO(j,s->l) LIST_AT(d,i+j) = cpy1(list_at(s,j)); }
+    else { DO(j,s->l) LIST_AT(d,i+j) = cpy1(list_at(s,j)); }
   }
   if (!s->r) { FREEL(s); }
 }
@@ -102,11 +102,11 @@ void cropList(V p, V l, I a, I b) {
   if (lv->r > 1) {
     I c=lv->c, nl=lv->l-a-b;
     T t=lv->t; I s=t_sizeof(t); P v=MALLOC(s*next_pow_2(nl));
-    DDO(i,nl) valcpy(v+s*i, LIST_PTR_ATS(lv,i+a,s), t);
+    DO(i,nl) valcpy(v+s*i, LIST_PTR_ATS(lv,i+a,s), t);
     del(l); setL(p, wrapArray(t, nl, v));
   } else {
-    if (a>0) { DDO(j,a) del(list_at(lv,a)); }
-    if (b>0) { DDO(j,b) del(list_at(lv,lv->l-b+j)); }
+    if (a>0) { DO(j,a) del(list_at(lv,a)); }
+    if (b>0) { DO(j,b) del(list_at(lv,lv->l-b+j)); }
     lv->o = (lv->o+a) % lv->c; lv->l -= a+b;
     mv_P(p, l);
   }
@@ -128,7 +128,7 @@ void addtype(V v, T t) {
   if (lt&t || IMPURE(lt)) get(v);
   else {
     I n=l->l, c=next_pow_2(n), s=t_sizeof(lt);
-    DECL_ARR(V,vs,c); DDO(i,n) { vs[i] = cpy1(list_ats(l,i,s)); }
+    DECL_ARR(V,vs,c); DO(i,n) { vs[i] = cpy1(list_ats(l,i,s)); }
     if (l->r<=1) {
       FREE(l->p); l->r=1; l->t|=t; l->c=c; l->o=0; l->p=(P)vs;
     } else {
@@ -158,7 +158,7 @@ D_L2(copy) { return 2*!!(r&ARITH_t) + 1; }
 D_D2(copy) { return copy_l2(T(l),T(r)); }
 D_P2(copy) {
   I t=T(l), ll=Z(r), s=t_sizeof(T(l)); del(r);
-  P v=MALLOC(next_pow_2(ll*s)); DDO(i,ll) valcpy(v+i*s,P(l),t);
+  P v=MALLOC(next_pow_2(ll*s)); DO(i,ll) valcpy(v+i*s,P(l),t);
   del(l); setL(p, wrapArray(t, ll, v));
 }
 
@@ -166,19 +166,19 @@ D_P1(iota) {
   I ll=getCeilZ(l); del(l);
   I w=(ll<0); if (w) ll=-ll;
   I c=next_pow_2(ll); DECL_ARR(Z,v,c);
-  if (w) { DDO(i,ll)v[i]=ll-1-i; } else { DDO(i,ll)v[i]=i; }
+  if (w) { DO(i,ll)v[i]=ll-1-i; } else { DO(i,ll)v[i]=i; }
   setL(p, wrapL(Z_t, c, ll, 0, v));
 }
 D_P2(iota) {
   switch (T(l)) {
     case Z_t: { Z lz=getZ(l), ll=getCeilZ(r)-lz; del(l); del(r);
                 I s=sign(ll); ll*=s; I c=next_pow_2(ll); DECL_ARR(Z,v,c);
-                DDO(i,ll)v[i]=lz+s*i; return setL(p, wrapL(Z_t, c, ll, 0, v));
+                DO(i,ll)v[i]=lz+s*i; return setL(p, wrapL(Z_t, c, ll, 0, v));
               }
     case R_t: { R lr=getR(l), llr=getR(r)-lr; del(l); del(r);
                 I s=sign(llr), ll=ceiling(s*llr);
                 I c=next_pow_2(ll); DECL_ARR(R,v,c);
-                DDO(i,ll)v[i]=lr+(R)s*i; return setL(p, wrapL(R_t, c, ll, 0, v));
+                DO(i,ll)v[i]=lr+(R)s*i; return setL(p, wrapL(R_t, c, ll, 0, v));
               }
   }
 }
@@ -239,21 +239,21 @@ D_P11(reduce) {
 D_P12(reduce) {
   if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); return; }
   get(ll); I len=L(ll)->l; rr=cpy1(rr); V r_;
-  DDO(i,len) { rr=apply2(l,r_=rr,listV_at(ll,i)); FREE(P(r_)); }
+  DO(i,len) { rr=apply2(l,r_=rr,listV_at(ll,i)); FREE(P(r_)); }
   FREEL(L(ll)); mv_P(p,rr); FREE(P(rr));
 }
 
 D_P1(reverse) {
   get(l); L v=L(l); I n=v->l; T t=v->t;
   if (!PURE(t)) {
-    DDO(i,n/2) {
+    DO(i,n/2) {
       V vt=LIST_AT(v,i); LIST_AT(v,i)=LIST_AT(v,n-i-1);
       LIST_AT(v,n-i-1)=vt;
     }
   } else {
 #define AT(i) LIST_PTR_ATS(v,i,s)
     I s=t_sizeof(t); P p=MALLOC(s);
-    DDO(i,n/2) {
+    DO(i,n/2) {
       memcpy(p, AT(i), s); memcpy(AT(i), AT(n-i-1), s);
       memcpy(AT(n-i-1), p, s);
     }

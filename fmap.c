@@ -28,14 +28,14 @@ V constant(V v) {
 }
 
 V fmap(V f, I n, V* x, I d) {
-  T t[n]; DDO(i,n) t[i]=T(x[i]);
+  T t[n]; DO(i,n) t[i]=T(x[i]);
   V v; T(v)=fmap_T(f,n,t,d,d); P(v)=MALLOC(t_sizeof(T(v)));
   fmap_P(v,f,n,x,d); return v;
 }
 T fmap_T(V f, I n, T* x, I dl, I du) { return fmap_TT(T(f),n,x,dl,du); }
 T fmap_TT(T f, I n, T* x, I dl, I du) {
   T tl=~0, tu=~0;
-  DDO(i, n) {
+  DO(i, n) {
     if (! (dl&1<<i)) { tl &= mapclass_T(x[i]);
       if (! (du&1<<i)) tu &= mapclass_T(x[i]); }
   }
@@ -50,11 +50,11 @@ T fmap_TT(T f, I n, T* x, I dl, I du) {
 void fmap_LIST_P(V, V, I, V*, I, I);
 void fmap_P(V v, V f, I n, V* x, I d) {
   X m={0,NULL};
-  DDO(i, n) if (! (d&1<<i)) {
+  DO(i, n) if (! (d&1<<i)) {
     X mt=mapclass(x[i]);
     if (!m.t) m=mt;
     else if (!mapclasseq(m,mt)) {
-      DDO(j,n)del(x[j]); ERR("Incompatible mapclasses");
+      DO(j,n)del(x[j]); ERR("Incompatible mapclasses");
     }
   }
   switch (m.t) {
@@ -69,7 +69,7 @@ void fmap_P(V v, V f, I n, V* x, I d) {
 
 
 void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
-  I i,j; T ts[n]; I ss[n];
+  I i; T ts[n]; I ss[n];
   DO(j,n) {
     ts[j] = d&1<<j ? T(x[j]) : L(x[j])->t; ss[j]=t_sizeof(ts[j]);
     if (!(d&1<<j)) get(x[j]);
@@ -139,14 +139,14 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
       P px0=P(*xi); i=0; do { for (;i<len0;i++) {
         P(*xi)=px0+ss[0]*i;
         apply_P(TP(t, LP(ll) + s*i), f, n, xi);
-        if (err) { DDO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); break; }
+        if (err) { DO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); break; }
       } px0-=ss[0]*L(x[0])->c; len0=l; } while (i<l);
     } else {
       P px[n]; DO(j,n) px[j]=P(xi[j]);
       I k=0; i=0; do { len0=wrap[order[k]]; for (;i<len0;i++) {
         DO(j,n) { V *u=xi+j; if (d&1<<j) cp_P(*u,x[j]); else P(*u)=px[j]+ss[j]*i; }
         apply_P(TP(t, LP(ll) + s*i), f, n, xi);
-        if (err) { DDO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); break; }
+        if (err) { DO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); break; }
       } k++; } while (i<l);
     }
   }

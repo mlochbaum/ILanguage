@@ -45,7 +45,7 @@ L wrapArray(T t, I l, P p) {
 }
 L wrapList(I l, V* v) {
   I c=next_pow_2(l);
-  T t=0; DDO(i,l)t|=T(v[i]);
+  T t=0; DO(i,l)t|=T(v[i]);
   if(PURE(t)){
     I s=t_sizeof(t); P p=MALLOC(c*s);
     DO(i,l) { memcpy(p+i*s, P(v[i]), s); FREE(P(v[i])); }
@@ -63,12 +63,12 @@ typedef void (*del_t)(V); del_t del_S(T);
 void delO(V); void delN(V); void delL(V); void delV(V);
 void delO(V v) {
   O o=O(v); if (--o->r) return;
-  ddel(o->f); DDO(i,o->l) ddel(o->x[i]); FREE(o->x); FREE(o);
+  ddel(o->f); DO(i,o->l) ddel(o->x[i]); FREE(o->x); FREE(o);
 }
 void delN(V v) { FREE(N(v)); }
 void delL(V v) {
   L l=L(v); if (--l->r) return;
-  del_t d=del_S(l->t); if (d) { DDO(i,l->l) d(list_at(l,i)); }
+  del_t d=del_S(l->t); if (d) { DO(i,l->l) d(list_at(l,i)); }
   FREEL(l);
 }
 void delV(V v) { ddel(V(v)); }
@@ -121,8 +121,8 @@ V cpy1(V v) {
   P(vv)=MALLOC(s); memcpy(P(vv),P(v),s); return vv;
 }
 
-void deln(I n, V* v) { DDO(i,n) del(v[i]); FREE(v); }
-V* cpyn(I n, V* v) {DECL_ARR(V,vv,n); DDO(i,n)vv[i]=cpy(v[i]); return vv;}
+void deln(I n, V* v) { DO(i,n) del(v[i]); FREE(v); }
+V* cpyn(I n, V* v) {DECL_ARR(V,vv,n); DO(i,n)vv[i]=cpy(v[i]); return vv;}
 
 void get(V v) {
   if ((T(v)&COMP_t) && REF(v)>1) {
@@ -133,7 +133,7 @@ void get(V v) {
         { F f=F(v); setF(v,wrapF(cpy(f->f), f->l, cpyn(f->l, f->x))); break;}
       case L_t:
         { L l=L(v); I s=t_sizeof(l->t); P p=MALLOC(s*l->c);
-          DDO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
+          DO(i,l->l) valcpy(p+i*s, LIST_PTR_ATS(l,i,s), l->t);
           setL(v,wrapL(l->t, l->c, l->l, 0, p)); break; }
     }
   }

@@ -57,7 +57,7 @@ D_L2(power) { return 2*(!!(r&Z_t)) + 1; }
 D_D2(power) { return power_l2(T(l), T(r)); }
 D_T21(power) {
   I n=getFloorZ(r);
-  DDO(i,n) { T llt=apply1_T(l,ll); if(llt==ll)break; ll=llt; }
+  DO(i,n) { T llt=apply1_T(l,ll); if(llt==ll)break; ll=llt; }
   return ll;
 }
 D_P21(power) {
@@ -90,11 +90,11 @@ D_P21(power) {
 }
 D_T22(power) {
   I n=getFloorZ(r);
-  DDO(i,n) { T llt=apply2_T(l,ll,rr); if(llt==ll)break; ll=llt; }
+  DO(i,n) { T llt=apply2_T(l,ll,rr); if(llt==ll)break; ll=llt; }
   return ll;
 }
 D_P22(power) {
-  I n=getFloorZ(r); ll=cpy1(ll); DDO(i,n) ll=apply2_d(l,ll,cpy(rr));
+  I n=getFloorZ(r); ll=cpy1(ll); DO(i,n) ll=apply2_d(l,ll,cpy(rr));
   del(rr); mv_P(p,ll); FREE(P(ll));
 }
 

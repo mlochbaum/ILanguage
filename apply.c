@@ -50,8 +50,8 @@ T apply_T(V f, I n, T* x) {
 void apply_P(V v, V f, I n, V* x) {
 #define LINE(T) case T##_t: apply_P_##T(v,T(f),n,x); break;
   T t=T(f);
-  if (t & CONST_t) { DDO(i,n) del(x[i]); return mv_P(v, f); }
-  B delp[n]; V op[n]; DDO(i,n) {
+  if (t & CONST_t) { DO(i,n) del(x[i]); return mv_P(v, f); }
+  B delp[n]; V op[n]; DO(i,n) {
     delp[i] = 0!=IMPURE(T(x[i]));
     if (delp[i]) { op[i]=x[i]; x[i]=V(x[i]); PURIFY_D(x[i]); }
   }
@@ -67,7 +67,7 @@ void apply_P(V v, V f, I n, V* x) {
 }
 
 V apply(V f, I n, V* x) {
-  T t[n]; DDO(i,n) t[i]=T(x[i]);
+  T t[n]; DO(i,n) t[i]=T(x[i]);
   V v; T(v)=apply_T(f, n, t); P(v)=MALLOC(t_sizeof(T(v)));
   apply_P(v, f, n, x);
   if (err) { FREE(P(v)); v=newE(err); err=NULL; } else { PURIFY_D(v); }
@@ -78,13 +78,13 @@ V apply(V f, I n, V* x) {
 // Internal functions
 T apply_T_O(O o, I n, T* x) {
   T t[o->l];
-  DDO(j, o->l) { t[j]=apply_T(o->x[j], n, x); }
+  DO(j, o->l) { t[j]=apply_T(o->x[j], n, x); }
   return apply_T(o->f, o->l, t);
 }
 void apply_P_O(V v, O o, I n, V* x) {
   V xt[n]; V xx[o->l];
-  DDO(j, o->l-1) {
-    DDO(i,n)xt[i]=cpy(x[i]);
+  DO(j, o->l-1) {
+    DO(i,n)xt[i]=cpy(x[i]);
     xx[j]=apply(o->x[j], n, xt);
     DO(i,n)FREE(P(xt[i]));
   }
@@ -112,7 +112,7 @@ T apply_T_N(N m, I n, T* x) {
 }
 void apply_P_N(V v, N m, I n, V* x) {
   V mv=StrVget(names, m);
-  if (!P(mv)) { DDO(i,n) del(x[i]); ERR("Value error"); }
+  if (!P(mv)) { DO(i,n) del(x[i]); ERR("Value error"); }
   return apply_P(v, mv, n, x);
 }
 
@@ -124,14 +124,14 @@ void apply_P_Q(V v, Q q, I n, V* x) {
 T apply_T_L(L l, I n, T* x) { return L_t; }
 V list_at_pure(L l, I i) { V r=list_at(l,i); PURIFY(r); return r; }
 void apply_P_L(V p, L l, I n, V* x) {
-  if (!(l->t & NCONST_t)) { DDO(i,n) del(x[i]); l->r++; setL(p,l); return; }
-  T tx[n]; DDO(i,n) tx[i]=T(x[i]);
+  if (!(l->t & NCONST_t)) { DO(i,n) del(x[i]); l->r++; setL(p,l); return; }
+  T tx[n]; DO(i,n) tx[i]=T(x[i]);
   T tr=0; DO(i,l->l) tr|=apply_T(list_at_pure(l,i),n,tx);
   I s=t_sizeof(tr); P lp=MALLOC(l->l*s);
   V xt[n];
   L ll = wrapL(tr,next_pow_2(l->l),l->l,0,lp);
   DO(i, l->l-1) {
-    DDO(j,n) xt[j]=cpy(x[j]);
+    DO(j,n) xt[j]=cpy(x[j]);
     apply_P(TP(tr, lp+s*i), list_at_pure(l,i), n, xt);
     DO(j,n) FREE(P(xt[j]));
   } apply_P(TP(tr, lp+s*(l->l-1)), list_at_pure(l,l->l-1), n, x);

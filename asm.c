@@ -9,7 +9,7 @@ Reg get_reg(RegM u) { return __builtin_ctz(~u); }
 Reg get_reg_mark(RegM *u, RegM v) {
   Reg r=get_reg(*u|v); *u|=1<<r; return r;
 }
-RegM input_mask(A a) { RegM u=0; DDO(i,a->n) u|=1<<a->i[i]; return u; }
+RegM input_mask(A a) { RegM u=0; DO(i,a->n) u|=1<<a->i[i]; return u; }
 I choose_reg(A a) {
   Reg i=a->i[0], o=a->o;
   if (i==NO_REG_NM) i=get_reg_mark(&a->u, 1<<o);
@@ -19,7 +19,7 @@ I choose_reg(A a) {
 }
 I choose_regs(A a) {
   I n=a->n; Reg *i=a->i, o=a->o;
-  DDO(j,n) if (i[j]==NO_REG_NM) i[j]=get_reg_mark(&a->u, 1<<o);
+  DO(j,n) if (i[j]==NO_REG_NM) i[j]=get_reg_mark(&a->u, 1<<o);
   RegM ui=a->u; DO(j,n) if (i[j]==NO_REG) i[j]=get_reg_mark(&ui,0);
   I ii=0; if (o==NO_REG) {
     while (ii<n  &&  a->u & 1<<a->i[ii]) ii++;
@@ -44,7 +44,7 @@ void a_append(A a, I l, Asm aa) {
 void apply_A_O(A a, O f, I n, T* x) {
   I l=f->l; T t[l];
   AS ax=*a; Reg iF[l];
-  RegM ua=ax.u; DDO(i,n) protect_input(&a->i[i],&ax.u);
+  RegM ua=ax.u; DO(i,n) protect_input(&a->i[i],&ax.u);
   DO(i,l) {
     if (i==l-1) ax.u = ua;
     ax.o = NO_REG;
@@ -65,7 +65,7 @@ void apply_A_O(A a, O f, I n, T* x) {
 Prot2State clear_regs(A a, RegM u) {
   RegM uc = u&a->u, ui=input_mask(a);
   RegM uu = a->u|u|ui;
-  DDO(ii,a->n) {
+  DO(ii,a->n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || u&si) {
       Reg i_ = a->i[ii] = get_reg(uu);
@@ -86,7 +86,7 @@ void pop_regs_2(A a, RegM pop, Reg o) {
 Prot3State clear_regs_3(A a, RegM u) {
   RegM ui=input_mask(a);
   RegM p1 = ui&u&a->u, p2 = ((ui|a->u)&u)^p1, uu = a->u|u|ui;
-  DDO(ii,a->n) {
+  DO(ii,a->n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || p2&si) {
       Reg i_ = a->i[ii] = get_reg(uu);
@@ -154,14 +154,14 @@ void apply_A_L(A a, L f, I n, T* x) {
   PROTECT_1of2(REG_SAVE);
 
   // Don't add any code to a; store in as
-  AS ax=*a; DDO(i,n) protect_input(&a->i[i],&ax.u);
+  AS ax=*a; DO(i,n) protect_input(&a->i[i],&ax.u);
   Reg vals = get_reg_mark(&ax.u,0); a->u |= 1<<vals;
   Asm as[l]; I al[l];
   DO(i, l) {
     if (i==l-1) ax.u = a->u;
     ax.l=0; ax.o=NO_REG; ax.t=0; apply_A(&ax, list_at(f,i), n, x);
     o[i]=ax.o; as[i]=ax.a; al[i]=ax.l;
-    if (ax.t==0) {DDO(j,i+1)if(al[i])FREE(as[i]); a->t=0; return;}
+    if (ax.t==0) {DO(j,i+1)if(al[i])FREE(as[i]); a->t=0; return;}
     tt |= t[i]=ax.t;
   }
 
@@ -207,7 +207,7 @@ void apply_A_F(A a, F f, I n, T* x) {
 void apply_A_Z(A a, Z z, I n, T* x) {
   if (a->o==NO_REG) a->o=get_reg(a->u);
   RegM ui=input_mask(a)&~a->u; a->u|=ui;
-  DDO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
+  DO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
   if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, a->o, z);
   else ASM(a, MOV4_RI, a->o, z);
   a->t=Z_t;
