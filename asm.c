@@ -304,25 +304,3 @@ void a_RfromT(A a, T t, Reg o, Reg i) {
 
 Reg reg_args[] = { REG_ARG0, REG_ARG1, REG_ARG2,
                    REG_ARG3, REG_ARG4, REG_ARG5 };
-
-S apply_SA(V f, I n, T* x) {
-  AS as; A a=&as; a->n=n; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
-  Reg ai[n]; a->i=ai; DDO(i,n) a->i[i]=reg_args[i];
-
-  ASM(a,PUSH,REG_ARG2,-);
-  DO(i,n) { V*v=NULL; ASM3(a,MOV_RM,a->i[i],REG_ARG4,(UI)(Z)&v[i].p); }
-  DO(i,n) { asm_load(a,x[i],a->i[i],a->i[i]); }
-
-  apply_A(a,f,n,x);
-  if (!a->t) { FREE(a->a); return (S){0,NULL,NULL}; }
-
-  ASM(a,POP,REG_ARG2,-);
-  asm_write(a,a->t,REG_ARG2,REG_RES);
-  ASM_RAW(a,RET);
-
-  Asm aa = asm_mmap(a->l); memcpy(aa,a->a,a->l); FREE(a->a);
-  return (S){a->t,aa,NULL};
-}
-V apply_S(V f, I n, T* x) {
-  S s=apply_SA(f, n, x); return (s.f) ? newS(s) : cpy(f);
-}

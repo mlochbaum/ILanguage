@@ -10,7 +10,7 @@ I next_pow_2(I l) {
 }
 I t_sizeof(T t) {
 #if UINTPTR_MAX == 0xffffffffffffffff
-  return IMPURE(t) ? 16 : 1 + 7*(t>2) + (t&24);
+  return IMPURE(t) ? 16 : 1 + 7*(t>2) + (t&8);
 #else
 #define LINE(T) case T##_t: return sizeof(T);
   switch(t){ON_TYPES(ALL,LINE) default: return sizeof(V);}

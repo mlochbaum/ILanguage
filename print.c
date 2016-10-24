@@ -112,7 +112,6 @@ Str ShowI(V v, I indent);
 Str TShow(T t) {
   switch (t) {
     case E_t: return strdup("Error");
-    case S_t: return strdup("Compiled");
     case B_t: return strdup("Builtin");
     case O_t: return strdup("Composition");
     case F_t: return strdup("Partial application");

@@ -11,7 +11,6 @@ Builtin
 Char
 Error
 K Complex
-Specialized function
 O Composition
 Function application
 Name
@@ -24,7 +23,6 @@ typedefs =: lines 0 :0
 B unsigned char
 C char
 E Str
-S struct { T t; void (*f)(P,V,I,V*); P a; }
 O struct { I r; V f; I l; V* x; } *
 F struct { I r; V f; I l; V* x; } *
 N Str
@@ -35,8 +33,8 @@ K struct { R a; R b; }
 L struct { I r; T t; I c; I l; I o; P p; } *
 )
 
-classes =:      'const arith func   comp'
-(classes) =: ;: 'ECZRK ZRK   SBOFNQ OFL'
+classes =:      'const arith func  comp'
+(classes) =: ;: 'ECZRK ZRK   BOFNQ OFL'
 classes =: 'all ',classes,' nconst'
 nconst =: all-.const
 

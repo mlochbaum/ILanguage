@@ -36,7 +36,6 @@ E err;
 T apply_T(V f, I n, T* x) {
 #define LINE(T) case T##_t: t|=apply_T_##T(T(f),n,x); break;
   PURIFY(f); T tf=T(f);
-  if (tf & S_t) { return S(f).t; }
   if (tf & CONST_t) return tf;
   T t=0; if (tf & (O_t+L_t)) {
     switch (tf) {LINE(O) LINE(L)} return t;
@@ -51,7 +50,6 @@ T apply_T(V f, I n, T* x) {
 void apply_P(V v, V f, I n, V* x) {
 #define LINE(T) case T##_t: apply_P_##T(v,T(f),n,x); break;
   T t=T(f);
-  if (t & S_t) { S s=S(f); return s.f(s.a,v,n,x); }
   if (t & CONST_t) { DDO(i,n) del(x[i]); return mv_P(v, f); }
   B delp[n]; V op[n]; DDO(i,n) {
     delp[i] = 0!=IMPURE(T(x[i]));
