@@ -34,7 +34,7 @@ D_A1(negate) {
 }
 D_A1(reciprocal) {
   if (l&~(Z_t|R_t)) return;
-  Reg i = choose_reg(a) ? a->i[0] : get_reg(a->u|1<<i);
+  Reg i = choose_reg(a) ? a->i[0] : get_reg(a->u|1<<a->i[0]);
   a_RfromT(a,l,i,a->i[0]);
   ASM(a, MOV4_RI,a->o,1);
   ASM(a, CVTSI2SD,a->o,a->o);
@@ -174,7 +174,7 @@ D_A2(mod) {
       PROTECT_3of3; return;
     }
     case R_t: {
-      I ii=prepR(a,ii,l,r);
+      I ii=choose_regs(a); ii=prepR(a,ii,l,r);
       RegM u = a->u|1<<a->o|1<<a->i[0]|1<<a->i[1];
       Reg rd = get_reg(u), rs = get_reg(u|1<<rd);
       ASM(a, MOVSD,rd,a->i[0]);
