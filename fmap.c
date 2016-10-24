@@ -95,19 +95,19 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   } order[n_wrap]=n; wrap[n]=l;
   I len0=wrap[order[0]];
 
-  AS as; A a=&as; a->l=0; a->t=0;
-  a->u=REG_MASK; DO(j,n+2) a->u|=1<<reg_args[j];
-  Reg rx[n]; DO(j,n) rx[j]=reg_args[j+2];
-  Reg ri=REG_RES; a->u|=1<<ri;
-  Reg rxi[n]; DO(j,n) rxi[j]=(d&1<<j)?rx[j]:NO_REG;
-  a->i=rxi; a->o=NO_REG; choose_regn(a,n);
+  AS as; A a=&as;
+  if (apply_R_full(a,f,n,ts)) {
+    Reg rx[n], ri, rxi[n];
+    DO(j,n+2) a->u|=1<<reg_args[j]; DO(j,n) rx[j]=reg_args[j+2];
+    DO(j,n) rxi[j]=(d&1<<j)?rx[j]:NO_REG; a->i=rxi;
+    a->u|=1<<(ri=REG_RES);
+    a->o=NO_REG; choose_regn(a,n);
 
-  ASM(a, PUSH,3,-); // TODO
-  DO(j,n) if (d&1<<j) asm_load(a,ts[j],rxi[j],rx[j]);
-  ASM(a, XOR4,ri,ri); I label=a->l;
-  DO(j,n) if (!(d&1<<j)) asm_load_at(a,ts[j],rxi[j],rx[j],ri);
-  apply_A(a,f,n,ts);
-  if (a->t) {
+    RegM pop=start_A(a,n);
+    DO(j,n) if (d&1<<j) asm_load(a,ts[j],rxi[j],rx[j]);
+    ASM(a, XOR4,ri,ri); I label=a->l;
+    DO(j,n) if (!(d&1<<j)) asm_load_at(a,ts[j],rxi[j],rx[j],ri);
+    apply_A_full(a,f,n,ts);
     asm_write_at(a,t,REG_ARG0,a->o,ri);
     ASM(a, ADDI1,ri,1);
     ASM(a, CMP,ri,REG_ARG1);
@@ -122,9 +122,7 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
       if (w<l) DO(j,k) ASM(a, ADDI4,rx[order[i+j]],sc[j]);
       i+=k;
     }
-    ASM(a, POP,3,-); // TODO
-    ASM_RAW(a, RET);
-    P ff=asm_mmap(a->l); memcpy(ff,a->a,a->l);
+    P ff = finish_A(a,pop);
 #define PI(i) (d&1<<i) ? P(x[i]) : LP(L(x[i])) + ss[i]*L(x[i])->o
     switch (n) {
       case 0: i = ((I(*)(P,Z))ff)(LP(ll), len0); break;
@@ -150,7 +148,6 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
       } k++; } while (i<l);
     }
   }
-  FREE(a->a);
   if (err) { DO(j,n) { if (!(d&1<<j)) {
     for(I k=i+1;k<l;k++) del(listV_ats(x[j],k,ss[j]));
   } } }

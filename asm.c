@@ -42,6 +42,21 @@ void a_append(A a, I l, Asm aa) {
   memcpy(a->a+a->l, aa, l); a->l=nl;
 }
 
+void request_regs(A a, I n) { a->ar[*(I*)&a->t][0]+=n; }
+void request_cv(A a, Z c) {
+  if (a->lc>=MIN_ARR && PURE(a->lc)) {
+    a->cr = realloc(a->cr, 2*a->lc*sizeof(c));
+    a->cv = realloc(a->cv, 2*a->lc*sizeof(c));
+  }
+  a->cr[a->lc] = NO_REG; a->cv[a->lc++] = c;
+}
+Reg use_cr(A a) { return a->cr[a->lc++]; }
+
+T apply_R_O(A a, O f, I n, T* x) {
+  I l=f->l; T t[l];
+  DO(i, l) { if (!(t[i] = apply_R(a, f->x[i], n, x))) return 0; }
+  return apply_R(a, f->f, l, t);
+}
 void apply_A_O(A a, O f, I n, T* x) {
   I l=f->l; T t[l];
   AS ax=*a; Reg iF[l];
@@ -50,8 +65,7 @@ void apply_A_O(A a, O f, I n, T* x) {
     if (i==l-1) ax.u = ua;
     ax.o = NO_REG;
     // TODO shortcut errors
-    ax.t=0; apply_A(&ax, f->x[i], n, x);
-    if (ax.t==0) {a->l=ax.l; a->a=ax.a; a->t=0; return;}
+    apply_A(&ax, f->x[i], n, x);
     t[i] = ax.t; iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
   }
   a->l=ax.l; a->a=ax.a;
@@ -115,13 +129,13 @@ void pop_regs(A a, RegM pop) {
 }
 
 RegM push_regs(A a, RegM u) {
-  RegM uc = u & REG_SAVE; DEACH_REG(uc,r) { ASM(a,PUSH,r,-); } return uc;
+  DEACH_REG(u,r) { ASM(a,PUSH,r,-); } return u;
 }
 
 // REG_ARG0, REG_RES, and res must be modifiable
 // Allocate l bytes and place the pointer at res.
 void a_malloc(A a, I l, Reg res, RegM keep) {
-  RegM pop = push_regs(a, keep);
+  RegM pop = push_regs(a, keep&REG_SAVE);
   ASM(a, MOV4_RI, res,(I)(Z)&malloc);
   ASM(a, MOV4_RI, REG_ARG0,l);
   ASM(a, CALL, res,-);
@@ -132,7 +146,7 @@ void a_malloc(A a, I l, Reg res, RegM keep) {
 typedef void (*del_t)(V); del_t del_S(T);
 void a_del(A a, T t, Reg i) {
   del_t del=del_S(t); if (!del) return;
-  RegM pop = push_regs(a, a->u);
+  RegM pop = push_regs(a, a->u&REG_SAVE);
   if (i!=REG_ARG1) ASM(a, MOV, REG_ARG1,i);
   if (PURE(t)) {
     ASM(a, SUBI1,REG_SP,8);
@@ -149,6 +163,11 @@ void a_del(A a, T t, Reg i) {
   pop_regs(a, pop);
 }
 
+T apply_R_L(A a, L f, I n, T* x) {
+  I l=f->l;
+  DO(i, l) { if (!apply_R(a, list_at(f,i), n, x)) return 0; }
+  return L_t;
+}
 void apply_A_L(A a, L f, I n, T* x) {
   I l=f->l; T t[l], tt=0; Reg o[l]; RegM au=a->u;
 
@@ -162,7 +181,6 @@ void apply_A_L(A a, L f, I n, T* x) {
     if (i==l-1) ax.u = a->u;
     ax.l=0; ax.o=NO_REG; ax.t=0; apply_A(&ax, list_at(f,i), n, x);
     o[i]=ax.o; as[i]=ax.a; al[i]=ax.l;
-    if (ax.t==0) {DO(j,i+1)if(al[i])FREE(as[i]); a->t=0; return;}
     tt |= t[i]=ax.t;
   }
 
@@ -191,6 +209,7 @@ void apply_A_L(A a, L f, I n, T* x) {
   PROTECT_2of2; a->u=au; a->t=L_t;
 }
 
+T apply_R_N(A a, N f, I n, T* x) { return 0; } // TODO
 void apply_A_N(A a, N f, I n, T* x) {
   V fv=StrVget(names, f);
   //TODO if (!P(fv)) { return newE(strdup("Value error")); }
@@ -198,34 +217,94 @@ void apply_A_N(A a, N f, I n, T* x) {
 }
 
 // builtin.c
+T apply_R_B(A a, B b, I n, T* x);
+T apply_R_FB(A a, F f, I n, T* x);
 void apply_A_B(A a, B b, I n, T* x);
 void apply_A_FB(A a, F f, I n, T* x);
 
+T apply_R_F(A a, F f, I n, T* x) {
+  if (T(f->f)==B_t) return apply_R_FB(a, f, n, x);
+  else { return 0; }
+}
 void apply_A_F(A a, F f, I n, T* x) {
   if (T(f->f)==B_t) return apply_A_FB(a, f, n, x);
 }
 
+T apply_R_Z(A a, Z z, I n, T* x) { request_cv(a, z); return Z_t; }
 void apply_A_Z(A a, Z z, I n, T* x) {
-  if (a->o==NO_REG) a->o=get_reg(a->u);
+  Reg r = use_cr(a);
   RegM ui=input_mask(a,n)&~a->u; a->u|=ui;
   DO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
-  if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, a->o, z);
-  else ASM(a, MOV4_RI, a->o, z);
+  if (a->o==NO_REG) a->o=r;
+  else ASM(a, MOV, a->o, r);
   a->t=Z_t;
 }
 
-void apply_A(A a, V f, I n, T* x) {
-#define LINE(T) case T##_t: return apply_A_##T(a,T(f),n,x);
+void init_A(A a) {
+  a->t=0; a->o=NO_REG; a->l=a->lc=0; a->u=REG_MASK;
+  a->ar=malloc(MIN_ARR*sizeof(*a->ar));
+  a->cr=malloc(MIN_ARR*sizeof(*a->cr));
+  a->cv=malloc(MIN_ARR*sizeof(*a->cv));
+}
+T apply_R_(A a, V f, I n, T* x) {
+#define LINE(T) case T##_t: return apply_R_##T(a,T(f),n,x);
   PURIFY(f); T t=T(f);
   switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) LINE(Z) }
-  //Asm call apply(f,n,...)
 #undef LINE
+}
+T apply_R(A a, V f, I n, T* x) {
+  I par=*(I*)&a->t, car=a->l; *(I*)&a->t=car;
+  if (a->l>=MIN_ARR && PURE(a->l)) {
+    a->ar = realloc(a->ar, 2*a->l*sizeof(*a->ar));
+  }
+  a->l++; a->ar[car][0]=a->ar[car][1]=0;
+  I lc = a->lc;
+  T t=apply_R_(a,f,n,x); if (!t) return 0; // TODO record type for apply_A
+  a->ar[car][1] = a->lc-lc;
+  a->ar[par][0] += a->ar[car][0];
+  *(I*)&a->t=par;
+  return t;
+}
+void apply_A(A a, V f, I n, T* x) {
+  RegM r=start_A(a,n);
+#define LINE(T) case T##_t: apply_A_##T(a,T(f),n,x); break;
+  PURIFY(f); T t=T(f);
+  switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) LINE(Z) }
+#undef LINE
+  pop_regs(a, r);
+}
+
+T apply_R_full(A a, V f, I n, T* x) {
+  init_A(a);
+  T t=apply_R(a,f,n,x);
+  if (t) { a->l=0; } else { free(a->ar); free(a->cr); free(a->cv); }
+  return t;
+}
+RegM start_A(A a, I n) {
+  Reg lc = min(a->lc,MAX_C_REG);
+  RegM pop = push_regs(a, a->u & ((1<<NO_REG)-(1<<(NO_REG-lc))));
+  DO(i,lc) {
+    Reg r=NO_REG-1-i; a->cr[i]=r; Z z=a->cv[i];
+    if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, r, z);
+    else ASM(a, MOV4_RI, r, z);
+  }
+  a->lc=0;
+  // TODO Push variable registers if necessary
+  return pop;
+}
+void apply_A_full(A a, V f, I n, T* x) {
+  apply_A(a,f,n,x); free(a->ar); free(a->cr); free(a->cv);
 }
 
 void *asm_mmap(size_t length) {
   void *mem = mmap(NULL, length, PROT_EXEC|PROT_READ|PROT_WRITE,
     (MAP_PRIVATE|MAP_ANON), -1, 0);
   return (mem == MAP_FAILED) ? NULL : mem;
+}
+P finish_A(A a, RegM r) {
+  pop_regs(a, r);
+  ASM_RAW(a, RET);
+  P f=asm_mmap(a->l); memcpy(f,a->a,a->l); FREE(a->a); return f;
 }
 
 #define A(op) ASM3(a,op,o,i,e)

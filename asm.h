@@ -4,12 +4,13 @@ typedef void* Asm;
 
 /*
  * i o (input used; output given)
- *   + t: output type
+ *   + t: output type (to be removed)
  * + + i: input registers
  * + + o: output register
  * +   u: mask of unmodified registers (can include inputs)
  * + + l: length of assembly code
  *   + a: assembly code
+ *     ar, cr: see register allocation below
  * 
  * The callee increments l and appends code to a.
  *
@@ -18,11 +19,25 @@ typedef void* Asm;
  * modify, or NO_REG_NM to indicate that the callee can choose but not
  * modify.
  */
-typedef struct { T t; Reg* i; Reg o; RegM u; I l; Asm a; } AS;
+typedef struct { T t; Reg* i; Reg o; RegM u; I l; Asm a;
+                 I (*ar)[2]; I lc; Reg* cr; Z* cv; } AS;
 typedef AS* A;
+#define MIN_ARR 8 // Minimum length for cr and cv
 
+void init_A(A a);
+// Append register allocation information to a->ar and a->cr
+T apply_R(A a, V f, I n, T* x);
 // Append code for f on the given types to a.
 void apply_A(A a, V f, I n, T* x);
+
+T apply_R_full(A,V,I,T*);
+RegM start_A(A,I);
+void apply_A_full(A,V,I,T*);
+P finish_A(A,RegM); // Returns a function pointer.
+
+void request_regs(A, I);
+void request_cv(A, Z);
+Reg use_cr(A);
 
 
 // Array of argument registers
@@ -43,9 +58,6 @@ I choose_regn(A,I); // Multiple inputs
 
 // Append l bytes of aa to a
 void a_append(A a, I l, Asm aa);
-
-// Return a pointer to writable, executable memory
-void *asm_mmap(size_t);
 
 void asm_load(A a, T t, Reg o, Reg i);
 void asm_write(A a, T t, Reg o, Reg i);

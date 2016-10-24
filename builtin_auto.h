@@ -31,6 +31,12 @@
 #define D_P12(func) void func##_p12(V p, V l, V ll, V rr)
 #define D_P21(func) void func##_p21(V p, V l, V r, V ll)
 #define D_P22(func) void func##_p22(V p, V l, V r, V ll, V rr)
+#define D_R1(func) T func##_r1(A a, T l)
+#define D_R2(func) T func##_r2(A a, T l, T r)
+#define D_R11(func) T func##_r11(A a, V l, T ll)
+#define D_R12(func) T func##_r12(A a, V l, T ll, T rr)
+#define D_R21(func) T func##_r21(A a, V l, V r, T ll)
+#define D_R22(func) T func##_r22(A a, V l, V r, T ll, T rr)
 #define D_A1(func) void func##_a1(A a, T l)
 #define D_A2(func) void func##_a2(A a, T l, T r)
 #define D_A11(func) void func##_a11(A a, V l, T ll)
@@ -67,6 +73,12 @@ typedef void (*P11)(V,V,V); extern P11 B_p11[256];
 typedef void (*P12)(V,V,V,V); extern P12 B_p12[256];
 typedef void (*P21)(V,V,V,V); extern P21 B_p21[256];
 typedef void (*P22)(V,V,V,V,V); extern P22 B_p22[256];
+typedef T (*R1)(A,T); extern R1 B_r1[256];
+typedef T (*R2)(A,T,T); extern R2 B_r2[256];
+typedef T (*R11)(A,V,T); extern R11 B_r11[256];
+typedef T (*R12)(A,V,T,T); extern R12 B_r12[256];
+typedef T (*R21)(A,V,V,T); extern R21 B_r21[256];
+typedef T (*R22)(A,V,V,T,T); extern R22 B_r22[256];
 typedef void (*A1)(A,T); extern A1 B_a1[256];
 typedef void (*A2)(A,T,T); extern A2 B_a2[256];
 typedef void (*A11)(A,V,T); extern A11 B_a11[256];
@@ -104,6 +116,12 @@ typedef void (*A22)(A,V,V,T,T); extern A22 B_a22[256];
   P12 B_p12[256]; \
   P21 B_p21[256]; \
   P22 B_p22[256]; \
+  R1 B_r1[256]; \
+  R2 B_r2[256]; \
+  R11 B_r11[256]; \
+  R12 B_r12[256]; \
+  R21 B_r21[256]; \
+  R22 B_r22[256]; \
   A1 B_a1[256]; \
   A2 B_a2[256]; \
   A11 B_a11[256]; \

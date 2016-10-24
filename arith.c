@@ -19,6 +19,11 @@ D_P1(ceiling) OP(ceiling);
 #undef M_L
 #undef OP
 
+D_R1(negate) {
+  if (l!=Z_t && l!=R_t) return 0;
+  if (l==R_t) request_regs(a, 1);
+  return l;
+}
 D_A1(negate) {
   switch (l) {
     case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
@@ -32,8 +37,11 @@ D_A1(negate) {
                 ASM(a, SUBSD,a->o,i); a->t=R_t; return; }
   }
 }
+D_R1(reciprocal) {
+  if (l&~(Z_t|R_t)) return 0;
+  request_regs(a, 1); return l;
+}
 D_A1(reciprocal) {
-  if (l&~(Z_t|R_t)) return;
   Reg i = choose_reg(a) ? a->i[0] : get_reg(a->u|1<<a->i[0]);
   a_RfromT(a,l,i,a->i[0]);
   ASM(a, MOV4_RI,a->o,1);
@@ -42,7 +50,6 @@ D_A1(reciprocal) {
   a->t=R_t;
 }
 #define ROUND(CMP,OP) \
-  if (l!=Z_t && l!=R_t) return;                  \
   a->t=Z_t; I c=choose_reg(a);                   \
   if (l==R_t) {                                  \
     Reg i=a->i[0], o=a->o, r=get_reg(a->u|1<<o); \
@@ -53,14 +60,21 @@ D_A1(reciprocal) {
     ASM(a, SET##CMP,r,-);                        \
     ASM(a, OP,o,r);                              \
   } else if (c) ASM(a, MOV,a->o,a->i[0]);
+D_R1(floor) {
+  if (l!=Z_t && l!=R_t) return 0;
+  if (l==R_t) request_regs(a, 1); return Z_t;
+}
 D_A1(floor) { ROUND(A,SUB) }
+D_R1(ceiling) { return floor_r1(a,l); }
 D_A1(ceiling) { ROUND(B,ADD) }
+
+D_R1(sqroot) { return (l!=Z_t && l!=R_t) ? 0 : R_t; }
 D_A1(sqroot) {
-  if (l!=Z_t && l!=R_t) return;
   a->t=R_t; choose_reg(a);
   if (l==Z_t) ASM(a, CVTSI2SD,a->i[0],a->i[0]);
   ASM(a, SQRTSD,a->o,a->i[0]);
 }
+D_R1(square) { return (l!=Z_t && l!=R_t) ? 0 : l; }
 D_A1(square) {
   switch (l) {
     case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
@@ -94,8 +108,14 @@ I prepR(A a, I ii, T l, T r) {
   return ii;
 }
 
+// arith_t2 if the output is pure and inputs are arithmetic
+T pure_t2(T l, T r) {
+  if ((l|r)&~(Z_t|R_t)) return 0;
+  T t=arith_t2(l,r); return IMPURE(t) ? 0 : t;
+}
+
+D_R2(plus) { return pure_t2(l,r); }
 D_A2(plus) {
-  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM3(a, LEA1,a->o,a->i[0],a->i[1]);
@@ -105,8 +125,12 @@ D_A2(plus) {
     default: a->t=0; return;
   }
 }
+D_R2(minus) {
+  if ((l|r)&~(Z_t|R_t)) return 0;
+  T t=arith_t2(l,r); if IMPURE(t) return 0;
+  if (t==R_t) request_regs(a, 1); return t;
+}
 D_A2(minus) {
-  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
@@ -126,8 +150,8 @@ D_A2(minus) {
     default: a->t=0; return;
   }
 }
+D_R2(times) { return pure_t2(l,r); }
 D_A2(times) {
-  if ((l|r)&~(Z_t|R_t)) return;
   I ii=choose_regs(a);
   switch (a->t=arith_t2(l,r)) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
@@ -137,8 +161,11 @@ D_A2(times) {
     default: a->t=0; return;
   }
 }
+D_R2(divide) {
+  if ((l|r)&~(Z_t|R_t)) return 0;
+  request_regs(a, 1); return R_t;
+}
 D_A2(divide) {
-  if ((l|r)&~(Z_t|R_t)) return;
   Reg i1 = (choose_regs(a)==1) ? a->i[1]
                                : get_reg(a->u|1<<a->o|1<<a->i[0]);
   a_RfromT(a,r,i1,a->i[1]);
@@ -146,8 +173,12 @@ D_A2(divide) {
   ASM(a, DIVSD,a->o,i1);
   a->t=R_t;
 }
+D_R2(mod) {
+  if ((l|r)&~(Z_t|R_t)) return 0;
+  request_regs(a, 2); return arith_t2(l,r);
+}
 D_A2(mod) {
-  if ((l|r)&~(Z_t|R_t)) return; I n=2; // For PROTECT
+  I n=2; // For PROTECT
   switch (a->t=arith_t2(l,r)) {
     case Z_t: {
       Reg r_=REG_IDIV_0, r1=REG_IDIV_1;
@@ -197,7 +228,6 @@ D_A2(mod) {
 }
 
 #define CMPZ(jj,OP) \
-  if ((l|r)&~(Z_t|R_t)) return;                      \
   I ii=choose_regs(a);                               \
   switch (a->t=arith_t2(l,r)) {                      \
     case Z_t: { I ifm=(ii==2); if (ifm) ii=1;        \
@@ -208,14 +238,16 @@ D_A2(mod) {
               ASM(a, OP##SD,a->o,a->i[1-ii]); break; \
     default: a->t=0; return;                         \
   }
+D_R2(min) { return pure_t2(l,r); }
 D_A2(min) { CMPZ(ii,  MIN) }
+D_R2(max) { return pure_t2(l,r); }
 D_A2(max) { CMPZ(1-ii,MAX) }
 #undef CMPZ
 
 // EXPORT DEFINITIONS
 void arith_init() {
 #define SET(c, t, f) B_l1[c] = B_u1[c] = &arith_l1; B_t1[c] = &t##_t1; \
-                  B_d1[c] = &arith_d1; B_a1[c] = &f##_a1
+                  B_d1[c] = &arith_d1; B_r1[c] = &f##_r1; B_a1[c] = &f##_a1
   SET('-', l, negate); DB(p1,'-',negate);
   SET('/', R, reciprocal);
   SET('m', Z, floor); DB(p1,'m',floor);
@@ -225,7 +257,7 @@ void arith_init() {
 #undef SET
 
 #define SET(c, f) B_l2[c] = B_u2[c] = &arith_l2; B_t2[c] = &arith_t2; \
-                  B_d2[c] = &arith_d2; B_a2[c] = &f##_a2
+                  B_d2[c] = &arith_d2; B_r2[c] = &f##_r2; B_a2[c] = &f##_a2
   SET('+', plus); DB(p2,'+',plus);
   SET('-', minus); DB(p2,'-',minus);
   SET('*', times); DB(p2,'*',times);

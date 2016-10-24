@@ -57,7 +57,7 @@ void string_init();
 void builtin_init() {
 #define INIT(n) \
   B_l##n[i]=B_u##n[i]=&true_l##n; B_t##n[i]=NULL; \
-  B_d##n[i]=&true_d##n; B_p##n[i]=NULL;
+  B_d##n[i]=&true_d##n; B_p##n[i]=NULL; B_r##n[i]=NULL;
   DO(i,256) { ON_ALL_NUMS(INIT) }
 #undef INIT
 
@@ -76,49 +76,47 @@ void FfromB_P(V p, B b, I n, V* x) {
   setF(p, wrapF(newB(b),n,xx));
 }
 
-Asm finish_asm_B(A a, V p, P* vp) {
-  if (!a->t) { FREE(a->a); return NULL; }
+P finish_asm_B(A a, RegM pop, V p, P* vp) {
   ASM(a,POP,REG_ARG0,-);
   asm_write(a,a->t,REG_ARG0,REG_RES);
-  ASM_RAW(a,RET);
-
-  Asm aa = asm_mmap(a->l); memcpy(aa,a->a,a->l); FREE(a->a);
+  P f = finish_A(a,pop);
   *vp=P(p);
   if (IMPURE(T(p)) && PURE(a->t)) {
     V *v=*vp; T(*v)=a->t; *vp=P(*v)=MALLOC(t_sizeof(a->t));
   }
-  return aa;
+  return f;
 }
+#define FREE_A free(a->ar); free(a->cr); free(a->cv)
 void apply_P_B1(V p, B b, V* x) {
   P1 f=B_p1[b]; if(f) return f(p,x[0]);
-  A1 ab=B_a1[b]; if (ab) {
-    AS as; A a=&as; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
-    Reg ai=REG_ARG1; a->i=&ai;
+  R1 rb=B_r1[b]; if (rb) { AS as; A a=&as; init_A(a); if (rb(a, T(x[0]))) {
+    a->l=0; a->o=0; Reg ai=REG_ARG1; a->i=&ai;
+    RegM pop=start_A(a,1);
 
     ASM(a,PUSH,REG_ARG0,-);
     asm_load(a,T(x[0]),ai,ai);
+    (B_a1[b])(a, T(x[0])); FREE_A;
 
-    ab(a, T(x[0]));
-    P vp; Asm aa=finish_asm_B(a,p,&vp);
-    if (aa) return ((void(*)(P,P))aa)(vp, P(x[0]));
-  }
+    P vp; void(*af)(P,P) = finish_asm_B(a,pop,p,&vp);
+    return af(vp, P(x[0]));
+  } else { FREE_A; } }
   return FfromB_P(p,b,1,x);
 }
 void apply_P_B2(V p, B b, V* x) {
   P2 f=B_p2[b]; if(f) return f(p,x[0],x[1]);
-  A2 ab=B_a2[b]; if (ab) {
-    AS as; A a=&as; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
-    Reg ai[2]={REG_ARG1,REG_ARG2}; a->i=ai;
+  R2 rb=B_r2[b]; if (rb) { AS as; A a=&as; init_A(a); if (rb(a, T(x[0]),
+                                                                T(x[1]))) {
+    a->l=0; a->o=0; Reg ai[2]={REG_ARG1,REG_ARG2}; a->i=ai;
+    RegM pop=start_A(a,2);
 
     ASM(a,PUSH,REG_ARG0,-);
     asm_load(a,T(x[0]),ai[0],ai[0]);
     asm_load(a,T(x[1]),ai[1],ai[1]);
+    (B_a2[b])(a, T(x[0]), T(x[1])); FREE_A;
 
-    ab(a, T(x[0]), T(x[1]));
-
-    P vp; Asm aa=finish_asm_B(a,p,&vp);
-    if (aa) return ((void(*)(P,P,P))aa)(vp, P(x[0]), P(x[1]));
-  }
+    P vp; void(*af)(P,P,P) = finish_asm_B(a,pop,p,&vp);
+    return af(vp, P(x[0]), P(x[1]));
+  } else { FREE_A; } }
   return FfromB_P(p,b,2,x);
 }
 void apply_P_B(V p, B b, I n, V* x) {
@@ -128,11 +126,32 @@ void apply_P_B(V p, B b, I n, V* x) {
   }
 }
 
+T apply_R_B(A a, B b, I n, T* x) {
+  switch (n) {
+    case 1: { R1 f=B_r1[b]; return f ? f(a,x[0]) : 0; }
+    case 2: { R2 f=B_r2[b]; return f ? f(a,x[0],x[1]) : 0; }
+  }
+}
 void apply_A_B(A a, B b, I n, T* x) {
   switch (n) {
-    case 1: { A1 f=B_a1[b]; if (f) f(a,x[0]); break; }
-    case 2: { A2 f=B_a2[b]; if (f) f(a,x[0],x[1]); break; }
+    case 1: { A1 f=B_a1[b]; f(a,x[0]); break; }
+    case 2: { A2 f=B_a2[b]; f(a,x[0],x[1]); break; }
   }
+}
+
+T apply_R11(A a, R11 f, V* x, T* xx) { return f(a, x[0], xx[0]); }
+T apply_R12(A a, R12 f, V* x, T* xx) { return f(a, x[0], xx[0], xx[1]); }
+T apply_R21(A a, R21 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0]); }
+T apply_R22(A a, R22 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0], xx[1]); }
+
+T apply_R_FB(A a, F f, I n, T* xx) {
+#define LINE1(y,z,yz) case (2*y+z): { \
+  B b=B(f->f); R##yz ff=B_r##yz[b]; \
+  return ff ? apply_R##yz(a, ff, f->x, xx) : 0; }
+#define LINE(a,b) LINE1(a,b,a##b)
+  switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
+#undef LINE
+#undef LINE1
 }
 
 void apply_A11(A a, A11 f, V* x, T* xx) { return f(a, x[0], xx[0]); }
@@ -143,7 +162,7 @@ void apply_A22(A a, A22 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0], xx[1]);
 void apply_A_FB(A a, F f, I n, T* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
   B b=B(f->f); A##yz ff=B_a##yz[b]; \
-  if(ff) return apply_A##yz(a, ff, f->x, xx); }
+  return apply_A##yz(a, ff, f->x, xx); }
 #define LINE(a,b) LINE1(a,b,a##b)
   switch (2*f->l + n) { LINE(1,1) LINE(1,2) LINE(2,1) LINE(2,2) }
 #undef LINE

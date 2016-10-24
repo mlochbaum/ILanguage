@@ -68,23 +68,22 @@ D_P21(power) {
     apply1_P(v, l, vt); FREE(P(vt)); if (err) break;
   }
   if (i<n && !err) {
-    AS as; A a=&as; a->l=0; a->t=0;
-    a->u=REG_MASK|1<<REG_LOOP; Reg ai; a->i=&ai; a->o=ai=REG_RES;
-    ASM(a, PUSH,REG_ARG1,-);
-    asm_load(a,T(v),REG_RES,REG_ARG1);
-    ASM(a, MOV,REG_LOOP,REG_ARG0); I label=a->l;
-    apply_A(a,l,1,t);
-    if (a->t) {
+    AS as; A a=&as;
+    if (apply_R_full(a,l,1,t)) {
+      a->u|=1<<REG_LOOP; Reg ai; a->i=&ai; a->o=ai=REG_RES;
+      RegM pop=start_A(a,n);
+      ASM(a, PUSH,REG_ARG1,-);
+      asm_load(a,T(v),REG_RES,REG_ARG1);
+      ASM(a, MOV,REG_LOOP,REG_ARG0); I label=a->l;
+      apply_A_full(a,l,1,t);
       ASM(a, LOOP,label-a->l,-);
       ASM(a, POP,REG_ARG1,-);
       asm_write(a,T(v),REG_ARG1,REG_RES);
-      ASM_RAW(a, RET);
-      void (*f)(Z,P); f=asm_mmap(a->l); memcpy(f,a->a,a->l);
+      void (*f)(Z,P) = finish_A(a,pop);
       f(n-i, v.p);
     } else {
       do { apply1_P(v, l, v); } while (++i<n&&(!err));
     }
-    FREE(a->a);
   }
   if (!err) mv_P(p,v); FREE(P(v));
 }
@@ -108,12 +107,17 @@ D_P22(while) {
   del(rr); mv_P(p,ll); FREE(P(ll));
 }
 
+D_R11(flip) { T t[2]={ll,ll}; return apply_R(a,l,2,t); }
 D_A11(flip) {
   AS ax=*a; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
   T t[2]={ll,ll};
   apply_A(&ax, l, 2, t);
   a->t=ax.t; a->o=ax.o; a->i[0]=axi[0]; a->l=ax.l; a->a=ax.a;
   return;
+}
+D_R21(hook) {
+  T t[2]; t[1]=ll;
+  return (t[0]=apply_R(a,l,1,&ll)) ? apply_R(a,r,2,t) : 0;
 }
 D_A21(hook) {
   AS ax=*a; ax.o=NO_REG; protect_input(ax.i, &ax.u);
@@ -126,6 +130,10 @@ D_A21(hook) {
   a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
   return;
 }
+D_R22(hook) {
+  T t[2]; t[1]=rr;
+  return (t[0]=apply_R(a,l,1,&ll)) ? apply_R(a,r,2,t) : 0;
+}
 D_A22(hook) {
   AS ax=*a; ax.o=NO_REG; ax.u|=1<<a->i[1];
   apply_A(&ax, l, 1, &ll);
@@ -137,6 +145,12 @@ D_A22(hook) {
 
   a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;
   return;
+}
+D_R22(compose) {
+  T t[2]; t[1]=rr;
+  if (!(t[0]=apply_R(a,l,1,&ll))) return 0;
+  if (!(t[1]=apply_R(a,l,1,&rr))) return 0;
+  return apply_R(a,r,2,t);
 }
 D_A22(compose) {
   AS ax=*a; Reg afi[2]; T tf[2];
@@ -165,19 +179,19 @@ void compose_init() {
   DB(t12,'k',l); DB(p12,'k',constant);
 
   DB(t2,'~',V); DB(p2,'~',flip);
-  D(11,'~',flip); DB(a11,'~',flip);
+  D(11,'~',flip); DB(a11,'~',flip); DB(r11,'~',flip);
   D(12,'~',flip);
 
   D(21,'b',bind);
   D(21,'B',backbind);
 
-  D(21,'h',hook); DB(a21,'h',hook);
-  D(22,'h',hook); DB(a22,'h',hook);
+  D(21,'h',hook); DB(a21,'h',hook); DB(r21,'h',hook);
+  D(22,'h',hook); DB(a22,'h',hook); DB(r22,'h',hook);
   D(21,'H',backhook);
   D(22,'H',backhook);
 
   D(21,'O',compose);
-  D(22,'O',compose); DB(a22,'O',compose);
+  D(22,'O',compose); DB(a22,'O',compose); DB(r22,'O',compose);
 
   DB(t11,'w',V); DB(p11,'w',doubleu);
   DB(t12,'w',V); DB(p12,'w',doubleu);

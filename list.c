@@ -201,15 +201,15 @@ D_P11(reduce) {
     apply2_P(v, l, vt, listV_ats(ll,i,s)); FREE(P(vt));
   }
   if (i<len && !err) {
-    AS as; A a=&as; a->l=0; a->t=0;
-    a->u=REG_MASK|1<<REG_ARG0|1<<REG_ARG1;
-    Reg ai[2]; a->i=ai;
-    a->o=ai[0]=REG_RES; ai[1]=get_reg(a->u|1<<ai[0]);
-    ASM(a, PUSH,REG_ARG2,-);
-    asm_load(a,t[0],ai[0],REG_ARG2); I label=a->l;
-    asm_load(a,t[1],ai[1],REG_ARG0);
-    apply_A(a,l,2,t);
-    if (a->t) {
+    AS as; A a=&as;
+    if (apply_R_full(a,l,2,t)) {
+      a->u|=1<<REG_ARG0|1<<REG_ARG1; Reg ai[2]; a->i=ai;
+      a->o=ai[0]=REG_RES; ai[1]=get_reg(a->u|1<<ai[0]);
+      RegM pop=start_A(a,2);
+      ASM(a, PUSH,REG_ARG2,-);
+      asm_load(a,t[0],ai[0],REG_ARG2); I label=a->l;
+      asm_load(a,t[1],ai[1],REG_ARG0);
+      apply_A_full(a,l,2,t);
       ASM(a, ADDI1,REG_ARG0,s);
       ASM(a, CMP,REG_ARG0,REG_ARG1);
       ASM(a, JB,label-a->l,-);
@@ -225,13 +225,10 @@ D_P11(reduce) {
       }
       ASM(a, POP,REG_ARG2,-);
       asm_write(a,t[0],REG_ARG2,REG_RES);
-      ASM_RAW(a, RET);
-      void (*f)(P,P,P); f=asm_mmap(a->l); memcpy(f,a->a,a->l);
-      f(lp+s*(o+i), end, v.p);
+      void (*f)(P,P,P) = finish_A(a,pop); f(lp+s*(o+i), end, v.p);
     } else {
       do { apply2_P(v, l, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
     }
-    FREE(a->a);
   }
   if (err) for(;i<len;i++) del(listV_ats(ll,i,s)); else mv_P(p,v);
   FREEL(L(ll)); FREE(P(v));

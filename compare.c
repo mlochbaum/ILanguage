@@ -18,8 +18,11 @@ D_P2(greater_than) { setZ(p, compare_arith(l,r)>0); }
 D_P2(less_than_or_eq) { setZ(p, compare_arith(l,r)<=0); }
 D_P2(greater_than_or_eq) { setZ(p, compare_arith(l,r)>=0); }
 
+D_R2(compare_arith) {
+  if ((l|r)&~(Z_t|R_t)) return 0;
+  T t=arith_t2(l,r); return IMPURE(t) ? 0 : Z_t;
+}
 void compare_arith_a(A a, T l, T r, UC code) {
-  if ((l|r)&~(Z_t|R_t)) return;
   choose_regs(a);
   switch (arith_t2(l,r)) {
     case Z_t: ASM(a, CMP,a->i[0],a->i[1]);
@@ -43,7 +46,7 @@ D_A(greater_than_or_eq, C_AE);
 
 void compare_init() {
 #define D(c,f) B_u2[c]=DB(l2,c,arith); DB(d2,c,arith); DB(t2,c,Z); \
-               DB(p2,c,f); DB(a2,c,f);
+               DB(p2,c,f); DB(r2,c,compare_arith); DB(a2,c,f);
   D('=',equals);
   D('<',less_than);
   D('>',greater_than);

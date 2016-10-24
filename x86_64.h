@@ -28,8 +28,10 @@ typedef unsigned char Reg;
 #define NO_REG_NM 17
 typedef unsigned short RegM;
 #define REG_NEVER 48 // Never modify rsp or rbp
-#define REG_MASK 48 // 61496 // Registers which must be pushed before use
+#define REG_MASK 61496 // Registers which must be pushed before use
 #define REG_SAVE 4039 // Registers which function calls may modify
+
+#define MAX_C_REG 8
 
 // Ignore leading 0x40
 #define ASM_RAW(A, OP) \
