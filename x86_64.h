@@ -163,6 +163,9 @@ typedef unsigned short RegM;
 #define JLE(O,I) {0x7E,((UC)(O)-2)}
 #define JG(O,I)  {0x7F,((UC)(O)-2)}
 
+#define LOOP(O,I) {0xE2,((UC)(O)-2)}
+#define REG_LOOP 1
+
 #define C_O   0x0
 #define C_NO  0x1
 #define C_B   0x2

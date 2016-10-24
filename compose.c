@@ -1,6 +1,7 @@
 // Generated; see ic/.
 
 #include "builtin.h"
+#include <string.h>
 
 D_P1(left) { mv_P(p,l); }
 D_P1(right) { mv_P(p,l); }
@@ -60,18 +61,30 @@ D_T21(power) {
   return ll;
 }
 D_P21(power) {
-  I n=getFloorZ(r); V vt,v=cpy1(ll); T t[2]; t[0]=T(v); V ls;
+  I n=getFloorZ(r); V vt,v=cpy1(ll); T t[2]; t[0]=T(v);
   DDO(i,n) {
     t[1]=t[0]; t[0]=apply_T(l,1,t); if (t[0]==t[1]) break;
     vt=v; T(v)=t[0]; P(v)=MALLOC(t_sizeof(T(v)));
-    ls=apply_S(l,1,t);
-    apply1_P(v, ls, vt); FREE(P(vt));
-    ddel(ls); if (err) break;
+    apply1_P(v, l, vt); FREE(P(vt)); if (err) break;
   }
   if (i<n && !err) {
-    ls=apply_S(l,1,t);
-    do { apply1_P(v, ls, v); } while (++i<n&&(!err));
-    ddel(ls);
+    AS as; A a=&as; a->n=1; a->l=0; a->t=0;
+    a->u=REG_MASK|1<<REG_LOOP; Reg ai; a->i=&ai; a->o=ai=REG_RES;
+    ASM(a, PUSH,REG_ARG1,-);
+    asm_load(a,T(v),REG_RES,REG_ARG1);
+    ASM(a, MOV,REG_LOOP,REG_ARG0); I label=a->l;
+    apply_A(a,l,2,t);
+    if (a->t) {
+      ASM(a, LOOP,label-a->l,-);
+      ASM(a, POP,REG_ARG1,-);
+      asm_write(a,T(v),REG_ARG1,REG_RES);
+      ASM_RAW(a, RET);
+      void (*f)(Z,P); f=asm_mmap(a->l); memcpy(f,a->a,a->l);
+      f(n-i, v.p);
+    } else {
+      do { apply1_P(v, l, v); } while (++i<n&&(!err));
+    }
+    FREE(a->a);
   }
   if (!err) mv_P(p,v); FREE(P(v));
 }
