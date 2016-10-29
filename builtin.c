@@ -92,7 +92,7 @@ Asm finish_asm_B(A a, V p, P* vp) {
 void apply_P_B1(V p, B b, V* x) {
   P1 f=B_p1[b]; if(f) return f(p,x[0]);
   A1 ab=B_a1[b]; if (ab) {
-    AS as; A a=&as; a->n=1; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
+    AS as; A a=&as; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
     Reg ai=REG_ARG1; a->i=&ai;
 
     ASM(a,PUSH,REG_ARG0,-);
@@ -107,7 +107,7 @@ void apply_P_B1(V p, B b, V* x) {
 void apply_P_B2(V p, B b, V* x) {
   P2 f=B_p2[b]; if(f) return f(p,x[0],x[1]);
   A2 ab=B_a2[b]; if (ab) {
-    AS as; A a=&as; a->n=2; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
+    AS as; A a=&as; a->o=0; a->u=REG_MASK; a->l=0; a->t=0;
     Reg ai[2]={REG_ARG1,REG_ARG2}; a->i=ai;
 
     ASM(a,PUSH,REG_ARG0,-);

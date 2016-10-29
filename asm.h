@@ -5,7 +5,6 @@ typedef void* Asm;
 /*
  * i o (input used; output given)
  *   + t: output type
- * +   n: number of inputs
  * + + i: input registers
  * + + o: output register
  * +   u: mask of unmodified registers (can include inputs)
@@ -19,7 +18,7 @@ typedef void* Asm;
  * modify, or NO_REG_NM to indicate that the callee can choose but not
  * modify.
  */
-typedef struct { T t; UC n; Reg* i; Reg o; RegM u; I l; Asm a; } AS;
+typedef struct { T t; Reg* i; Reg o; RegM u; I l; Asm a; } AS;
 typedef AS* A;
 
 // Append code for f on the given types to a.
@@ -35,11 +34,12 @@ Reg get_reg(RegM);
 Reg get_reg_mark(RegM *u, RegM v);
 
 // Get the mask of all input registers.
-RegM input_mask(A);
+RegM input_mask(A,I);
 
 // Choose a->i and a->o (ensuring that neither is NO_REG or NO_REG_NM)
 I choose_reg(A); // One input
-I choose_regs(A); // Multiple inputs
+I choose_regs(A); // Two inputs
+I choose_regn(A,I); // Multiple inputs
 
 // Append l bytes of aa to a
 void a_append(A a, I l, Asm aa);
@@ -94,16 +94,16 @@ void protect_input(Reg *i, RegM *u);
  */
 
 typedef struct { RegM p; Reg o; } Prot2State;
-#define PROTECT_1of2(U) Prot2State prot2 = clear_regs(a, U)
+#define PROTECT_1of2(U) Prot2State prot2 = clear_regs(a,n, U)
 #define PROTECT_2of2 pop_regs_2(a, prot2.p, prot2.o)
 
 typedef struct {RegM p1; RegM m; RegM p2;} Prot3State;
-#define PROTECT_1of3(U) Prot3State prot3 = clear_regs_3(a, U)
+#define PROTECT_1of3(U) Prot3State prot3 = clear_regs_3(a,n, U)
 #define PROTECT_2of3 clear_regs_post(a, prot3.m, prot3.p1)
 #define PROTECT_3of3 pop_regs(a, prot3.p2)
 
-Prot2State clear_regs(A a, RegM u);
+Prot2State clear_regs(A a, I n, RegM u);
 void pop_regs_2(A a, RegM pop, Reg o);
-Prot3State clear_regs_3(A a, RegM u);
+Prot3State clear_regs_3(A a, I n, RegM u);
 void clear_regs_post(A a, RegM mov, RegM pop);
 void pop_regs(A a, RegM pop);

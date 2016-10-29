@@ -9,7 +9,7 @@ Reg get_reg(RegM u) { return __builtin_ctz(~u); }
 Reg get_reg_mark(RegM *u, RegM v) {
   Reg r=get_reg(*u|v); *u|=1<<r; return r;
 }
-RegM input_mask(A a) { RegM u=0; DO(i,a->n) u|=1<<a->i[i]; return u; }
+RegM input_mask(A a, I n) { RegM u=0; DO(i,n) u|=1<<a->i[i]; return u; }
 I choose_reg(A a) {
   Reg i=a->i[0], o=a->o;
   if (i==NO_REG_NM) i=get_reg_mark(&a->u, 1<<o);
@@ -17,8 +17,8 @@ I choose_reg(A a) {
   if (i==NO_REG) i = o;
   a->i[0]=i; a->o=o; return i!=o;
 }
-I choose_regs(A a) {
-  I n=a->n; Reg *i=a->i, o=a->o;
+I choose_regn(A a, I n) {
+  Reg *i=a->i, o=a->o;
   DO(j,n) if (i[j]==NO_REG_NM) i[j]=get_reg_mark(&a->u, 1<<o);
   RegM ui=a->u; DO(j,n) if (i[j]==NO_REG) i[j]=get_reg_mark(&ui,0);
   I ii=0; if (o==NO_REG) {
@@ -29,6 +29,7 @@ I choose_regs(A a) {
   }
   return ii;
 }
+I choose_regs(A a) { return choose_regn(a,2); }
 
 void protect_input(Reg *i, RegM *u) {
   if (*i<NO_REG) *u|=1<<*i; else *i=NO_REG_NM;
@@ -55,17 +56,17 @@ void apply_A_O(A a, O f, I n, T* x) {
   }
   a->l=ax.l; a->a=ax.a;
 
-  AS af=*a; af.n=l; af.i=iF;
+  AS af=*a; af.i=iF;
   apply_A(&af, f->f, l, t);
   a->o=af.o; a->t=af.t; a->l=af.l; a->a=af.a;
 }
 
 #define EACH_REG(U,R) for (RegM ui=U; R=get_reg(~ui), ui; ui-=1<<R)
 #define DEACH_REG(U,R) Reg R; EACH_REG(U,R)
-Prot2State clear_regs(A a, RegM u) {
-  RegM uc = u&a->u, ui=input_mask(a);
+Prot2State clear_regs(A a, I n, RegM u) {
+  RegM uc = u&a->u, ui=input_mask(a,n);
   RegM uu = a->u|u|ui;
-  DO(ii,a->n) {
+  DO(ii,n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || u&si) {
       Reg i_ = a->i[ii] = get_reg(uu);
@@ -83,10 +84,10 @@ void pop_regs_2(A a, RegM pop, Reg o) {
   pop_regs(a, pop);
 }
 
-Prot3State clear_regs_3(A a, RegM u) {
-  RegM ui=input_mask(a);
+Prot3State clear_regs_3(A a, I n, RegM u) {
+  RegM ui=input_mask(a,n);
   RegM p1 = ui&u&a->u, p2 = ((ui|a->u)&u)^p1, uu = a->u|u|ui;
-  DO(ii,a->n) {
+  DO(ii,n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || p2&si) {
       Reg i_ = a->i[ii] = get_reg(uu);
@@ -206,7 +207,7 @@ void apply_A_F(A a, F f, I n, T* x) {
 
 void apply_A_Z(A a, Z z, I n, T* x) {
   if (a->o==NO_REG) a->o=get_reg(a->u);
-  RegM ui=input_mask(a)&~a->u; a->u|=ui;
+  RegM ui=input_mask(a,n)&~a->u; a->u|=ui;
   DO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
   if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, a->o, z);
   else ASM(a, MOV4_RI, a->o, z);

@@ -68,12 +68,12 @@ D_P21(power) {
     apply1_P(v, l, vt); FREE(P(vt)); if (err) break;
   }
   if (i<n && !err) {
-    AS as; A a=&as; a->n=1; a->l=0; a->t=0;
+    AS as; A a=&as; a->l=0; a->t=0;
     a->u=REG_MASK|1<<REG_LOOP; Reg ai; a->i=&ai; a->o=ai=REG_RES;
     ASM(a, PUSH,REG_ARG1,-);
     asm_load(a,T(v),REG_RES,REG_ARG1);
     ASM(a, MOV,REG_LOOP,REG_ARG0); I label=a->l;
-    apply_A(a,l,2,t);
+    apply_A(a,l,1,t);
     if (a->t) {
       ASM(a, LOOP,label-a->l,-);
       ASM(a, POP,REG_ARG1,-);
@@ -109,17 +109,17 @@ D_P22(while) {
 }
 
 D_A11(flip) {
-  AS ax=*a; ax.n=2; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
+  AS ax=*a; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
   T t[2]={ll,ll};
   apply_A(&ax, l, 2, t);
   a->t=ax.t; a->o=ax.o; a->i[0]=axi[0]; a->l=ax.l; a->a=ax.a;
   return;
 }
 D_A21(hook) {
-  AS ax=*a; ax.n=1; ax.o=NO_REG; protect_input(ax.i, &ax.u);
+  AS ax=*a; ax.o=NO_REG; protect_input(ax.i, &ax.u);
   apply_A(&ax, l, 1, &ll);
 
-  ax.n=2; Reg axi[2]={ax.o,ax.i[0]}; ax.i=axi; ax.o=a->o; ax.u=a->u;
+  Reg axi[2]={ax.o,ax.i[0]}; ax.i=axi; ax.o=a->o; ax.u=a->u;
   T t[2]={ax.t,ll};
   apply_A(&ax, r, 2, t);
 
@@ -127,10 +127,10 @@ D_A21(hook) {
   return;
 }
 D_A22(hook) {
-  AS ax=*a; ax.n=1; ax.o=NO_REG; ax.u|=1<<a->i[1];
+  AS ax=*a; ax.o=NO_REG; ax.u|=1<<a->i[1];
   apply_A(&ax, l, 1, &ll);
 
-  ax.n=2; I i=a->i[0]; ax.i[0]=ax.o; ax.o=a->o; ax.u=a->u;
+  I i=a->i[0]; ax.i[0]=ax.o; ax.o=a->o; ax.u=a->u;
   T t[2]={ax.t,rr};
   apply_A(&ax, r, 2, t);
   a->i[0]=i;
@@ -141,13 +141,13 @@ D_A22(hook) {
 D_A22(compose) {
   AS ax=*a; Reg afi[2]; T tf[2];
 
-  ax.n=1; ax.i=a->i; ax.o=NO_REG; ax.u|=1<<a->i[1];
+  ax.i=a->i; ax.o=NO_REG; ax.u|=1<<a->i[1];
   apply_A(&ax, l, 1, &ll); afi[0]=ax.o; tf[0]=ax.t;
 
   ax.i=a->i+1; ax.u=a->u|1<<ax.o; ax.o=NO_REG;
   apply_A(&ax, l, 1, &rr); afi[1]=ax.o; tf[1]=ax.t;
 
-  ax.n=2; ax.i=afi; ax.o=a->o; ax.u=a->u;
+  ax.i=afi; ax.o=a->o; ax.u=a->u;
   apply_A(&ax, r, 2, tf);
 
   a->t=ax.t; a->o=ax.o; a->l=ax.l; a->a=ax.a;

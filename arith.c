@@ -147,7 +147,7 @@ D_A2(divide) {
   a->t=R_t;
 }
 D_A2(mod) {
-  if ((l|r)&~(Z_t|R_t)) return;
+  if ((l|r)&~(Z_t|R_t)) return; I n=2; // For PROTECT
   switch (a->t=arith_t2(l,r)) {
     case Z_t: {
       Reg r_=REG_IDIV_0, r1=REG_IDIV_1;

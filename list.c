@@ -201,7 +201,7 @@ D_P11(reduce) {
     apply2_P(v, l, vt, listV_ats(ll,i,s)); FREE(P(vt));
   }
   if (i<len && !err) {
-    AS as; A a=&as; a->n=2; a->l=0; a->t=0;
+    AS as; A a=&as; a->l=0; a->t=0;
     a->u=REG_MASK|1<<REG_ARG0|1<<REG_ARG1;
     Reg ai[2]; a->i=ai;
     a->o=ai[0]=REG_RES; ai[1]=get_reg(a->u|1<<ai[0]);
