@@ -202,7 +202,7 @@ D_P11(reduce) {
   }
   if (i<len && !err) {
     AS as; A a=&as;
-    if (apply_R_full(a,l,2,t)) {
+    if (len-i>=ASM_MIN_ITER && apply_R_full(a,l,2,t)) {
       a->u|=1<<REG_ARG0|1<<REG_ARG1; Reg ai[2]; a->i=ai;
       a->o=ai[0]=REG_RES; ai[1]=get_reg(a->u|1<<ai[0]);
       RegM pop=start_A(a,2);

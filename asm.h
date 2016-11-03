@@ -2,6 +2,8 @@
 
 typedef void* Asm;
 
+#define ASM_MIN_ITER 8 // Required number of iterations before compiling
+
 /*
  * i o (input used; output given)
  *   + t: output type (to be removed)

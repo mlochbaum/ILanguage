@@ -69,7 +69,7 @@ D_P21(power) {
   }
   if (i<n && !err) {
     AS as; A a=&as;
-    if (apply_R_full(a,l,1,t)) {
+    if (n-i>=ASM_MIN_ITER && apply_R_full(a,l,1,t)) {
       a->u|=1<<REG_LOOP; Reg ai; a->i=&ai; a->o=ai=REG_RES;
       RegM pop=start_A(a,n);
       ASM(a, PUSH,REG_ARG1,-);

@@ -96,7 +96,7 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
   I len0=wrap[order[0]];
 
   AS as; A a=&as;
-  if (apply_R_full(a,f,n,ts)) {
+  if (l>=ASM_MIN_ITER && apply_R_full(a,f,n,ts)) {
     Reg rx[n], ri, rxi[n];
     DO(j,n+2) a->u|=1<<reg_args[j]; DO(j,n) rx[j]=reg_args[j+2];
     DO(j,n) rxi[j]=(d&1<<j)?rx[j]:NO_REG; a->i=rxi;
