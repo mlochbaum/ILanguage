@@ -99,8 +99,8 @@ typedef unsigned short RegM;
 
 #define UCOMISD(O,I)  {0x66,0x0F,0x2E,A_REG(I,O)}
 
-#define PUSH(O,I) {0x50+O}
-#define POP(O,I)  {0x58+O}
+#define PUSH(O,I) {REX4(O,0),0x50+((O)&7)}
+#define POP(O,I)  {REX4(O,0),0x58+((O)&7)}
 
 #define BYTES4(I) ((UC)(I)),((UC)((I)>>8)),((UC)((I)>>16)),((UC)((I)>>24))
 #define BYTES8(I) BYTES4(I) ,((UC)((I)>>32)),((UC)((I)>>40)) \
