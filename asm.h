@@ -13,6 +13,7 @@ typedef void* Asm;
  * x + + l: length of assembly code
  *     + a: assembly code
  * + +   ar: number of variable and constant registers for each function
+ * + +   ts: output type for each function
  * + + + lc: index in constant registers
  *   + + cr: registers used for constants
  * + +   cv: values stored in constant registers
@@ -25,7 +26,7 @@ typedef void* Asm;
  * modify.
  */
 typedef struct { T t; Reg* i; Reg o; RegM u; I l; Asm a;
-                 I (*ar)[2]; I lc; Reg* cr; Z* cv; } AS;
+                 T* ts; I (*ar)[2]; I lc; Reg* cr; Z* cv; } AS;
 typedef AS* A;
 #define MIN_ARR 8 // Minimum length for cr and cv
 

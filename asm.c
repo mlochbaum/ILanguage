@@ -243,7 +243,7 @@ void apply_A_Z(A a, Z z, I n, T* x) {
 void init_A(A a) {
   a->t=0; a->o=NO_REG; a->l=a->lc=0; a->u=REG_MASK;
 #define D(N) a->N=MALLOC(MIN_ARR*sizeof(*a->N))
-  D(ar); D(cr); D(cv);
+  D(ar); D(cr); D(cv); D(ts);
 #undef D
 }
 T apply_R_(A a, V f, I n, T* x) {
@@ -257,10 +257,12 @@ T apply_R(A a, V f, I n, T* x) {
   I *car=a->ar[ci], *par=a->ar[pi];
   if (a->l>=MIN_ARR && PURE(a->l)) {
     REALLOC(a->ar, 2*a->l);
+    REALLOC(a->ts, 2*a->l);
   }
   a->l++; car[0]=car[1]=0;
   I lc = a->lc;
   T t=apply_R_(a,f,n,x); if (!t) return 0;
+  a->ts[ci] = t;
   car[1] = a->lc-lc;
   if (par[0] < car[0]) par[0] = car[0];
   *(I*)&a->t=pi;
@@ -275,7 +277,7 @@ void apply_A(A a, V f, I n, T* x) {
   pop_regs(a, r);
 }
 
-#define FREE_A(a) free(a->ar); free(a->cr); free(a->cv)
+#define FREE_A(a) free(a->ts); free(a->ar); free(a->cr); free(a->cv)
 T apply_R_full(A a, V f, I n, T* x) {
   init_A(a);
   T t=apply_R(a,f,n,x);
