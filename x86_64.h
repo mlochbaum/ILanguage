@@ -34,6 +34,7 @@ typedef unsigned short RegM;
 #define MAX_C_REG 8
 
 // Ignore leading 0x40
+// TODO Doesn't drop 0xF2 0x40, etc.
 #define ASM_RAW(A, OP) \
   do { UC aa[] = OP; C off=aa[0]==0x40; \
        a_append(A, sizeof(aa)-off, aa+off); } while(0)
@@ -81,25 +82,24 @@ typedef unsigned short RegM;
 #define REG_IDIV_0  REG_RES
 #define REG_IDIV_1  REG_ARG2
 
-#define CVTSI2SD(O,I)  {0xF2,REX8(I,0),0x0F,0x2A,A_REG(I,O)}
-#define CVTTSD2SI(O,I) {0xF2,REX8(I,0),0x0F,0x2C,A_REG(I,O)}
-#define MOVQ(O,I)  {0x66,REX8(O,0),0x0F,0x7E,A_REG(O,I)}
+#define CVTSI2SD(O,I)  {0xF2,REX8(I,O),0x0F,0x2A,A_REG(I,O)}
+#define CVTTSD2SI(O,I) {0xF2,REX8(I,O),0x0F,0x2C,A_REG(I,O)}
+#define MOVQ(O,I)  {0x66,REX8(O,I),0x0F,0x7E,A_REG(O,I)}
 
-#define CVTSI2SD_RM(O,I,OFF) {0xF2,REX8(I,0),0x0F,0x2A,0x40+A_0REG(I,O),OFF}
-#define CVTSI2SD_RM0(O,I)    {0xF2,REX8(I,0),0x0F,0x2A,A_0REG(I,O)}
+#define CVTSI2SD_RM(O,I,OFF) {0xF2,REX8(I,O),0x0F,0x2A,0x40+A_0REG(I,O),OFF}
+#define CVTSI2SD_RM0(O,I)    {0xF2,REX8(I,O),0x0F,0x2A,A_0REG(I,O)}
 
-#define MOVSD(O,I)  {0xF2,0x0F,0x10,A_REG(I,O)}
-#define ADDSD(O,I)  {0xF2,0x0F,0x58,A_REG(I,O)}
-#define MULSD(O,I)  {0xF2,0x0F,0x59,A_REG(I,O)}
-#define SUBSD(O,I)  {0xF2,0x0F,0x5C,A_REG(I,O)}
-#define MINSD(O,I)  {0xF2,0x0F,0x5D,A_REG(I,O)}
-#define DIVSD(O,I)  {0xF2,0x0F,0x5E,A_REG(I,O)}
-#define MAXSD(O,I)  {0xF2,0x0F,0x5F,A_REG(I,O)}
-#define PXOR(O,I)   {0x66,0x0F,0xEF,A_REG(I,O)}
+#define MOVSD(O,I)  {0xF2,REX4(I,O),0x0F,0x10,A_REG(I,O)}
+#define ADDSD(O,I)  {0xF2,REX4(I,O),0x0F,0x58,A_REG(I,O)}
+#define MULSD(O,I)  {0xF2,REX4(I,O),0x0F,0x59,A_REG(I,O)}
+#define SUBSD(O,I)  {0xF2,REX4(I,O),0x0F,0x5C,A_REG(I,O)}
+#define MINSD(O,I)  {0xF2,REX4(I,O),0x0F,0x5D,A_REG(I,O)}
+#define DIVSD(O,I)  {0xF2,REX4(I,O),0x0F,0x5E,A_REG(I,O)}
+#define MAXSD(O,I)  {0xF2,REX4(I,O),0x0F,0x5F,A_REG(I,O)}
+#define SQRTSD(O,I) {0xF2,REX4(I,O),0x0F,0x51,A_REG(I,O)}
+#define PXOR(O,I)   {0x66,REX4(I,O),0x0F,0xEF,A_REG(I,O)}
 
-#define SQRTSD(O,I) {0xF2,0x0F,0x51,A_REG(I,O)}
-
-#define UCOMISD(O,I)  {0x66,0x0F,0x2E,A_REG(I,O)}
+#define UCOMISD(O,I)  {0x66,REX4(I,O),0x0F,0x2E,A_REG(I,O)}
 
 #define PUSH(O,I) {REX4(O,0),0x50+((O)&7)}
 #define POP(O,I)  {REX4(O,0),0x58+((O)&7)}
@@ -126,11 +126,10 @@ typedef unsigned short RegM;
 #define MOV1_RM(I,O,OFF) {REX4(O,I),0x0F,0xB6,0x40+A_0REG(O,I),OFF}
 #define MOV1_RM0(I,O)    {REX4(O,I),0x0F,0xB6,A_0REG(O,I)}
 
-// TODO REX
-#define MOVSD_MR(O,I,OFF) {0xF2,0x0F,0x11,0x40+A_0REG(O,I),OFF}
-#define MOVSD_MR0(O,I)    {0xF2,0x0F,0x11,A_0REG(O,I)}
-#define MOVSD_RM(I,O,OFF) {0xF2,0x0F,0x10,0x40+A_0REG(O,I),OFF}
-#define MOVSD_RM0(I,O)    {0xF2,0x0F,0x10,A_0REG(O,I)}
+#define MOVSD_MR(O,I,OFF) {0xF2,REX4(O,I),0x0F,0x11,0x40+A_0REG(O,I),OFF}
+#define MOVSD_MR0(O,I)    {0xF2,REX4(O,I),0x0F,0x11,A_0REG(O,I)}
+#define MOVSD_RM(I,O,OFF) {0xF2,REX4(O,I),0x0F,0x10,0x40+A_0REG(O,I),OFF}
+#define MOVSD_RM0(I,O)    {0xF2,REX4(O,I),0x0F,0x10,A_0REG(O,I)}
 
 #define ASM_MOV_PRE(A,T)  if ((T)==R_t) ASM_RAW(A, {0xF2})
 #define MOV1_MR_STUB(O,I,E)   {REX4_3(O,I,E),0x88}
