@@ -24,6 +24,9 @@
 // Declare string of length l, and null-terminate it.
 #define DECL_NSTR(v, l) DECL_STR(v, l); v[l]='\0'
 
+// Extend array v to have length at least l
+#define REALLOC(v, l) (v) = realloc((v), (l)*sizeof(*v))
+
 I t_sizeof(T);   // Return the size of values of the input type.
 I next_pow_2(I); // Return the smallest power of two >= the input.
 // Test whether t is a pure power of two.

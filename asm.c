@@ -45,8 +45,8 @@ void a_append(A a, I l, Asm aa) {
 void request_regs(A a, I n) { a->ar[*(I*)&a->t][0]+=n; }
 void request_cv(A a, Z c) {
   if (a->lc>=MIN_ARR && PURE(a->lc)) {
-    a->cr = realloc(a->cr, 2*a->lc*sizeof(c));
-    a->cv = realloc(a->cv, 2*a->lc*sizeof(c));
+    REALLOC(a->cr, 2*a->lc);
+    REALLOC(a->cv, 2*a->lc);
   }
   a->cr[a->lc] = NO_REG; a->cv[a->lc++] = c;
 }
@@ -242,9 +242,9 @@ void apply_A_Z(A a, Z z, I n, T* x) {
 
 void init_A(A a) {
   a->t=0; a->o=NO_REG; a->l=a->lc=0; a->u=REG_MASK;
-  a->ar=malloc(MIN_ARR*sizeof(*a->ar));
-  a->cr=malloc(MIN_ARR*sizeof(*a->cr));
-  a->cv=malloc(MIN_ARR*sizeof(*a->cv));
+#define D(N) a->N=MALLOC(MIN_ARR*sizeof(*a->N))
+  D(ar); D(cr); D(cv);
+#undef D
 }
 T apply_R_(A a, V f, I n, T* x) {
 #define LINE(T) case T##_t: return apply_R_##T(a,T(f),n,x);
@@ -253,16 +253,17 @@ T apply_R_(A a, V f, I n, T* x) {
 #undef LINE
 }
 T apply_R(A a, V f, I n, T* x) {
-  I par=*(I*)&a->t, car=a->l; *(I*)&a->t=car;
+  I pi=*(I*)&a->i, ci=a->l; *(I*)&a->i=ci;
+  I *car=a->ar[ci], *par=a->ar[pi];
   if (a->l>=MIN_ARR && PURE(a->l)) {
-    a->ar = realloc(a->ar, 2*a->l*sizeof(*a->ar));
+    REALLOC(a->ar, 2*a->l);
   }
-  a->l++; a->ar[car][0]=a->ar[car][1]=0;
+  a->l++; car[0]=car[1]=0;
   I lc = a->lc;
-  T t=apply_R_(a,f,n,x); if (!t) return 0; // TODO record type for apply_A
-  a->ar[car][1] = a->lc-lc;
-  a->ar[par][0] += a->ar[car][0];
-  *(I*)&a->t=par;
+  T t=apply_R_(a,f,n,x); if (!t) return 0;
+  car[1] = a->lc-lc;
+  if (par[0] < car[0]) par[0] = car[0];
+  *(I*)&a->t=pi;
   return t;
 }
 void apply_A(A a, V f, I n, T* x) {
@@ -274,10 +275,11 @@ void apply_A(A a, V f, I n, T* x) {
   pop_regs(a, r);
 }
 
+#define FREE_A(a) free(a->ar); free(a->cr); free(a->cv)
 T apply_R_full(A a, V f, I n, T* x) {
   init_A(a);
   T t=apply_R(a,f,n,x);
-  if (t) { a->l=0; } else { free(a->ar); free(a->cr); free(a->cv); }
+  if (t) { a->l=0; } else { FREE_A(a); }
   return t;
 }
 RegM start_A(A a, I n) {
@@ -293,7 +295,8 @@ RegM start_A(A a, I n) {
   return pop;
 }
 void apply_A_full(A a, V f, I n, T* x) {
-  apply_A(a,f,n,x); free(a->ar); free(a->cr); free(a->cv);
+  apply_A(a,f,n,x);
+  FREE_A(a);
 }
 
 void *asm_mmap(size_t length) {
