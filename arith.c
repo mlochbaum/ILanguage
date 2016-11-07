@@ -27,14 +27,14 @@ D_R1(negate) {
 D_A1(negate) {
   switch (l) {
     case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
-              ASM(a, NEG,-,a->o); a->t=Z_t; return;
+              ASM(a, NEG,-,a->o); return;
     case R_t: { Reg i=a->i[0];
                 if (!choose_reg(a)) {
                   i=get_reg(a->u|1<<i);
                   ASM(a, MOVSD,i,a->i[0]);
                 }
                 ASM(a, PXOR,a->o,a->o);
-                ASM(a, SUBSD,a->o,i); a->t=R_t; return; }
+                ASM(a, SUBSD,a->o,i); return; }
   }
 }
 D_R1(reciprocal) {
@@ -47,10 +47,9 @@ D_A1(reciprocal) {
   ASM(a, MOV4_RI,a->o,1);
   ASM(a, CVTSI2SD,a->o,a->o);
   ASM(a, DIVSD,a->o,i);
-  a->t=R_t;
 }
 #define ROUND(CMP,OP) \
-  a->t=Z_t; I c=choose_reg(a);                   \
+  I c=choose_reg(a);                             \
   if (l==R_t) {                                  \
     Reg i=a->i[0], o=a->o, r=get_reg(a->u|1<<o); \
     ASM(a, CVTTSD2SI,o,i);                       \
@@ -70,7 +69,7 @@ D_A1(ceiling) { ROUND(B,ADD) }
 
 D_R1(sqroot) { return (l!=Z_t && l!=R_t) ? 0 : R_t; }
 D_A1(sqroot) {
-  a->t=R_t; choose_reg(a);
+  choose_reg(a);
   if (l==Z_t) ASM(a, CVTSI2SD,a->i[0],a->i[0]);
   ASM(a, SQRTSD,a->o,a->i[0]);
 }
@@ -78,9 +77,9 @@ D_R1(square) { return (l!=Z_t && l!=R_t) ? 0 : l; }
 D_A1(square) {
   switch (l) {
     case Z_t: if (choose_reg(a)) ASM(a, MOV,a->o,a->i[0]);
-              ASM(a, IMUL,a->o,a->o); a->t=Z_t; return;
+              ASM(a, IMUL,a->o,a->o); return;
     case R_t: if (choose_reg(a)) ASM(a, MOVSD,a->o,a->i[0]);
-              ASM(a, MULSD,a->o,a->o); a->t=R_t; return;
+              ASM(a, MULSD,a->o,a->o); return;
   }
 }
 
@@ -117,12 +116,11 @@ T pure_t2(T l, T r) {
 D_R2(plus) { return pure_t2(l,r); }
 D_A2(plus) {
   I ii=choose_regs(a);
-  switch (a->t=arith_t2(l,r)) {
+  switch (*a->ts) {
     case Z_t: if (ii==2) ASM3(a, LEA1,a->o,a->i[0],a->i[1]);
               else ASM(a, ADD,a->o,a->i[1-ii]); break;
     case R_t: ii=prepR(a,ii,l,r);
               ASM(a, ADDSD,a->o,a->i[1-ii]); break;
-    default: a->t=0; return;
   }
 }
 D_R2(minus) {
@@ -132,7 +130,7 @@ D_R2(minus) {
 }
 D_A2(minus) {
   I ii=choose_regs(a);
-  switch (a->t=arith_t2(l,r)) {
+  switch (*a->ts) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
               ASM(a, SUB,a->o,a->i[1-ii]);
               if(ii) ASM(a,NEG,-,a->o);
@@ -147,18 +145,16 @@ D_A2(minus) {
                 ASM(a, SUBSD,a->o,a->i[1]);
               }
               break;
-    default: a->t=0; return;
   }
 }
 D_R2(times) { return pure_t2(l,r); }
 D_A2(times) {
   I ii=choose_regs(a);
-  switch (a->t=arith_t2(l,r)) {
+  switch (*a->ts) {
     case Z_t: if (ii==2) ASM(a, MOV,a->o,a->i[ii=0]);
               ASM(a, IMUL,a->o,a->i[1-ii]); break;
     case R_t: ii=prepR(a,ii,l,r);
               ASM(a, MULSD,a->o,a->i[1-ii]); break;
-    default: a->t=0; return;
   }
 }
 D_R2(divide) {
@@ -171,7 +167,6 @@ D_A2(divide) {
   a_RfromT(a,r,i1,a->i[1]);
   a_RfromT(a,l,a->o,a->i[0]);
   ASM(a, DIVSD,a->o,i1);
-  a->t=R_t;
 }
 D_R2(mod) {
   if ((l|r)&~(Z_t|R_t)) return 0;
@@ -179,7 +174,7 @@ D_R2(mod) {
 }
 D_A2(mod) {
   I n=2; // For PROTECT
-  switch (a->t=arith_t2(l,r)) {
+  switch (*a->ts) {
     case Z_t: {
       Reg r_=REG_IDIV_0, r1=REG_IDIV_1;
       C shortcut = a->i[0]==r_;
@@ -223,20 +218,18 @@ D_A2(mod) {
       if (a->i[0]!=a->o) ASM(a, MOVSD,a->o,a->i[0]);
       ASM(a, SUBSD,a->o,rd);
     }
-    default: a->t=0; return;
   }
 }
 
 #define CMPZ(jj,OP) \
   I ii=choose_regs(a);                               \
-  switch (a->t=arith_t2(l,r)) {                      \
+  switch (*a->ts) {                                  \
     case Z_t: { I ifm=(ii==2); if (ifm) ii=1;        \
                 ASM(a, CMP,a->i[1-(jj)],a->i[jj]);   \
                 if (ifm) ASM(a, MOV,a->o,a->i[ii]);  \
-                ASM(a, CMOVLE,a->o,a->i[1-ii]); }    \
+                ASM(a, CMOVLE,a->o,a->i[1-ii]); break; } \
     case R_t: ii=prepR(a,ii,l,r);                    \
               ASM(a, OP##SD,a->o,a->i[1-ii]); break; \
-    default: a->t=0; return;                         \
   }
 D_R2(min) { return pure_t2(l,r); }
 D_A2(min) { CMPZ(ii,  MIN) }

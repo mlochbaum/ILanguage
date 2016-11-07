@@ -26,6 +26,8 @@
 
 // Extend array v to have length at least l
 #define REALLOC(v, l) (v) = realloc((v), (l)*sizeof(*v))
+// Same, for array v-o
+#define REALLOC_OFF(v, o, l) (v) = (o) + realloc((v)-(o), (l)*sizeof(*v))
 
 I t_sizeof(T);   // Return the size of values of the input type.
 I next_pow_2(I); // Return the smallest power of two >= the input.

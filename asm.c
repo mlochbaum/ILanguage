@@ -42,7 +42,7 @@ void a_append(A a, I l, Asm aa) {
   memcpy(a->a+a->l, aa, l); a->l=nl;
 }
 
-void request_regs(A a, I n) { a->ar[*(I*)&a->t][0]+=n; }
+void request_regs(A a, I n) { a->ar[*(I*)&a->i][0]+=n; }
 void request_cv(A a, Z c) {
   if (a->lc>=MIN_ARR && PURE(a->lc)) {
     REALLOC(a->cr, 2*a->lc);
@@ -66,13 +66,13 @@ void apply_A_O(A a, O f, I n, T* x) {
     ax.o = NO_REG;
     // TODO shortcut errors
     apply_A(&ax, f->x[i], n, x);
-    t[i] = ax.t; iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
+    t[i] = ax.ts[-1]; iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
   }
   a->l=ax.l; a->a=ax.a;
 
   AS af=*a; af.i=iF;
   apply_A(&af, f->f, l, t);
-  a->o=af.o; a->t=af.t; a->l=af.l; a->a=af.a;
+  a->o=af.o; a->l=af.l; a->a=af.a;
 }
 
 #define EACH_REG(U,R) for (RegM ui=U; R=get_reg(~ui), ui; ui-=1<<R)
@@ -179,9 +179,9 @@ void apply_A_L(A a, L f, I n, T* x) {
   Asm as[l]; I al[l];
   DO(i, l) {
     if (i==l-1) ax.u = a->u;
-    ax.l=0; ax.o=NO_REG; ax.t=0; apply_A(&ax, list_at(f,i), n, x);
+    ax.l=0; ax.o=NO_REG; apply_A(&ax, list_at(f,i), n, x);
     o[i]=ax.o; as[i]=ax.a; al[i]=ax.l;
-    tt |= t[i]=ax.t;
+    tt |= t[i]=ax.ts[-1];
   }
 
   I s=t_sizeof(tt);
@@ -206,7 +206,7 @@ void apply_A_L(A a, L f, I n, T* x) {
 #undef MI
 #undef MR
 
-  PROTECT_2of2; a->u=au; a->t=L_t;
+  PROTECT_2of2; a->u=au;
 }
 
 T apply_R_N(A a, N f, I n, T* x) { return 0; } // TODO
@@ -237,11 +237,10 @@ void apply_A_Z(A a, Z z, I n, T* x) {
   DO(i,n) { a->u-=ui&1<<a->i[i]; a_del(a, x[i], a->i[i]); }
   if (a->o==NO_REG) a->o=r;
   else ASM(a, MOV, a->o, r);
-  a->t=Z_t;
 }
 
 void init_A(A a) {
-  a->t=0; a->o=NO_REG; a->l=a->lc=0; a->u=REG_MASK;
+  *(I*)&a->i=0; a->o=NO_REG; a->l=a->lc=0; a->u=REG_MASK;
 #define D(N) a->N=MALLOC(MIN_ARR*sizeof(*a->N))
   D(ar); D(cr); D(cv); D(ts);
 #undef D
@@ -257,15 +256,15 @@ T apply_R(A a, V f, I n, T* x) {
   I *car=a->ar[ci], *par=a->ar[pi];
   if (a->l>=MIN_ARR && PURE(a->l)) {
     REALLOC(a->ar, 2*a->l);
-    REALLOC(a->ts, 2*a->l);
+    REALLOC_OFF(a->ts, a->l, 2*a->l);
   }
   a->l++; car[0]=car[1]=0;
   I lc = a->lc;
-  T t=apply_R_(a,f,n,x); if (!t) return 0;
-  a->ts[ci] = t;
+  T t=apply_R_(a,f,n,x); if (!t) { a->l--; return 0; }
+  *(a->ts++) = t;
   car[1] = a->lc-lc;
   if (par[0] < car[0]) par[0] = car[0];
-  *(I*)&a->t=pi;
+  *(I*)&a->i=pi;
   return t;
 }
 void apply_A(A a, V f, I n, T* x) {
@@ -274,13 +273,13 @@ void apply_A(A a, V f, I n, T* x) {
   PURIFY(f); T t=T(f);
   switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) LINE(Z) }
 #undef LINE
-  pop_regs(a, r);
+  pop_regs(a, r); a->ts++;
 }
 
 #define FREE_A(a) free(a->ts); free(a->ar); free(a->cr); free(a->cv)
 T apply_R_full(A a, V f, I n, T* x) {
   init_A(a);
-  T t=apply_R(a,f,n,x);
+  T t=apply_R(a,f,n,x); a->ts-=a->l;
   if (t) { a->l=0; } else { FREE_A(a); }
   return t;
 }
@@ -297,8 +296,9 @@ RegM start_A(A a, I n) {
   return pop;
 }
 void apply_A_full(A a, V f, I n, T* x) {
+  T* tt=a->ts;
   apply_A(a,f,n,x);
-  FREE_A(a);
+  a->ts=tt; FREE_A(a);
 }
 
 void *asm_mmap(size_t length) {

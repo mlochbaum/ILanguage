@@ -6,7 +6,6 @@ typedef void* Asm;
 
 /*
  * r i o (input used; output given)
- * x   + t: output type (to be removed)
  *   + + i: input registers
  *   + + o: output register
  *   +   u: mask of unmodified registers (can include inputs)
@@ -25,7 +24,7 @@ typedef void* Asm;
  * modify, or NO_REG_NM to indicate that the callee can choose but not
  * modify.
  */
-typedef struct { T t; Reg* i; Reg o; RegM u; I l; Asm a;
+typedef struct { Reg* i; Reg o; RegM u; I l; Asm a;
                  T* ts; I (*ar)[2]; I lc; Reg* cr; Z* cv; } AS;
 typedef AS* A;
 #define MIN_ARR 8 // Minimum length for cr and cv

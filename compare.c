@@ -34,7 +34,6 @@ void compare_arith_a(A a, T l, T r, UC code) {
   }
   ASM(a, SETX,a->o,code);
   ASM(a, MOVZX4,a->o,a->o);
-  a->t = Z_t;
 }
 #define D_A(name, cmp) D_A2(name) { return compare_arith_a(a,l,r,cmp); }
 D_A(equals, C_E);

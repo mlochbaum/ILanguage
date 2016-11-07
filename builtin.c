@@ -76,37 +76,38 @@ void FfromB_P(V p, B b, I n, V* x) {
   setF(p, wrapF(newB(b),n,xx));
 }
 
-P finish_asm_B(A a, RegM pop, V p, P* vp) {
+P finish_asm_B(A a, T t, RegM pop, V p, P* vp) {
   ASM(a,POP,REG_ARG0,-);
-  asm_write(a,a->t,REG_ARG0,REG_RES);
+  asm_write(a,t,REG_ARG0,REG_RES);
   P f = finish_A(a,pop);
   *vp=P(p);
-  if (IMPURE(T(p)) && PURE(a->t)) {
-    V *v=*vp; T(*v)=a->t; *vp=P(*v)=MALLOC(t_sizeof(a->t));
+  if (IMPURE(T(p)) && PURE(t)) {
+    V *v=*vp; T(*v)=t; *vp=P(*v)=MALLOC(t_sizeof(t));
   }
   return f;
 }
 #define FREE_A free(a->ar); free(a->cr); free(a->cv)
 void apply_P_B1(V p, B b, V* x) {
   P1 f=B_p1[b]; if(f) return f(p,x[0]);
-  R1 rb=B_r1[b]; if (rb) { AS as; A a=&as; init_A(a); if (rb(a, T(x[0]))) {
-    a->l=0; a->o=0; Reg ai=REG_ARG1; a->i=&ai;
+  R1 rb=B_r1[b]; if (rb) { AS as; A a=&as; init_A(a);
+                           T t=rb(a, T(x[0])); FREE(a->ts); if (t) {
+    a->l=0; a->o=0; Reg ai=REG_ARG1; a->i=&ai; a->ts=&t;
     RegM pop=start_A(a,1);
 
     ASM(a,PUSH,REG_ARG0,-);
     asm_load(a,T(x[0]),ai,ai);
     (B_a1[b])(a, T(x[0])); FREE_A;
 
-    P vp; void(*af)(P,P) = finish_asm_B(a,pop,p,&vp);
+    P vp; void(*af)(P,P) = finish_asm_B(a,t,pop,p,&vp);
     return af(vp, P(x[0]));
   } else { FREE_A; } }
   return FfromB_P(p,b,1,x);
 }
 void apply_P_B2(V p, B b, V* x) {
   P2 f=B_p2[b]; if(f) return f(p,x[0],x[1]);
-  R2 rb=B_r2[b]; if (rb) { AS as; A a=&as; init_A(a); if (rb(a, T(x[0]),
-                                                                T(x[1]))) {
-    a->l=0; a->o=0; Reg ai[2]={REG_ARG1,REG_ARG2}; a->i=ai;
+  R2 rb=B_r2[b]; if (rb) { AS as; A a=&as; init_A(a);
+                           T t=rb(a, T(x[0]), T(x[1])); FREE(a->ts); if (t) {
+    a->l=0; a->o=0; Reg ai[2]={REG_ARG1,REG_ARG2}; a->i=ai; a->ts=&t;
     RegM pop=start_A(a,2);
 
     ASM(a,PUSH,REG_ARG0,-);
@@ -114,7 +115,7 @@ void apply_P_B2(V p, B b, V* x) {
     asm_load(a,T(x[1]),ai[1],ai[1]);
     (B_a2[b])(a, T(x[0]), T(x[1])); FREE_A;
 
-    P vp; void(*af)(P,P,P) = finish_asm_B(a,pop,p,&vp);
+    P vp; void(*af)(P,P,P) = finish_asm_B(a,t,pop,p,&vp);
     return af(vp, P(x[0]), P(x[1]));
   } else { FREE_A; } }
   return FfromB_P(p,b,2,x);
