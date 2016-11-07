@@ -312,6 +312,7 @@ P finish_A(A a, RegM r) {
   ASM_RAW(a, RET);
   P f=asm_mmap(a->l); memcpy(f,a->a,a->l); FREE(a->a); return f;
 }
+void asm_unmap(A a, P f) { munmap(f,a->l); }
 
 #define A(op) ASM3(a,op,o,i,e)
 C asm_load_stub(A a, T t, Reg o, Reg i, Reg e) {

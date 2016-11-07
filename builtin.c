@@ -99,7 +99,7 @@ void apply_P_B1(V p, B b, V* x) {
     (B_a1[b])(a, T(x[0])); FREE_A;
 
     P vp; void(*af)(P,P) = finish_asm_B(a,t,pop,p,&vp);
-    return af(vp, P(x[0]));
+    af(vp, P(x[0])); asm_unmap(a,af); return;
   } else { FREE_A; } }
   return FfromB_P(p,b,1,x);
 }
@@ -116,7 +116,7 @@ void apply_P_B2(V p, B b, V* x) {
     (B_a2[b])(a, T(x[0]), T(x[1])); FREE_A;
 
     P vp; void(*af)(P,P,P) = finish_asm_B(a,t,pop,p,&vp);
-    return af(vp, P(x[0]), P(x[1]));
+    af(vp, P(x[0]), P(x[1])); asm_unmap(a,af); return;
   } else { FREE_A; } }
   return FfromB_P(p,b,2,x);
 }

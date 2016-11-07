@@ -225,7 +225,8 @@ D_P11(reduce) {
       }
       ASM(a, POP,REG_ARG2,-);
       asm_write(a,t[0],REG_ARG2,REG_RES);
-      void (*f)(P,P,P) = finish_A(a,pop); f(lp+s*(o+i), end, v.p);
+      void (*f)(P,P,P) = finish_A(a,pop);
+      f(lp+s*(o+i), end, v.p); asm_unmap(a,f);
     } else {
       do { apply2_P(v, l, v, listV_ats(ll,i,s)); } while (++i<len&&(!err));
     }

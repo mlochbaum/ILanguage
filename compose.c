@@ -80,7 +80,7 @@ D_P21(power) {
       ASM(a, POP,REG_ARG1,-);
       asm_write(a,T(v),REG_ARG1,REG_RES);
       void (*f)(Z,P) = finish_A(a,pop);
-      f(n-i, v.p);
+      f(n-i, v.p); asm_unmap(a,f);
     } else {
       do { apply1_P(v, l, v); } while (++i<n&&(!err));
     }

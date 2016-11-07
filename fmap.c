@@ -131,6 +131,7 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
       case 3: i = ((I(*)(P,Z,P,P,P))ff)(LP(ll), len0, PI(0), PI(1), PI(2)); break;
       case 4: i = ((I(*)(P,Z,P,P,P,P))ff)(LP(ll), len0, PI(0), PI(1), PI(2), PI(3)); break;
     }
+    asm_unmap(a,ff);
 #undef PI
   } else {
     if (n==1) {

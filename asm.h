@@ -39,6 +39,7 @@ T apply_R_full(A,V,I,T*);
 RegM start_A(A,I);
 void apply_A_full(A,V,I,T*);
 P finish_A(A,RegM); // Returns a function pointer.
+void asm_unmap(A,P);
 
 void request_regs(A, I);
 void request_cv(A, Z);
