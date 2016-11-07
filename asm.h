@@ -5,14 +5,17 @@ typedef void* Asm;
 #define ASM_MIN_ITER 8 // Required number of iterations before compiling
 
 /*
- * i o (input used; output given)
- *   + t: output type (to be removed)
- * + + i: input registers
- * + + o: output register
- * +   u: mask of unmodified registers (can include inputs)
- * + + l: length of assembly code
- *   + a: assembly code
- *     ar, cr: see register allocation below
+ * r i o (input used; output given)
+ * x   + t: output type (to be removed)
+ *   + + i: input registers
+ *   + + o: output register
+ *   +   u: mask of unmodified registers (can include inputs)
+ * x + + l: length of assembly code
+ *     + a: assembly code
+ * + +   ar: number of variable and constant registers for each function
+ * + + + lc: index in constant registers
+ *   + + cr: registers used for constants
+ * + +   cv: values stored in constant registers
  * 
  * The callee increments l and appends code to a.
  *
