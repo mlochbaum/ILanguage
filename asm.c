@@ -53,8 +53,8 @@ void request_cv(A a, Z c) {
 Reg use_cr(A a) { return a->cr[a->lc++]; }
 
 T apply_R_O(A a, O f, I n, T* x) {
-  I l=f->l; T t[l];
-  DO(i, l) { if (!(t[i] = apply_R(a, f->x[i], n, x))) return 0; }
+  I l=f->l; T t[l]; request_regs(a,l);
+  DO(i, l) { request_regs(a,-1); if (!(t[i] = apply_R(a, f->x[i], n, x))) return 0; }
   return apply_R(a, f->f, l, t);
 }
 void apply_A_O(A a, O f, I n, T* x) {
@@ -166,6 +166,7 @@ void a_del(A a, T t, Reg i) {
 T apply_R_L(A a, L f, I n, T* x) {
   I l=f->l;
   DO(i, l) { if (!apply_R(a, list_at(f,i), n, x)) return 0; }
+  request_regs(a,1);
   return L_t;
 }
 void apply_A_L(A a, L f, I n, T* x) {
