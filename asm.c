@@ -65,8 +65,8 @@ void apply_A_O(A a, O f, I n, T* x) {
     if (i==l-1) ax.u = ua;
     ax.o = NO_REG;
     // TODO shortcut errors
-    apply_A(&ax, f->x[i], n, x);
-    t[i] = ax.ts[-1]; iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
+    t[i] = apply_A_t(&ax, f->x[i], n, x);
+    iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
   }
   a->l=ax.l; a->a=ax.a;
 
@@ -180,9 +180,9 @@ void apply_A_L(A a, L f, I n, T* x) {
   Asm as[l]; I al[l];
   DO(i, l) {
     if (i==l-1) ax.u = a->u;
-    ax.l=0; ax.o=NO_REG; apply_A(&ax, list_at(f,i), n, x);
+    ax.l=0; ax.o=NO_REG;
+    tt |= t[i]=apply_A_t(&ax, list_at(f,i), n, x);
     o[i]=ax.o; as[i]=ax.a; al[i]=ax.l;
-    tt |= t[i]=ax.ts[-1];
   }
 
   I s=t_sizeof(tt);
@@ -276,6 +276,7 @@ void apply_A(A a, V f, I n, T* x) {
 #undef LINE
   pop_regs(a, r); a->ts++;
 }
+T apply_A_t(A a, V f, I n, T* x) { apply_A(a,f,n,x); return a->ts[-1]; }
 
 #define FREE_A(a) free(a->ts); free(a->ar); free(a->cr); free(a->cv)
 T apply_R_full(A a, V f, I n, T* x) {

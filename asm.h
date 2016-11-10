@@ -34,6 +34,8 @@ void init_A(A a);
 T apply_R(A a, V f, I n, T* x);
 // Append code for f on the given types to a.
 void apply_A(A a, V f, I n, T* x);
+// Also return the output type (*a->ts after application)
+T apply_A_t(A a, V f, I n, T* x);
 
 T apply_R_full(A,V,I,T*);
 RegM start_A(A,I);

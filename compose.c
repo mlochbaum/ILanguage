@@ -121,10 +121,10 @@ D_R21(hook) {
 }
 D_A21(hook) {
   AS ax=*a; ax.o=NO_REG; protect_input(ax.i, &ax.u);
-  apply_A(&ax, l, 1, &ll);
+  T tx=apply_A_t(&ax, l, 1, &ll);
 
   Reg axi[2]={ax.o,ax.i[0]}; ax.i=axi; ax.o=a->o; ax.u=a->u;
-  T t[2]={*ax.ts,ll};
+  T t[2]={tx,ll};
   apply_A(&ax, r, 2, t);
 
   a->o=ax.o; a->l=ax.l; a->a=ax.a;
@@ -136,10 +136,10 @@ D_R22(hook) {
 }
 D_A22(hook) {
   AS ax=*a; ax.o=NO_REG; ax.u|=1<<a->i[1];
-  apply_A(&ax, l, 1, &ll);
+  T tx=apply_A_t(&ax, l, 1, &ll);
 
   I i=a->i[0]; ax.i[0]=ax.o; ax.o=a->o; ax.u=a->u;
-  T t[2]={*ax.ts,rr};
+  T t[2]={tx,rr};
   apply_A(&ax, r, 2, t);
   a->i[0]=i;
 
@@ -156,10 +156,10 @@ D_A22(compose) {
   AS ax=*a; Reg afi[2]; T tf[2];
 
   ax.i=a->i; ax.o=NO_REG; ax.u|=1<<a->i[1];
-  apply_A(&ax, l, 1, &ll); afi[0]=ax.o; tf[0]=*ax.ts;
+  tf[0]=apply_A_t(&ax, l, 1, &ll); afi[0]=ax.o;
 
   ax.i=a->i+1; ax.u=a->u|1<<ax.o; ax.o=NO_REG;
-  apply_A(&ax, l, 1, &rr); afi[1]=ax.o; tf[1]=*ax.ts;
+  tf[1]=apply_A_t(&ax, l, 1, &rr); afi[1]=ax.o;
 
   ax.i=afi; ax.o=a->o; ax.u=a->u;
   apply_A(&ax, r, 2, tf);
