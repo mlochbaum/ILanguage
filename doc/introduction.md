@@ -106,8 +106,7 @@ Tokens may be of five types:
 * A quasiquote, set off by backquotes and currently undefined.
 
 Numbers and strings are constants; when applied as operators they'll
-return themselves. Names can represent anything, as can quasiquotes,
-although neither of these are implemented yet. Soon... very soon...
+return themselves. Names can represent anything, as can quasiquotes.
 Builtins are the soul of I. They provide all the functionality you need
 to build functions. No lambdas... no "define" constructs... just builtins.
 
