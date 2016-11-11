@@ -68,11 +68,11 @@ void apply_A_O(A a, O f, I n, T* x) {
     t[i] = apply_A_t(&ax, f->x[i], n, x);
     iF[i] = ax.o; ax.u |= ua |= 1<<ax.o;
   }
-  a->l=ax.l; a->a=ax.a;
+  UPDATE_A(a,ax);
 
   AS af=*a; af.i=iF;
   apply_A(&af, f->f, l, t);
-  a->o=af.o; a->l=af.l; a->a=af.a;
+  a->o=af.o; UPDATE_A(a,af);
 }
 
 #define EACH_REG(U,R) for (RegM ui=U; R=get_reg(~ui), ui; ui-=1<<R)
@@ -195,6 +195,7 @@ void apply_A_L(A a, L f, I n, T* x) {
     }
     ASM3(a, MOV_MR,vals,o[i],i*s);
   }
+  UPDATE_A_(a,ax);
 
   choose_regs(a); Reg ll = a->o; L lt=NULL;
   a_malloc(a, sizeof(*lt), ll, 1<<vals);

@@ -112,7 +112,7 @@ D_A11(flip) {
   AS ax=*a; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
   T t[2]={ll,ll};
   apply_A(&ax, l, 2, t);
-  a->o=ax.o; a->i[0]=axi[0]; a->l=ax.l; a->a=ax.a;
+  a->o=ax.o; a->i[0]=axi[0]; UPDATE_A(a,ax);
   return;
 }
 D_R21(hook) {
@@ -127,7 +127,7 @@ D_A21(hook) {
   T t[2]={tx,ll};
   apply_A(&ax, r, 2, t);
 
-  a->o=ax.o; a->l=ax.l; a->a=ax.a;
+  a->o=ax.o; UPDATE_A(a,ax);
   return;
 }
 D_R22(hook) {
@@ -143,7 +143,7 @@ D_A22(hook) {
   apply_A(&ax, r, 2, t);
   a->i[0]=i;
 
-  a->o=ax.o; a->l=ax.l; a->a=ax.a;
+  a->o=ax.o; UPDATE_A(a,ax);
   return;
 }
 D_R22(compose) {
@@ -164,7 +164,7 @@ D_A22(compose) {
   ax.i=afi; ax.o=a->o; ax.u=a->u;
   apply_A(&ax, r, 2, tf);
 
-  a->o=ax.o; a->l=ax.l; a->a=ax.a;
+  a->o=ax.o; UPDATE_A(a,ax);
   return;
 }
 

@@ -66,6 +66,9 @@ I choose_regn(A,I); // Multiple inputs
 
 // Append l bytes of aa to a
 void a_append(A a, I l, Asm aa);
+// Copy values back from AX to A
+#define UPDATE_A_(A,AX) A->lc=AX.lc; A->ar=AX.ar; A->ts=AX.ts
+#define UPDATE_A(A,AX) A->l=AX.l; A->a=AX.a; UPDATE_A_(A,AX)
 
 void asm_load(A a, T t, Reg o, Reg i);
 void asm_write(A a, T t, Reg o, Reg i);
