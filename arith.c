@@ -39,7 +39,7 @@ D_A1(negate) {
 }
 D_R1(reciprocal) {
   if (l&~(Z_t|R_t)) return 0;
-  request_regs(a, 1); return l;
+  request_regs(a, 1); return R_t;
 }
 D_A1(reciprocal) {
   Reg i = choose_reg(a) ? a->i[0] : get_reg(a->u|1<<a->i[0]);
