@@ -282,25 +282,25 @@ T apply_A_t(A a, V f, I n, T* x) { apply_A(a,f,n,x); return a->ts[-1]; }
 T apply_R_full(A a, V f, I n, T* x) {
   init_A(a);
   T t=apply_R(a,f,n,x); a->ts=(T*)a->a;
-  if (t) { a->l=0; } else { FREE_A(a); }
+  if (t) { a->l=a->lc=0; } else { FREE_A(a); }
   return t;
 }
 RegM start_A(A a, I n) {
-  Reg lc = min(a->lc,MAX_C_REG);
+  I* ar=*(a->ar++); I nc=min(ar[1],MAX_C_REG), nr=ar[0]; Reg lc=0;
+  DO(i,nc) lc += (a->cr[a->lc+i]==NO_REG);
   RegM pop = push_regs(a, a->u & ((1<<NO_REG)-(1<<(NO_REG-lc))));
-  DO(i,lc) {
-    Reg r=NO_REG-1-i; a->cr[i]=r; Z z=a->cv[i];
+  I j=0; DO(i,nc) if (a->cr[a->lc+i]==NO_REG) {
+    Reg r=NO_REG-1-j++; a->cr[a->lc+i]=r; Z z=a->cv[i];
     if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, r, z);
     else ASM(a, MOV4_RI, r, z);
   }
-  a->lc=0;
   // TODO Push variable registers if necessary
   return pop;
 }
 void apply_A_full(A a, V f, I n, T* x) {
-  T* tt=a->ts;
+  T* ts=a->ts; I (*ar)[2]=a->ar-1;
   apply_A(a,f,n,x);
-  a->ts=tt; FREE_A(a);
+  a->ts=ts; a->ar=ar; FREE_A(a);
 }
 
 void *asm_mmap(size_t length) {
