@@ -243,7 +243,7 @@ void apply_A_Z(A a, Z z, I n, T* x) {
 void init_A(A a) {
   *(I*)&a->i=0; a->o=NO_REG; a->l=a->lc=0; a->u=REG_MASK;
 #define D(N) a->N=MALLOC(MIN_ARR*sizeof(*a->N))
-  D(ar); D(cr); D(cv); D(ts);
+  D(ar); D(cr); D(cv); a->a=D(ts);
 #undef D
 }
 T apply_R_(A a, V f, I n, T* x) {
@@ -254,17 +254,17 @@ T apply_R_(A a, V f, I n, T* x) {
 }
 T apply_R(A a, V f, I n, T* x) {
   I pi=*(I*)&a->i, ci=a->l; *(I*)&a->i=ci;
-  I *car=a->ar[ci], *par=a->ar[pi];
   if (a->l>=MIN_ARR && PURE(a->l)) {
     REALLOC(a->ar, 2*a->l);
-    REALLOC_OFF(a->ts, a->l, 2*a->l);
+    T** aa=(T**)&a->a; I d=a->ts-*aa;
+    REALLOC(*aa, 2*a->l); a->ts=*aa+d;
   }
-  a->l++; car[0]=car[1]=0;
+  a->l++; a->ar[ci][0]=a->ar[pi][1]=0;
   I lc = a->lc;
   T t=apply_R_(a,f,n,x); if (!t) { a->l--; return 0; }
   *(a->ts++) = t;
-  car[1] = a->lc-lc;
-  if (par[0] < car[0]) par[0] = car[0];
+  a->ar[ci][1] = a->lc-lc;
+  if (a->ar[pi][0] < a->ar[ci][0]) a->ar[pi][0] = a->ar[ci][0];
   *(I*)&a->i=pi;
   return t;
 }
@@ -281,7 +281,7 @@ T apply_A_t(A a, V f, I n, T* x) { apply_A(a,f,n,x); return a->ts[-1]; }
 #define FREE_A(a) free(a->ts); free(a->ar); free(a->cr); free(a->cv)
 T apply_R_full(A a, V f, I n, T* x) {
   init_A(a);
-  T t=apply_R(a,f,n,x); a->ts-=a->l;
+  T t=apply_R(a,f,n,x); a->ts=(T*)a->a;
   if (t) { a->l=0; } else { FREE_A(a); }
   return t;
 }
