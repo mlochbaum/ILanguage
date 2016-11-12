@@ -38,7 +38,7 @@ void apply_A(A a, V f, I n, T* x);
 T apply_A_t(A a, V f, I n, T* x);
 
 T apply_R_full(A,V,I,T*);
-RegM start_A(A,I);
+RegM start_A(A,I,RegM);
 void apply_A_full(A,V,I,T*);
 P finish_A(A,RegM); // Returns a function pointer.
 void asm_unmap(A,P);
@@ -55,6 +55,8 @@ extern Reg reg_args[];
 Reg get_reg(RegM);
 // Get an register not marked in *u|v and mark it in *u.
 Reg get_reg_mark(RegM *u, RegM v);
+// Given a mask, count the number of marked registers.
+Reg num_marked(RegM u);
 
 // Get the mask of all input registers.
 RegM input_mask(A,I);

@@ -92,7 +92,7 @@ void apply_P_B1(V p, B b, V* x) {
   R1 rb=B_r1[b]; if (rb) { AS as; A a=&as; init_A(a);
                            T t=rb(a, T(x[0])); FREE(a->ts); if (t) {
     a->l=0; a->o=0; Reg ai=REG_ARG1; a->i=&ai; a->ts=&t;
-    RegM pop=start_A(a,1);
+    RegM pop=start_A(a,1,0);
 
     ASM(a,PUSH,REG_ARG0,-);
     asm_load(a,T(x[0]),ai,ai);
@@ -108,7 +108,7 @@ void apply_P_B2(V p, B b, V* x) {
   R2 rb=B_r2[b]; if (rb) { AS as; A a=&as; init_A(a);
                            T t=rb(a, T(x[0]), T(x[1])); FREE(a->ts); if (t) {
     a->l=0; a->o=0; Reg ai[2]={REG_ARG1,REG_ARG2}; a->i=ai; a->ts=&t;
-    RegM pop=start_A(a,2);
+    RegM pop=start_A(a,2,0);
 
     ASM(a,PUSH,REG_ARG0,-);
     asm_load(a,T(x[0]),ai[0],ai[0]);

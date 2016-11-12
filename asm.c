@@ -6,6 +6,7 @@
 
 // TODO support for compilers other than gcc
 Reg get_reg(RegM u) { return __builtin_ctz(~u); }
+Reg num_marked(RegM u) { return __builtin_popcount(u); }
 Reg get_reg_mark(RegM *u, RegM v) {
   Reg r=get_reg(*u|v); *u|=1<<r; return r;
 }
@@ -270,7 +271,7 @@ T apply_R(A a, V f, I n, T* x) {
   return t;
 }
 void apply_A(A a, V f, I n, T* x) {
-  RegM r=start_A(a,n);
+  RegM r=start_A(a,n,0);
 #define LINE(T) case T##_t: apply_A_##T(a,T(f),n,x); break;
   PURIFY(f); T t=T(f);
   switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) LINE(Z) }
@@ -286,7 +287,7 @@ T apply_R_full(A a, V f, I n, T* x) {
   if (t) { a->l=a->lc=0; } else { FREE_A(a); }
   return t;
 }
-RegM start_A(A a, I n) {
+RegM start_A(A a, I n, RegM u) {
   I* ar=*(a->ar++); I nc=min(ar[1],MAX_C_REG), nr=ar[0]; Reg lc=0;
   DO(i,nc) lc += (a->cr[a->lc+i]==NO_REG);
   RegM pop = push_regs(a, a->u & ((1<<NO_REG)-(1<<(NO_REG-lc))));
@@ -295,7 +296,9 @@ RegM start_A(A a, I n) {
     if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, r, z);
     else ASM(a, MOV4_RI, r, z);
   }
-  // TODO Push variable registers if necessary
+  RegM v=0, un=REG_NEVER|u|~a->u; a->u|=u;
+  I nrp = nr - num_marked(~a->u & ((1<<max(nr,8))-1));
+  DO(i,nrp) v|=1<<get_reg(un|v); a->u-=v; pop|=push_regs(a, v);
   return pop;
 }
 void apply_A_full(A a, V f, I n, T* x) {

@@ -97,13 +97,12 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
 
   AS as; A a=&as;
   if (l>=ASM_MIN_ITER && apply_R_full(a,f,n,ts)) {
-    Reg rx[n], ri, rxi[n];
-    DO(j,n+2) a->u|=1<<reg_args[j]; DO(j,n) rx[j]=reg_args[j+2];
+    Reg rx[n], ri, rxi[n]; RegM u=0;
+    DO(j,n+2) u|=1<<reg_args[j]; DO(j,n) rx[j]=reg_args[j+2];
     DO(j,n) rxi[j]=(d&1<<j)?rx[j]:NO_REG; a->i=rxi;
-    a->u|=1<<(ri=REG_RES);
-    a->o=NO_REG; choose_regn(a,n);
+    u|=1<<(ri=REG_RES);
 
-    RegM pop=start_A(a,n);
+    RegM pop=start_A(a,n,u); a->o=NO_REG; choose_regn(a,n);
     DO(j,n) if (d&1<<j) asm_load(a,ts[j],rxi[j],rx[j]);
     ASM(a, XOR4,ri,ri); I label=a->l;
     DO(j,n) if (!(d&1<<j)) asm_load_at(a,ts[j],rxi[j],rx[j],ri);

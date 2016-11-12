@@ -70,8 +70,8 @@ D_P21(power) {
   if (i<n && !err) {
     AS as; A a=&as;
     if (n-i>=ASM_MIN_ITER && apply_R_full(a,l,1,t)) {
-      a->u|=1<<REG_LOOP; Reg ai; a->i=&ai; a->o=ai=REG_RES;
-      RegM pop=start_A(a,n);
+      Reg ai; a->i=&ai; a->o=ai=REG_RES;
+      RegM pop=start_A(a,n, 1<<REG_LOOP);
       ASM(a, PUSH,REG_ARG1,-);
       asm_load(a,T(v),REG_RES,REG_ARG1);
       ASM(a, MOV,REG_LOOP,REG_ARG0); I label=a->l;
