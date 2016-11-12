@@ -170,7 +170,7 @@ D_A2(divide) {
 }
 D_R2(mod) {
   if ((l|r)&~(Z_t|R_t)) return 0;
-  request_regs(a, 2); return arith_t2(l,r);
+  T t=arith_t2(l,r); request_regs(a, 1+(t==R_t)); return t;
 }
 D_A2(mod) {
   I n=2; // For PROTECT
