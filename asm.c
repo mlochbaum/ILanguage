@@ -256,8 +256,9 @@ T apply_A_t(A a, V f, I n, T* x) { apply_A(a,f,n,x); return a->ts[-1]; }
 
 #define FREE_A(a) free(a->ts); free(a->ar); free(a->cr); free(a->cv)
 T apply_R_full(A a, V f, I n, T* x) {
-  init_A(a);
+  init_A(a); I lc = a->lc;
   T t=apply_R(a,f,n,x); a->ts=(T*)a->a;
+  a->ar[0][1] = a->lc-lc;
   if (t) { a->l=a->lc=0; } else { FREE_A(a); }
   return t;
 }
