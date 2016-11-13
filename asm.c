@@ -216,10 +216,11 @@ void apply_A_Z(A a, Z z, I n, T* x) {
 }
 
 void init_A(A a) {
-  *(I*)&a->i=0; a->o=NO_REG; a->l=a->lc=0; a->u=REG_MASK;
+  *(I*)&a->i=0; a->o=NO_REG; a->lc=0; a->u=REG_MASK;
 #define D(N) a->N=MALLOC(MIN_ARR*sizeof(*a->N))
   D(ar); D(cr); D(cv); a->a=D(ts);
 #undef D
+  a->ar[0][0]=a->ar[0][1]=0; a->l=1;
 }
 T apply_R_(A a, V f, I n, T* x) {
 #define LINE(T) case T##_t: return apply_R_##T(a,T(f),n,x);
@@ -234,7 +235,7 @@ T apply_R(A a, V f, I n, T* x) {
     T** aa=(T**)&a->a; I d=a->ts-*aa;
     REALLOC(*aa, 2*a->l); a->ts=*aa+d;
   }
-  a->l++; a->ar[ci][0]=a->ar[pi][1]=0;
+  a->l++; a->ar[ci][0]=a->ar[ci][1]=0;
   I lc = a->lc;
   T t=apply_R_(a,f,n,x); if (!t) { a->l--; return 0; }
   *(a->ts++) = t;
