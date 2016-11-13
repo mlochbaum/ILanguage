@@ -98,37 +98,24 @@ void protect_input(Reg *i, RegM *u);
  * of some specific registers.
  * The assembly object is assumed to be named a.
  *
- * The 2-part protect is used to protect those registers for the duration
- * of the function.
+ * PROTECT(u) protects those registers until UNPROTECT is called.
+ * PROTECT_START(u) may be used instead if the registers are not used
+ * after a->o is used.
  * {
- *   PROTECT_1of2(u);
+ *   PROTECT(u);
  *   // protected operations using registers u mixed with other operations
  *   // input and output registers in a will be disjoint from u
- *   PROTECT_2of2;
- * }
- *
- * The 3-part protect is used for an operation which happens before
- * anything else.
- * {
- *   PROTECT_1of3(u);
- *   // protected operation using registers u
- *   PROTECT_2of3;
- *   // rest of operations
- *   PROTECT_3of3;
+ *   UNPROTECT;
  * }
  */
 
-typedef struct { RegM p; Reg o; } Prot2State;
-#define PROTECT_1of2(U) Prot2State prot2 = clear_regs(a,n, U)
-#define PROTECT_2of2 pop_regs_2(a, prot2.p, prot2.o)
+typedef struct { RegM p; Reg o; } ProtState;
+#define PROTECT(U) ProtState prot2 = clear_regs(a,n, U,0)
+#define UNPROTECT pop_regs_o(a, prot2.p, prot2.o)
 
-typedef struct {RegM p1; RegM m; RegM p2;} Prot3State;
-#define PROTECT_1of3(U) Prot3State prot3 = clear_regs_3(a,n, U)
-#define PROTECT_2of3 clear_regs_post(a, prot3.m, prot3.p1)
-#define PROTECT_3of3 pop_regs(a, prot3.p2)
+#define PROTECT_START(U) ProtState prot2 = clear_regs(a,n, U,1)
 
-Prot2State clear_regs(A a, I n, RegM u);
-void pop_regs_2(A a, RegM pop, Reg o);
-Prot3State clear_regs_3(A a, I n, RegM u);
-void clear_regs_post(A a, RegM mov, RegM pop);
+ProtState clear_regs(A a, I n, RegM u, C start);
+void pop_regs_o(A a, RegM pop, Reg o);
+RegM push_regs(A a, RegM u);
 void pop_regs(A a, RegM pop);

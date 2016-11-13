@@ -78,9 +78,16 @@ void apply_A_O(A a, O f, I n, T* x) {
 
 #define EACH_REG(U,R) for (RegM ui=U; R=get_reg(~ui), ui; ui-=1<<R)
 #define DEACH_REG(U,R) Reg R; EACH_REG(U,R)
-Prot2State clear_regs(A a, I n, RegM u) {
-  RegM uc = u&a->u, ui=input_mask(a,n);
-  RegM uu = a->u|u|ui;
+void pop_regs(A a, RegM pop) {
+  Reg rs[8*sizeof(RegM)]; I i=0; DEACH_REG(pop,r) rs[i++]=r;
+  while(--i>=0) { ASM(a,POP,rs[i],-); }
+}
+RegM push_regs(A a, RegM u) {
+  DEACH_REG(u,r) { ASM(a,PUSH,r,-); } return u;
+}
+
+ProtState clear_regs(A a, I n, RegM u, C start) {
+  RegM uc = u&a->u, ui=input_mask(a,n), uu = a->u|u|ui;
   DO(ii,n) {
     Reg i=a->i[ii]; RegM si=1<<i;
     if (i>=NO_REG || u&si) {
@@ -90,47 +97,13 @@ Prot2State clear_regs(A a, I n, RegM u) {
       else if (i==NO_REG_NM) a->u|=1<<i_;
     }
   }
-  Reg o=a->o; if (u&1<<o) a->o=get_reg(uu);
   DEACH_REG(uc,r) { ASM(a,PUSH,r,-); }
-  return (Prot2State){uc,o};
+  Reg o=NO_REG; if (!start && u&1<<a->o) { o=a->o; a->o=get_reg(uu); }
+  return (ProtState){uc,o};
 }
-void pop_regs_2(A a, RegM pop, Reg o) {
+void pop_regs_o(A a, RegM pop, Reg o) {
   if (o<NO_REG && o!=a->o) { ASM(a, MOV,o,a->o); a->o=o; }
   pop_regs(a, pop);
-}
-
-Prot3State clear_regs_3(A a, I n, RegM u) {
-  RegM ui=input_mask(a,n);
-  RegM p1 = ui&u&a->u, p2 = ((ui|a->u)&u)^p1, uu = a->u|u|ui;
-  DO(ii,n) {
-    Reg i=a->i[ii]; RegM si=1<<i;
-    if (i>=NO_REG || p2&si) {
-      Reg i_ = a->i[ii] = get_reg(uu);
-      uu |= 1<<i_;
-      if (p2&si) ASM(a, MOV,i_,i);
-      else if (i==NO_REG_NM) a->u|=1<<i_;
-    }
-  }
-  Reg r; RegM m=0;
-  EACH_REG(p2,r) { ASM(a,PUSH,r,-); }
-  EACH_REG(p1,r) { ASM(a,PUSH,r,-); m|=get_reg(uu|m); }
-  return (Prot3State){p1,m,p2};
-}
-void clear_regs_post(A a, RegM mov, RegM pop) {
-  Reg rs[8*sizeof(RegM)]; I i=0;
-  DEACH_REG(pop,r) {
-    Reg m=get_reg(mov); mov-=1<<m;
-    ASM(a, MOV,m,r); rs[i++]=r;
-  }
-  while(--i>=0) { ASM(a,POP,rs[i],-); }
-}
-void pop_regs(A a, RegM pop) {
-  Reg rs[8*sizeof(RegM)]; I i=0; DEACH_REG(pop,r) rs[i++]=r;
-  while(--i>=0) { ASM(a,POP,rs[i],-); }
-}
-
-RegM push_regs(A a, RegM u) {
-  DEACH_REG(u,r) { ASM(a,PUSH,r,-); } return u;
 }
 
 // REG_ARG0, REG_RES, and res must be modifiable
@@ -173,7 +146,7 @@ T apply_R_L(A a, L f, I n, T* x) {
 void apply_A_L(A a, L f, I n, T* x) {
   I l=f->l; T t[l], tt=0; Reg o[l]; RegM au=a->u;
 
-  PROTECT_1of2(REG_SAVE);
+  PROTECT(REG_SAVE);
 
   // Don't add any code to a; store in as
   AS ax=*a; DO(i,n) protect_input(&a->i[i],&ax.u);
@@ -209,7 +182,7 @@ void apply_A_L(A a, L f, I n, T* x) {
 #undef MI
 #undef MR
 
-  PROTECT_2of2; a->u=au;
+  UNPROTECT; a->u=au;
 }
 
 T apply_R_N(A a, N f, I n, T* x) { return 0; } // TODO

@@ -178,11 +178,10 @@ D_A2(mod) {
     case Z_t: {
       Reg r_=REG_IDIV_0, r1=REG_IDIV_1;
       C shortcut = a->i[0]==r_;
-      PROTECT_1of3(1<<r_|1<<r1);
+      PROTECT_START(1<<r_|1<<r1);
       if (!shortcut) ASM(a, MOV,r_,a->i[0]);
       ASM(a, CQO,-,-);
       ASM(a, IDIV,a->i[1],-);
-      PROTECT_2of3; // TODO what if r1 moves?
 
       ASM(a, MOV,r_,a->i[1]);
       ASM(a, XOR,r_,r1);
@@ -197,7 +196,7 @@ D_A2(mod) {
 
       if (a->o==NO_REG) a->o = a->u&1<<r1 ? get_reg(a->u) : r1;
       if (a->o!=r1) ASM(a, MOV,a->o,r1);
-      PROTECT_3of3; return;
+      UNPROTECT; return;
     }
     case R_t: {
       I ii=choose_regs(a); ii=prepR(a,ii,l,r);
