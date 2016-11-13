@@ -212,7 +212,7 @@ D_P11(reduce) {
       apply_A_full(a,l,2,t);
       ASM(a, ADDI1,REG_ARG0,s);
       ASM(a, CMP,REG_ARG0,REG_ARG1);
-      ASM(a, JB,label-a->l,-);
+      asm_jump(a, C_B, label);
       I c=L(ll)->c, o=L(ll)->o;
       P lp=LP(L(ll)), end = lp+s*((o+len-1)%c+1);
       if (o+len > c && o+i < c) {
@@ -220,7 +220,7 @@ D_P11(reduce) {
         ASM(a, MOV_RI,REG_ARG1, (Z)(end));
         ASM(a, SUBI4,REG_ARG0, s*c);
         ASM(a, CMP,REG_ARG1,REG_ARG2);
-        ASM(a, JNE,label-a->l,-);
+        asm_jump(a, C_NE, label);
         end = lp+s*c;
       }
       ASM(a, POP,REG_ARG2,-);

@@ -294,6 +294,12 @@ P finish_A(A a, RegM r) {
 }
 void asm_unmap(A a, P f) { munmap(f,a->l); }
 
+void asm_jump(A a, UC cond, I label) {
+  I rel = label-a->l;
+  if (rel==(UC)rel) ASM(a, JX, rel, cond);
+  else ASM(a, J4X, rel, cond);
+}
+
 #define A(op) ASM3(a,op,o,i,e)
 C asm_load_stub(A a, T t, Reg o, Reg i, Reg e) {
   switch (t) {

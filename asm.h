@@ -72,6 +72,8 @@ void a_append(A a, I l, Asm aa);
 #define UPDATE_A_(A,AX) A->lc=AX.lc; A->ar=AX.ar; A->ts=AX.ts
 #define UPDATE_A(A,AX) A->l=AX.l; A->a=AX.a; UPDATE_A_(A,AX)
 
+void asm_jump(A a, UC cond, I label);
+
 void asm_load(A a, T t, Reg o, Reg i);
 void asm_write(A a, T t, Reg o, Reg i);
 void asm_load_at(A a, T t, Reg o, Reg i, Reg e);

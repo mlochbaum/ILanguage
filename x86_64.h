@@ -147,23 +147,6 @@ typedef unsigned short RegM;
 
 #define CALL(O,I) {REX4(O,0),0xFF,A_REG(O,2)}
 
-#define JO(O,I)  {0x70,((UC)(O)-2)}
-#define JNO(O,I) {0x71,((UC)(O)-2)}
-#define JB(O,I)  {0x72,((UC)(O)-2)}
-#define JAE(O,I) {0x73,((UC)(O)-2)}
-#define JE(O,I)  {0x74,((UC)(O)-2)}
-#define JNE(O,I) {0x75,((UC)(O)-2)}
-#define JBE(O,I) {0x76,((UC)(O)-2)}
-#define JA(O,I)  {0x77,((UC)(O)-2)}
-#define JS(O,I)  {0x78,((UC)(O)-2)}
-#define JNS(O,I) {0x79,((UC)(O)-2)}
-#define JP(O,I)  {0x7A,((UC)(O)-2)}
-#define JNP(O,I) {0x7B,((UC)(O)-2)}
-#define JL(O,I)  {0x7C,((UC)(O)-2)}
-#define JGE(O,I) {0x7D,((UC)(O)-2)}
-#define JLE(O,I) {0x7E,((UC)(O)-2)}
-#define JG(O,I)  {0x7F,((UC)(O)-2)}
-
 #define LOOP(O,I) {0xE2,((UC)(O)-2)}
 #define REG_LOOP 1
 
@@ -184,7 +167,27 @@ typedef unsigned short RegM;
 #define C_LE  0xE
 #define C_G   0xF
 
+#define JX(O,C)    {0x70+(C),(UC)(O)-2}
+#define J4X(O,C)   {0x0F,0x80+(C),BYTES4((O)-6)}
 #define SETX(O,C)  {REX4(O,0),0x0F,0x90+(C),A_REG(O,0)}
+
+#define JO(O,I)  {0x70,((UC)(O)-2)}
+#define JNO(O,I) {0x71,((UC)(O)-2)}
+#define JB(O,I)  {0x72,((UC)(O)-2)}
+#define JAE(O,I) {0x73,((UC)(O)-2)}
+#define JE(O,I)  {0x74,((UC)(O)-2)}
+#define JNE(O,I) {0x75,((UC)(O)-2)}
+#define JBE(O,I) {0x76,((UC)(O)-2)}
+#define JA(O,I)  {0x77,((UC)(O)-2)}
+#define JS(O,I)  {0x78,((UC)(O)-2)}
+#define JNS(O,I) {0x79,((UC)(O)-2)}
+#define JP(O,I)  {0x7A,((UC)(O)-2)}
+#define JNP(O,I) {0x7B,((UC)(O)-2)}
+#define JL(O,I)  {0x7C,((UC)(O)-2)}
+#define JGE(O,I) {0x7D,((UC)(O)-2)}
+#define JLE(O,I) {0x7E,((UC)(O)-2)}
+#define JG(O,I)  {0x7F,((UC)(O)-2)}
+
 #define SETO(O,I)  {REX4(O,0),0x0F,0x90,A_REG(O,0)}
 #define SETNO(O,I) {REX4(O,0),0x0F,0x91,A_REG(O,0)}
 #define SETB(O,I)  {REX4(O,0),0x0F,0x92,A_REG(O,0)}

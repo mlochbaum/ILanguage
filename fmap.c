@@ -110,14 +110,14 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
     asm_write_at(a,t,REG_ARG0,a->o,ri);
     ASM(a, ADDI1,ri,1);
     ASM(a, CMP,ri,REG_ARG1);
-    ASM(a, JB,label-a->l,-);
+    asm_jump(a, C_B,label);
     I wo,w=len0; i=0; while (w<l) {
       wo=w; I k=0; do { k++; w=wrap[order[i+k]]; } while (wo==w);
       ASM(a, MOV_RI,REG_ARG1,(Z)(w));
       I sc[k]; DO(j,k) { I o=order[i+j]; sc[j]=ss[o]*L(x[o])->c; }
       DO(j,k) ASM(a, SUBI4,rx[order[i+j]],sc[j]);
       ASM(a, CMP,ri,REG_ARG1);
-      ASM(a, JB,label-a->l,-);
+      asm_jump(a, C_B,label);
       if (w<l) DO(j,k) ASM(a, ADDI4,rx[order[i+j]],sc[j]);
       i+=k;
     }
