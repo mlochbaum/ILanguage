@@ -245,12 +245,13 @@ T apply_R(A a, V f, I n, T* x) {
   return t;
 }
 void apply_A(A a, V f, I n, T* x) {
-  RegM r=start_A(a,n,0);
+  RegM v=start_A(a,n,0);
 #define LINE(T) case T##_t: apply_A_##T(a,T(f),n,x); break;
   PURIFY(f); T t=T(f);
   switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) LINE(Z) }
 #undef LINE
-  pop_regs(a, r); a->ts++;
+  if (v&1<<a->o) { Reg r=get_reg(v|a->u); ASM(a,MOV,r,a->o); a->o=r; }
+  pop_regs(a, v); a->ts++;
 }
 T apply_A_t(A a, V f, I n, T* x) { apply_A(a,f,n,x); return a->ts[-1]; }
 
