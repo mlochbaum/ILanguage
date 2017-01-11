@@ -48,6 +48,7 @@ typedef unsigned short RegM;
 #define REX4(O,I) (0x40 + REX0(O,I))
 #define REX8_3(O,I,E) (0x48 + REX0_3(O,I,E))
 #define REX4_3(O,I,E) (0x40 + REX0_3(O,I,E))
+#define REX1(O,I) 0x40 , (0x40 + REX0(O,I))
 
 #define MOV(O,I)  {REX8(O,I),0x89,A_REG(O,I)}
 #define ADD(O,I)  {REX8(O,I),0x01,A_REG(O,I)}
@@ -169,7 +170,7 @@ typedef unsigned short RegM;
 
 #define JX(O,C)    {0x70+(C),(UC)(O)-2}
 #define J4X(O,C)   {0x0F,0x80+(C),BYTES4((O)-6)}
-#define SETX(O,C)  {REX4(O,0),0x0F,0x90+(C),A_REG(O,0)}
+#define SETX(O,C)  {REX1(O,0),0x0F,0x90+(C),A_REG(O,0)}
 
 #define JO(O,I)  {0x70,((UC)(O)-2)}
 #define JNO(O,I) {0x71,((UC)(O)-2)}
@@ -188,21 +189,21 @@ typedef unsigned short RegM;
 #define JLE(O,I) {0x7E,((UC)(O)-2)}
 #define JG(O,I)  {0x7F,((UC)(O)-2)}
 
-#define SETO(O,I)  {REX4(O,0),0x0F,0x90,A_REG(O,0)}
-#define SETNO(O,I) {REX4(O,0),0x0F,0x91,A_REG(O,0)}
-#define SETB(O,I)  {REX4(O,0),0x0F,0x92,A_REG(O,0)}
-#define SETAE(O,I) {REX4(O,0),0x0F,0x93,A_REG(O,0)}
-#define SETE(O,I)  {REX4(O,0),0x0F,0x94,A_REG(O,0)}
-#define SETNE(O,I) {REX4(O,0),0x0F,0x95,A_REG(O,0)}
-#define SETBE(O,I) {REX4(O,0),0x0F,0x96,A_REG(O,0)}
-#define SETA(O,I)  {REX4(O,0),0x0F,0x97,A_REG(O,0)}
-#define SETS(O,I)  {REX4(O,0),0x0F,0x98,A_REG(O,0)}
-#define SETNS(O,I) {REX4(O,0),0x0F,0x99,A_REG(O,0)}
-#define SETP(O,I)  {REX4(O,0),0x0F,0x9A,A_REG(O,0)}
-#define SETNP(O,I) {REX4(O,0),0x0F,0x9B,A_REG(O,0)}
-#define SETL(O,I)  {REX4(O,0),0x0F,0x9C,A_REG(O,0)}
-#define SETGE(O,I) {REX4(O,0),0x0F,0x9D,A_REG(O,0)}
-#define SETLE(O,I) {REX4(O,0),0x0F,0x9E,A_REG(O,0)}
-#define SETG(O,I)  {REX4(O,0),0x0F,0x9F,A_REG(O,0)}
+#define SETO(O,I)  {REX1(O,0),0x0F,0x90,A_REG(O,0)}
+#define SETNO(O,I) {REX1(O,0),0x0F,0x91,A_REG(O,0)}
+#define SETB(O,I)  {REX1(O,0),0x0F,0x92,A_REG(O,0)}
+#define SETAE(O,I) {REX1(O,0),0x0F,0x93,A_REG(O,0)}
+#define SETE(O,I)  {REX1(O,0),0x0F,0x94,A_REG(O,0)}
+#define SETNE(O,I) {REX1(O,0),0x0F,0x95,A_REG(O,0)}
+#define SETBE(O,I) {REX1(O,0),0x0F,0x96,A_REG(O,0)}
+#define SETA(O,I)  {REX1(O,0),0x0F,0x97,A_REG(O,0)}
+#define SETS(O,I)  {REX1(O,0),0x0F,0x98,A_REG(O,0)}
+#define SETNS(O,I) {REX1(O,0),0x0F,0x99,A_REG(O,0)}
+#define SETP(O,I)  {REX1(O,0),0x0F,0x9A,A_REG(O,0)}
+#define SETNP(O,I) {REX1(O,0),0x0F,0x9B,A_REG(O,0)}
+#define SETL(O,I)  {REX1(O,0),0x0F,0x9C,A_REG(O,0)}
+#define SETGE(O,I) {REX1(O,0),0x0F,0x9D,A_REG(O,0)}
+#define SETLE(O,I) {REX1(O,0),0x0F,0x9E,A_REG(O,0)}
+#define SETG(O,I)  {REX1(O,0),0x0F,0x9F,A_REG(O,0)}
 
 #define RET {0xC3}
