@@ -107,6 +107,21 @@ D_P22(while) {
   del(rr); mv_P(p,ll); FREE(P(ll));
 }
 
+void a_mov(A a, T t, Reg o, Reg i) {
+  if (t!=R_t) ASM(a, MOV  , o,i);
+  else        ASM(a, MOVSD, o,i);
+}
+#define MOV_I(l) \
+  if (a->o==NO_REG) a->o=a->i[l]; \
+  else if (a->o!=a->i[l]) a_mov(a, l,a->o,a->i[l])
+D_R1(left) { return l; }
+D_A1(left) { MOV_I(0); }
+D_R1(right) { return l; }
+D_A1(right) { MOV_I(0); }
+D_R2(left) { return l; }
+D_A2(left) { a_del(a, r,a->i[1]); MOV_I(0); }
+D_R2(right) { return r; }
+D_A2(right) { a_del(a, l,a->i[0]); MOV_I(1); }
 D_R11(flip) { T t[2]={ll,ll}; return apply_R(a,l,2,t); }
 D_A11(flip) {
   AS ax=*a; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
@@ -170,10 +185,10 @@ D_A22(compose) {
 
 void compose_init() {
 #define D(n,c,f) DB(t##n,c,f); DB(p##n,c,f)
-  DB(t1,'[',l); DB(p1,'[',left);
-  DB(t1,']',l); DB(p1,']',right);
-  DB(t2,'[',l); DB(p2,'[',left);
-  DB(t2,']',r); DB(p2,']',right);
+  DB(t1,'[',l); DB(p1,'[',left);  DB(a1,'[',left);  DB(r1,'[',left);
+  DB(t1,']',l); DB(p1,']',right); DB(a1,']',right); DB(r1,']',right);
+  DB(t2,'[',l); DB(p2,'[',left);  DB(a2,'[',left);  DB(r2,'[',left);
+  DB(t2,']',r); DB(p2,']',right); DB(a2,']',right); DB(r2,']',right);
 
   DB(t11,'k',l); DB(p11,'k',constant);
   DB(t12,'k',l); DB(p12,'k',constant);

@@ -81,6 +81,8 @@ void asm_write_at(A a, T t, Reg o, Reg i, Reg e);
 void a_RfromV(A a, Reg o, Reg i);
 void a_RfromT(A a, T t, Reg o, Reg i);
 
+void a_del(A a, T t, Reg i);
+
 // Mark input *i as not writeable
 void protect_input(Reg *i, RegM *u);
 
