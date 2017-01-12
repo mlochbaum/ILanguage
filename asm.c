@@ -250,6 +250,7 @@ void apply_A(A a, V f, I n, T* x) {
   PURIFY(f); T t=T(f);
   switch (t) { LINE(O) LINE(L) LINE(N) LINE(B) LINE(F) LINE(Z) }
 #undef LINE
+  a->u |= v;
   if (v&1<<a->o) { Reg r=get_reg(v|a->u); ASM(a,MOV,r,a->o); a->o=r; }
   pop_regs(a, v); a->ts++;
 }
@@ -268,11 +269,11 @@ RegM start_A(A a, I n, RegM u) {
   DO(i,nc) lc += (a->cr[a->lc+i]==NO_REG);
   RegM pop = push_regs(a, a->u & ((1<<NO_REG)-(1<<(NO_REG-lc))));
   I j=0; DO(i,nc) if (a->cr[a->lc+i]==NO_REG) {
-    Reg r=NO_REG-1-j++; a->cr[a->lc+i]=r; Z z=a->cv[i];
+    Reg r=NO_REG-1-j++; a->cr[a->lc+i]=r; Z z=a->cv[i]; a->u|=1<<r;
     if (z&~(((1L)<<32)-1)) ASM(a, MOV_RI, r, z);
     else ASM(a, MOV4_RI, r, z);
   }
-  RegM v=0, un=REG_NEVER|u|~a->u; a->u|=u;
+  RegM v=0, un=REG_NEVER|u|input_mask(a,n)|~a->u; a->u|=u;
   I nrp = nr - num_marked(~a->u & ((1<<max(nr,8))-1));
   DO(i,nrp) v|=1<<get_reg(un|v); a->u-=v; pop|=push_regs(a, v);
   return pop;
