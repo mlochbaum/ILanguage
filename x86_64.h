@@ -189,6 +189,9 @@ typedef unsigned short RegM;
 #define JLE(O,I) {0x7E,((UC)(O)-2)}
 #define JG(O,I)  {0x7F,((UC)(O)-2)}
 
+#define JMP(O,I)  {0xEB,((UC)(O)-2)}
+#define JMP4(O,I) {0xE9,BYTES4((O)-5)}
+
 #define SETO(O,I)  {REX1(O,0),0x0F,0x90,A_REG(O,0)}
 #define SETNO(O,I) {REX1(O,0),0x0F,0x91,A_REG(O,0)}
 #define SETB(O,I)  {REX1(O,0),0x0F,0x92,A_REG(O,0)}
