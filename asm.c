@@ -60,6 +60,24 @@ T apply_R_O(A a, O f, I n, T* x) {
 }
 void apply_A_O(A a, O f, I n, T* x) {
   I l=f->l; T t[l];
+  if (l==1 && n==2 && T(f->f)==B_t && B(f->f)=='m' && T(f->x[0])==B_t && B(f->x[0])=='/' && x[0]==Z_t && x[1]==Z_t) {
+    Reg r0=REG_IDIV_0, r1=REG_IDIV_1;
+    C shortcut = a->i[0]==r0;
+    I n=2; PROTECT_START(1<<r0|1<<r1);
+    if (!shortcut) ASM(a, MOV,r0,a->i[0]);
+    ASM(a, CQO,-,-);
+    ASM(a, IDIV,a->i[1],-);
+
+    ASM(a, TEST,r1,r1);
+    ASM(a, CMOVE,r1,a->i[1]);
+    ASM(a, XOR,r1,a->i[1]);
+    ASM(a, SHRI1,r1,63);
+    ASM(a, SUB,r0,r1);
+
+    if (a->o==NO_REG) a->o = a->u&1<<r0 ? get_reg(a->u) : r0;
+    if (a->o!=r0) ASM(a, MOV,a->o,r0);
+    UNPROTECT; return;
+  }
   AS ax=*a; Reg iF[l];
   RegM ua=ax.u; DO(i,n) protect_input(&a->i[i],&ax.u);
   DO(i,l) {
