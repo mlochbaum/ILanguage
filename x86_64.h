@@ -61,10 +61,8 @@ typedef unsigned short RegM;
 
 #define CMP4_MI(O,I) {REX4(O,0),0x81,A_0REG(O,7),BYTES4(I)}
 
+// TODO REX for sil, etc
 #define MOVZX4(I,O) {REX4(O,I),0x0F,0xB6,A_REG(O,I)}
-
-#define CMOVNE(I,O) {REX8(O,I),0x0F,0x45,A_REG(O,I)}
-#define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
 
 #define ADDI4(O,I) {REX8(O,0),0x81,A_REG(O,0),BYTES4(I)}
 #define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
@@ -171,6 +169,7 @@ typedef unsigned short RegM;
 #define JX(O,C)    {0x70+(C),(UC)(O)-2}
 #define J4X(O,C)   {0x0F,0x80+(C),BYTES4((O)-6)}
 #define SETX(O,C)  {REX1(O,0),0x0F,0x90+(C),A_REG(O,0)}
+#define CMOVX(I,O,C)  {REX8(O,I),0x0F,0x40+(C),A_REG(O,I)}
 
 #define JO(O,I)  {0x70,((UC)(O)-2)}
 #define JNO(O,I) {0x71,((UC)(O)-2)}
@@ -208,5 +207,22 @@ typedef unsigned short RegM;
 #define SETGE(O,I) {REX1(O,0),0x0F,0x9D,A_REG(O,0)}
 #define SETLE(O,I) {REX1(O,0),0x0F,0x9E,A_REG(O,0)}
 #define SETG(O,I)  {REX1(O,0),0x0F,0x9F,A_REG(O,0)}
+
+#define CMOVO(I,O)  {REX8(O,I),0x0F,0x40,A_REG(O,I)}
+#define CMOVNO(I,O) {REX8(O,I),0x0F,0x41,A_REG(O,I)}
+#define CMOVB(I,O)  {REX8(O,I),0x0F,0x42,A_REG(O,I)}
+#define CMOVAE(I,O) {REX8(O,I),0x0F,0x43,A_REG(O,I)}
+#define CMOVE(I,O)  {REX8(O,I),0x0F,0x44,A_REG(O,I)}
+#define CMOVNE(I,O) {REX8(O,I),0x0F,0x45,A_REG(O,I)}
+#define CMOVBE(I,O) {REX8(O,I),0x0F,0x46,A_REG(O,I)}
+#define CMOVA(I,O)  {REX8(O,I),0x0F,0x47,A_REG(O,I)}
+#define CMOVS(I,O)  {REX8(O,I),0x0F,0x48,A_REG(O,I)}
+#define CMOVNS(I,O) {REX8(O,I),0x0F,0x49,A_REG(O,I)}
+#define CMOVP(I,O)  {REX8(O,I),0x0F,0x4A,A_REG(O,I)}
+#define CMOVNP(I,O) {REX8(O,I),0x0F,0x4B,A_REG(O,I)}
+#define CMOVL(I,O)  {REX8(O,I),0x0F,0x4C,A_REG(O,I)}
+#define CMOVGE(I,O) {REX8(O,I),0x0F,0x4D,A_REG(O,I)}
+#define CMOVLE(I,O) {REX8(O,I),0x0F,0x4E,A_REG(O,I)}
+#define CMOVG(I,O)  {REX8(O,I),0x0F,0x4F,A_REG(O,I)}
 
 #define RET {0xC3}
