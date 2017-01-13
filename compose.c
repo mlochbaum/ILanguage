@@ -135,17 +135,17 @@ void a_mov(A a, T t, Reg o, Reg i) {
   if (t!=R_t) ASM(a, MOV  , o,i);
   else        ASM(a, MOVSD, o,i);
 }
-#define MOV_I(l) \
+#define MOV_I(l,t) \
   if (a->o==NO_REG) a->o=a->i[l]; \
-  else if (a->o!=a->i[l]) a_mov(a, l,a->o,a->i[l])
+  else if (a->o!=a->i[l]) a_mov(a, t,a->o,a->i[l])
 D_R1(left) { return l; }
-D_A1(left) { MOV_I(0); }
+D_A1(left) { MOV_I(0,l); }
 D_R1(right) { return l; }
-D_A1(right) { MOV_I(0); }
+D_A1(right) { MOV_I(0,l); }
 D_R2(left) { return l; }
-D_A2(left) { a_del(a, r,a->i[1]); MOV_I(0); }
+D_A2(left) { a_del(a, r,a->i[1]); MOV_I(0,l); }
 D_R2(right) { return r; }
-D_A2(right) { a_del(a, l,a->i[0]); MOV_I(1); }
+D_A2(right) { a_del(a, l,a->i[0]); MOV_I(1,r); }
 D_R11(flip) { T t[2]={ll,ll}; return apply_R(a,l,2,t); }
 D_A11(flip) {
   AS ax=*a; Reg axi[2]={ax.i[0],ax.i[0]}; ax.i=axi;
