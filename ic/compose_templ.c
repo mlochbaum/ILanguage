@@ -63,9 +63,33 @@ D_P22(power) {
   del(rr); mv_P(p,ll); FREE(P(ll));
 }
 
+D_T21(while) {
+  return ll == apply1_T(l,ll) ? ll : ALL_t & ~E_t;
+}
 D_P21(while) {
   ll=cpy1(ll); while(toBoold(apply1_d(r, cpy(ll)))) ll=apply1_d(l,ll);
   mv_P(p,ll); FREE(P(ll));
+}
+D_R21(while) {
+  if (ll != apply_R(a,l,1,&ll)) return 0;
+  if (Z_t != apply_R(a,r,1,&ll)) return 0;
+  return ll;
+}
+D_A21(while) {
+  RegM u=a->u; Reg i_=a->i[0], i = a->o<NO_REG ? a->o : i_;
+  if (i!=i_ && i_<NO_REG) ASM(a, MOV,i,i_);
+  a->o=a->i[0]=i; protect_input(a->i, &a->u);
+  I jstart=a->l; ASM(a, JMP,0,-); I label=a->l;
+  apply_A(a, l, 1, &ll);
+  if (a->i[0] >= NO_REG) a->i[0] = a->o;
+  else if (a->o != a->i[0]) ASM(a, MOV,a->i[0],a->o);
+  ((C*)a->a)[label-1] += a->l-jstart;
+  a->o=NO_REG; apply_A(a, r, 1, &ll);
+  ASM(a, TEST,a->o,a->o);
+  asm_jump(a, C_NE, label);
+  a->o = a->i[0];
+  a->u=u; if (i_<NO_REG) a->i[0] = i_;
+  return;
 }
 D_P22(while) {
   ll=cpy1(ll); while(toBoold(apply2_d(r, cpy(ll), cpy(rr))))
@@ -86,7 +110,7 @@ void compose_init() {
   B_u2['p']=DB(l2,'p',power); DB(d2,'p',power);
   D(21,'p',power); D(22,'p',power);
 
-  DB(t21,'w',V); DB(p21,'w',while);
+  D(21,'w',while); DB(a21,'w',while); DB(r21,'w',while);
   DB(t22,'w',V); DB(p22,'w',while);
 #undef D
 }
