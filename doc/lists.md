@@ -44,3 +44,7 @@ their domain is everything.
 ```
 1;2,3,4 +.r 7  =  7+1+2+3+4
 ```
+
+* `l\r` is identical to `l  #.f o ,.r  r`.
+* `l.\` is identical to `l  .  \ H i.#`.
+  Thus `l\r` is the same as `l }H\ r`.

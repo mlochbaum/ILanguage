@@ -261,6 +261,67 @@ D_P1(reverse) {
   setL(p,L(l));
 }
 
+I count_indices(L l, I n, I* over) {
+  if (l->t!=Z_t) {ERR("Argument must be a list of integers")0;}
+  I o=0, s=0; DO(i,n) {
+    Z e=LIST_AT_T(Z,l,i);
+    if (e<0) {ERR("Numbers in argument must not be negative")0;}
+    s+=e; if (s>++o) o=s;
+  }
+  *over=o-n; return s;
+}
+
+D_P1(indices) {
+  L il=L(l); I n=il->l;
+  I o=0, s=count_indices(il, n, &o); if (err) { del(l); return; }
+  I c=il->c, oi=il->o, ie=min(c-oi,n);
+  Z *v0=LP(il), *v=v0+oi, *d, *ds=0;
+  if (il->r==1 && o<=c-n) {
+    ds=v0+c; d=v0 + (il->o = o>oi ? oi+n : c>=oi+n ? 0 : oi+n-c);
+    il->l=s; setL(p, il);
+  } else {
+    I rc=next_pow_2(s); d=MALLOC(rc*sizeof(Z));
+    il->r--; setL(p, wrapL(Z_t, rc, s, 0, d));
+  }
+  I i=0; Z *de=d;
+  do {
+    for (; i<ie; i++) {
+      de+=v[i]; while (d<de) { *d++=i; if(d==ds){d-=c;de-=c;} }
+    }
+    v-=c; ie=n;
+  } while (i<n);
+  if (!il->r) { il->r++; del(l); }
+}
+
+D_P2(replicate) {
+  L il=L(r), ll=L(l); I n=il->l;
+  if (n!=ll->l) { del(l); del(r); ERR("Lengths must match"); }
+  I o=0, s=count_indices(il, n, &o); if (err) { del(l); del(r); return; }
+  T t=ll->t; I ls=t_sizeof(t), c=ll->c;
+  P l0=ll->p, src=l0+ll->o*ls, dst, stop=l0+c*ls;
+  if (ll->r==1 && o<=c-n) {
+    I oi=ll->o;
+    dst=l0+ls*(ll->o = o>oi ? oi+n : c>=oi+n ? 0 : oi+n-c);
+    ll->l=s; setL(p, ll);
+  } else {
+    I rc=next_pow_2(s); dst=MALLOC(rc*ls);
+    ll->r--; setL(p, wrapL(t, rc, s, 0, dst));
+  }
+  Z *v=LP(il)+il->o; I i=0, ie=min(il->c-il->o,n);
+  do {
+    for (; i<ie; i++) {
+      for (I j=v[i]; j--; ) {
+        memcpy(dst, src, ls);
+        dst+=ls; if(dst==stop)dst=l0;
+      }
+      src+=ls; if(src==stop)src=l0;
+    }
+    v-=il->c; ie=n;
+  } while (i<n);
+  del(r);
+  if (!ll->r) { ll->r++; del(l); }
+}
+
 
 void list_init() {
   DB(t1,';',L); DB(p1,';',itemize);
@@ -298,4 +359,7 @@ void list_init() {
 
   B_u1['z']=DB(l1,'z',list); DB(d1,'z',list);
   DB(t1,'z',L); DB(p1,'z',reverse);
+
+  DB(t1,'\\',L); DB(p1,'\\',indices);
+  DB(t2,'\\',L); DB(p2,'\\',replicate);
 }
