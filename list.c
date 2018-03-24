@@ -157,7 +157,17 @@ D_P1(length) { I n; if (T(l)&L_t) n=L(l)->l; else n=1; del(l); setZ(p,n); }
 D_L2(copy) { return 2*!!(r&ARITH_t) + 1; }
 D_D2(copy) { return copy_l2(T(l),T(r)); }
 D_P2(copy) {
-  I t=T(l), ll=Z(r), s=t_sizeof(T(l)); del(r);
+  I ll;
+  if (T(r)==R_t) {
+    R rl=getR(r); ll=rl;
+    if (ll!=rl) { err=strdup("Argument to # is not an integer"); }
+  } else {
+    ll=getZ(r);
+  }
+  del(r);
+  if (!err & ll<0) { err=strdup("Argument to # is negative"); }
+  if (err) { del(l); return; }
+  I t=T(l), s=t_sizeof(T(l));
   P v=MALLOC(next_pow_2(ll*s)); DO(i,ll) valcpy(v+i*s,P(l),t);
   del(l); setL(p, wrapArray(t, ll, v));
 }
