@@ -199,13 +199,13 @@ D_L12(reduce) { return 2 + !!(ll&(L_t|CONST_t)); }
 D_D12(reduce) { return reduce_l12(l,T(ll),T(rr)); }
 D_T1(identity_of) { return E_t; }
 D_P1(identity_of) { del(l); ERR("Identity unknown"); }
-D_P11(reduce) {
-  if (!(T(ll)&L_t)) { return mv_P(p, ll); }
+static void reduce_sub(V p, V l, V ll, I i, V v) {
   I len=L(ll)->l;
-  if (len==0) { del(ll); return identity_of_p1(p,l); }
+  if (len<i) { del(ll); return identity_of_p1(p,l); }
   T t[3]; t[1]=t[2]=L(ll)->t; I s=t_sizeof(t[1]);
-  get(ll); I i; V vt,v=cpy1(listV_ats(ll,0,s));
-  for(i=1;i<len&&(!err);i++) {
+  get(ll); V vt;
+  if (i) v=listV_ats(ll,0,s); else t[1]=T(v); v=cpy1(v);
+  for(;i<len&&(!err);i++) {
     t[0]=t[2]; t[2]=apply_T(l,2,t); if(t[0]==t[2]) break;
     vt=v; T(v)=t[2]; P(v)=MALLOC(t_sizeof(T(v)));
     apply2_P(v, l, vt, listV_ats(ll,i,s)); FREE(P(vt));
@@ -244,11 +244,13 @@ D_P11(reduce) {
   if (err) for(;i<len;i++) del(listV_ats(ll,i,s)); else mv_P(p,v);
   FREEL(L(ll)); FREE(P(v));
 }
+D_P11(reduce) {
+  if (!(T(ll)&L_t)) { return mv_P(p, ll); }
+  reduce_sub(p, l, ll, 1, ll);
+}
 D_P12(reduce) {
   if (!(T(ll)&L_t)) { V(p)=apply2(l,ll,rr); return; }
-  get(ll); I len=L(ll)->l; rr=cpy1(rr); V r_;
-  DO(i,len) { rr=apply2(l,r_=rr,listV_at(ll,i)); FREE(P(r_)); }
-  FREEL(L(ll)); mv_P(p,rr); FREE(P(rr));
+  reduce_sub(p, l, ll, 0, rr);
 }
 
 D_P1(reverse) {
