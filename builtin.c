@@ -53,6 +53,7 @@ void arith_init();
 void compare_init();
 void list_init();
 void string_init();
+void set_init();
 
 void builtin_init() {
 #define INIT(n) \
@@ -68,6 +69,7 @@ void builtin_init() {
   compare_init();
   list_init();
   string_init();
+  set_init();
 }
 
 /////////////// Main definitions ///////////
