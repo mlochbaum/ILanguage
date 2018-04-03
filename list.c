@@ -165,7 +165,7 @@ D_P2(copy) {
     ll=getZ(r);
   }
   del(r);
-  if (!err & ll<0) { err=strdup("Argument to # is negative"); }
+  if (!err && ll<0) { err=strdup("Argument to # is negative"); }
   if (err) { del(l); return; }
   I t=T(l), s=t_sizeof(T(l));
   P v=MALLOC(next_pow_2(ll*s)); DO(i,ll) valcpy(v+i*s,P(l),t);
