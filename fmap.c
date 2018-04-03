@@ -137,14 +137,14 @@ void fmap_LIST_P(V v, V f, I n, V* x, I d, I l) {
       P px0=P(*xi); i=0; do { for (;i<len0;i++) {
         P(*xi)=px0+ss[0]*i;
         apply_P(TP(t, LP(ll) + s*i), f, n, xi);
-        if (err) { DO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); break; }
+        if (err) { DO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); i=l; break; }
       } px0-=ss[0]*L(x[0])->c; len0=l; } while (i<l);
     } else {
       P px[n]; DO(j,n) px[j]=P(xi[j]);
       I k=0; i=0; do { len0=wrap[order[k]]; for (;i<len0;i++) {
         DO(j,n) { V *u=xi+j; if (d&1<<j) cp_P(*u,x[j]); else P(*u)=px[j]+ss[j]*i; }
         apply_P(TP(t, LP(ll) + s*i), f, n, xi);
-        if (err) { DO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); break; }
+        if (err) { DO(k,i) del(TP(t, LP(ll) + s*k)); FREEL(ll); i=l; break; }
       } k++; } while (i<l);
     }
   }
