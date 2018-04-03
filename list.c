@@ -271,6 +271,34 @@ D_P1(reverse) {
   setL(p,L(l));
 }
 
+D_P2(rotate) {
+  I rot;
+  if (T(r)==R_t) {
+    R rr=getR(r); rot=rr;
+    if (rot!=rr) { del(r); del(l); ERR("Rotation amount is not an integer"); }
+  } else {
+    rot=getZ(r);
+  }
+  del(r);
+  get(l); L v=L(l); setL(p,v);
+  I n=v->l, o=v->o, c=v->c, a, b; // Move rot elts from a to b
+  if (n==c) { v->o=(o+rot)%c; return; }
+  rot %= n;
+  if (rot <= n/2) { a=o; b=n; o=rot; }
+  else { a=o+rot; if(a>=c)a-=c; rot=n-rot; o=b=c-n; }
+  b+=a; if (b>=c) b-=c;
+  o+=a; if (o>=c) o-=c; v->o=o;
+
+  I s=t_sizeof(v->t); rot*=s; a*=s; b*=s; c*=s;
+  P q=v->p, stop=q+rot, s1=q+c-a, s2=q+c-b;
+  if (s1<stop) {
+    if (s2<s1) { memmove(q+b,q+a,s2-q); q=s2; s2=stop; b-=c; }
+    memmove(q+b,q+a,s1-q); q=s1; a-=c;
+  }
+  if (s2<stop) { memmove(q+b,q+a,s2-q); q=s2; b-=c; }
+  memmove(q+b,q+a,stop-q);
+}
+
 I count_indices(L l, I n, I* over) {
   if (l->t!=Z_t) {ERR("Argument must be a list of integers")0;}
   I o=0, s=0; DO(i,n) {
@@ -369,6 +397,8 @@ void list_init() {
 
   B_u1['z']=DB(l1,'z',list); DB(d1,'z',list);
   DB(t1,'z',L); DB(p1,'z',reverse);
+  B_u2['z']=DB(l2,'z',select); DB(d2,'z',select);
+  DB(t2,'z',L); DB(p2,'z',rotate);
 
   B_u1['\\']=DB(l1,'\\',list); DB(d1,'\\',list);
   DB(t1,'\\',L); DB(p1,'\\',indices);

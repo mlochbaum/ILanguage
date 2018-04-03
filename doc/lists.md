@@ -33,6 +33,8 @@ their domain is everything.
   `k` is a nonnegative integer.
 
 * `z` monad: Reverse the argument list.
+* `z` dyad: Rotate the left argument list leftwards by the number on the
+  right.
 
 * `r` stands for "reduce".
 
