@@ -370,6 +370,8 @@ void list_init() {
   B_u1['z']=DB(l1,'z',list); DB(d1,'z',list);
   DB(t1,'z',L); DB(p1,'z',reverse);
 
+  B_u1['\\']=DB(l1,'\\',list); DB(d1,'\\',list);
   DB(t1,'\\',L); DB(p1,'\\',indices);
+  B_u2['\\']=DB(l2,'\\',list); DB(d2,'\\',list);
   DB(t2,'\\',L); DB(p2,'\\',replicate);
 }
