@@ -4,22 +4,22 @@
 
 D_P1(itemize) { setL(p, wrapL(T(l),1,1,0,P(cpy1(l)))); }
 D_P2(cross) {
-  T tl=T(l), tr=T(r), t=tl|tr; I s=t_sizeof(t); P v=MALLOC(2*s);
+  T tl=T(l), tr=T(r), t=tl|tr; U s=t_sizeof(t); P v=MALLOC(2*s);
   if (PURE(t)) { memcpy(v,P(l),s); memcpy(v+s,P(r),s); }
   else { ((V*)v)[0]=cpy1(l); ((V*)v)[1]=cpy1(r); }
   setL(p, wrapL(t,2,2,0,v));
 }
 
-void resize(L l, I s, I c) { // Assume resizing up
+void resize(L l, U s, U c) { // Assume resizing up
   if (l->c>=c) return; l->p=realloc(l->p, s*c);
   if (l->l+l->o > l->c) memcpy(LP(l)+s*l->c, LP(l), s*(l->l+l->o-l->c));
   l->c=c;
 }
 
-void listcpy1(L d, L s, I i) {
+void listcpy1(L d, L s, U i) {
 #define DS s1-s0
 #define DD d1-d0
-  I ss=t_sizeof(d->t);
+  U ss=t_sizeof(d->t);
   P d0=LIST_PTR_ATS(d,i,ss), d1=LP(d)+d->c*ss;
   P s0=LIST_PTR_ATS(s,0,ss), s1=LP(s)+s->c*ss;
   I l=s->l*ss;
@@ -34,13 +34,13 @@ void listcpy1(L d, L s, I i) {
 #undef DS
 #undef DD
 }
-void listcpy(L d, L s, I i) {
+void listcpy(L d, L s, U i) {
   s->r--; if (s->l) {
     d->l += s->l;
     if (s->r && s->t&COMP_t) {
       // Increase reference count of source's children
-      I ss=t_sizeof(s->t);
-      DO(j,s->l) (**(I**)(LIST_PTR_ATS(s,j,ss)))++;
+      U ss=t_sizeof(s->t);
+      DO(j,s->l) (**(U**)(LIST_PTR_ATS(s,j,ss)))++;
     }
     if (PURE(d->t)==PURE(s->t)) listcpy1(d,s,i);
     else { DO(j,s->l) LIST_AT(d,i+j) = cpy1(list_at(s,j)); }
@@ -58,10 +58,10 @@ void prepend(L l, L r) { r->o += r->c-l->l; r->o%=r->c; listcpy(r,l,0); }
 D_P2(concat) {
   if (T(l)==L_t) { L lv=L(l);
     if (T(r)==L_t) { L rv=L(r);
-      T t=lv->t|rv->t; I ll=lv->l+rv->l, c=next_pow_2(ll);
-      I s=t_sizeof(t);
-      I ifl = lv->r==1 && PURE(lv->t)==PURE(t);
-      I ifr = rv->r==1 && PURE(rv->t)==PURE(t);
+      T t=lv->t|rv->t; U ll=lv->l+rv->l, c=next_pow_2(ll);
+      U s=t_sizeof(t);
+      B ifl = lv->r==1 && PURE(lv->t)==PURE(t);
+      B ifr = rv->r==1 && PURE(rv->t)==PURE(t);
       if (ifl  &&  lv->l >= ifr*rv->l) {
         resize(lv,s,c); append(lv,rv); REL(lv);
       } else if (ifr) {
@@ -71,7 +71,7 @@ D_P2(concat) {
         append(v,lv); append(v,rv); REL(v);
       }
     } else {
-      T t=lv->t|T(r); I ll=lv->l+1, c=next_pow_2(ll); I s=t_sizeof(t);
+      T t=lv->t|T(r); U ll=lv->l+1, c=next_pow_2(ll); U s=t_sizeof(t);
       L v; if (lv->r==1 && PURE(lv->t)==PURE(t)) {
         resize(lv,s,c); v=lv;
       } else {
@@ -93,15 +93,15 @@ D_P1(last) { mv_Pd(p, cpy(listV_at(l,L(l)->l-1))); del(l); }
 D_L2(select) { return 2*!!(r&ARITH_t) + !!(l&L_t); }
 D_D2(select) { return select_l2(T(l),T(r)); }
 D_P2(select) {
-  I i=Z(r), ll=L(l)->l; if (i<0 && i>-ll) i+=ll;
+  Z i=Z(r), ll=L(l)->l; if (i<0 && i>-ll) i+=ll;
   mv_Pd(p, cpy(listV_at(l,i))); del(l);del(r);
 }
 // drop a elements from the beginning and b from the end of l
-void cropList(V p, V l, I a, I b) {
+void cropList(V p, V l, U a, U b) {
   L lv=L(l);
   if (lv->r > 1) {
-    I nl=lv->l-a-b;
-    T t=lv->t; I s=t_sizeof(t); P v=MALLOC(s*next_pow_2(nl));
+    U nl=lv->l-a-b;
+    T t=lv->t; U s=t_sizeof(t); P v=MALLOC(s*next_pow_2(nl));
     DO(i,nl) valcpy(v+s*i, LIST_PTR_ATS(lv,i+a,s), t);
     del(l); setL(p, wrapArray(t, nl, v));
   } else {
@@ -112,11 +112,11 @@ void cropList(V p, V l, I a, I b) {
   }
 }
 D_P2(take) {
-  I i=Z(r), ll=L(l)->l; del(r);
+  Z i=Z(r), ll=L(l)->l; del(r);
   if (i>=0) cropList(p, l, 0, ll-i); else cropList(p, l, ll+i, 0);
 }
 D_P2(drop) {
-  I i=Z(r); del(r);
+  Z i=Z(r); del(r);
   if (i>=0) cropList(p, l, i, 0); else cropList(p, l, 0, -i);
 }
 
@@ -127,7 +127,7 @@ void addtype(V v, T t) {
   L l=L(v); T lt=l->t;
   if (lt&t || IMPURE(lt)) get(v);
   else {
-    I n=l->l, c=next_pow_2(n), s=t_sizeof(lt);
+    U n=l->l, c=next_pow_2(n), s=t_sizeof(lt);
     DECL_ARR(V,vs,c); DO(i,n) { vs[i] = cpy1(list_ats(l,i,s)); }
     if (l->r<=1) {
       FREE(l->p); l->r=1; l->t|=t; l->c=c; l->o=0; l->p=(P)vs;
@@ -153,11 +153,11 @@ D_P2(amend) {
 #undef ERR1
 }
 
-D_P1(length) { I n; if (T(l)&L_t) n=L(l)->l; else n=1; del(l); setZ(p,n); }
+D_P1(length) { U n; if (T(l)&L_t) n=L(l)->l; else n=1; del(l); setZ(p,n); }
 D_L2(copy) { return 2*!!(r&ARITH_t) + 1; }
 D_D2(copy) { return copy_l2(T(l),T(r)); }
 D_P2(copy) {
-  I ll;
+  U ll;
   if (T(r)==R_t) {
     R rl=getR(r); ll=rl;
     if (ll!=rl) { err=strdup("Argument to # is not an integer"); }
@@ -167,27 +167,27 @@ D_P2(copy) {
   del(r);
   if (!err && ll<0) { err=strdup("Argument to # is negative"); }
   if (err) { del(l); return; }
-  I t=T(l), s=t_sizeof(T(l));
+  T t=T(l); U s=t_sizeof(T(l));
   P v=MALLOC(next_pow_2(ll*s)); DO(i,ll) valcpy(v+i*s,P(l),t);
   del(l); setL(p, wrapArray(t, ll, v));
 }
 
 D_P1(iota) {
-  I ll=getCeilZ(l); del(l);
-  I w=(ll<0); if (w) ll=-ll;
-  I c=next_pow_2(ll); DECL_ARR(Z,v,c);
+  Z ll=getCeilZ(l); del(l);
+  B w=(ll<0); if (w) ll=-ll;
+  U c=next_pow_2(ll); DECL_ARR(Z,v,c);
   if (w) { DO(i,ll)v[i]=ll-1-i; } else { DO(i,ll)v[i]=i; }
   setL(p, wrapL(Z_t, c, ll, 0, v));
 }
 D_P2(iota) {
   switch (T(l)) {
     case Z_t: { Z lz=getZ(l), ll=getCeilZ(r)-lz; del(l); del(r);
-                I s=sign(ll); ll*=s; I c=next_pow_2(ll); DECL_ARR(Z,v,c);
+                I s=sign(ll); ll*=s; U c=next_pow_2(ll); DECL_ARR(Z,v,c);
                 DO(i,ll)v[i]=lz+s*i; return setL(p, wrapL(Z_t, c, ll, 0, v));
               }
     case R_t: { R lr=getR(l), llr=getR(r)-lr; del(l); del(r);
                 I s=sign(llr), ll=ceiling(s*llr);
-                I c=next_pow_2(ll); DECL_ARR(R,v,c);
+                U c=next_pow_2(ll); DECL_ARR(R,v,c);
                 DO(i,ll)v[i]=lr+(R)s*i; return setL(p, wrapL(R_t, c, ll, 0, v));
               }
   }
@@ -199,10 +199,10 @@ D_L12(reduce) { return 2 + !!(ll&(L_t|CONST_t)); }
 D_D12(reduce) { return reduce_l12(l,T(ll),T(rr)); }
 D_T1(identity_of) { return E_t; }
 D_P1(identity_of) { del(l); ERR("Identity unknown"); }
-static void reduce_sub(V p, V l, V ll, I i, V v) {
-  I len=L(ll)->l;
+static void reduce_sub(V p, V l, V ll, U i, V v) {
+  U len=L(ll)->l;
   if (len<i) { del(ll); return identity_of_p1(p,l); }
-  T t[3]; t[1]=t[2]=L(ll)->t; I s=t_sizeof(t[1]);
+  T t[3]; t[1]=t[2]=L(ll)->t; U s=t_sizeof(t[1]);
   get(ll); V vt;
   if (i) v=listV_ats(ll,0,s); else t[1]=T(v); v=cpy1(v);
   for(;i<len&&(!err);i++) {
@@ -217,13 +217,13 @@ static void reduce_sub(V p, V l, V ll, I i, V v) {
       a->o=ai[0]=REG_RES; ai[1]=get_reg(a->u|u|1<<ai[0]);
       RegM pop=start_A(a,2,u);
       ASM(a, PUSH,REG_ARG2,-);
-      asm_load(a,t[0],ai[0],REG_ARG2); I label=a->l;
+      asm_load(a,t[0],ai[0],REG_ARG2); U label=a->l;
       asm_load(a,t[1],ai[1],REG_ARG0);
       apply_A_full(a,l,2,t);
       ASM(a, ADDI1,REG_ARG0,s);
       ASM(a, CMP,REG_ARG0,REG_ARG1);
       asm_jump(a, C_B, label);
-      I c=L(ll)->c, o=L(ll)->o;
+      U c=L(ll)->c, o=L(ll)->o;
       P lp=LP(L(ll)), end = lp+s*((o+len-1)%c+1);
       if (o+len > c && o+i < c) {
         ASM(a, MOV,REG_ARG2,REG_ARG1);
@@ -254,7 +254,7 @@ D_P12(reduce) {
 }
 
 D_P1(reverse) {
-  get(l); L v=L(l); I n=v->l; T t=v->t;
+  get(l); L v=L(l); U n=v->l; T t=v->t;
   if (!PURE(t)) {
     DO(i,n/2) {
       V vt=LIST_AT(v,i); LIST_AT(v,i)=LIST_AT(v,n-i-1);
@@ -262,7 +262,7 @@ D_P1(reverse) {
     }
   } else {
 #define AT(i) LIST_PTR_ATS(v,i,s)
-    I s=t_sizeof(t); P p=MALLOC(s);
+    U s=t_sizeof(t); P p=MALLOC(s);
     DO(i,n/2) {
       memcpy(p, AT(i), s); memcpy(AT(i), AT(n-i-1), s);
       memcpy(AT(n-i-1), p, s);
@@ -283,7 +283,7 @@ D_P2(rotate) {
   }
   del(r);
   get(l); L v=L(l); setL(p,v);
-  I n=v->l, o=v->o, c=v->c, a, b; // Move rot elts from a to b
+  U n=v->l, o=v->o, c=v->c, a, b; // Move rot elts from a to b
   if (n==c) { v->o=(o+rot)%c; return; }
   rot %= n;
   if (rot <= n/2) { a=o; b=n; o=rot; }
@@ -291,7 +291,7 @@ D_P2(rotate) {
   b+=a; if (b>=c) b-=c;
   o+=a; if (o>=c) o-=c; v->o=o;
 
-  I s=t_sizeof(v->t); rot*=s; a*=s; b*=s; c*=s;
+  U s=t_sizeof(v->t); rot*=s; a*=s; b*=s; c*=s;
   P q=v->p, stop=q+rot, s1=q+c-a, s2=q+c-b;
   if (s1<stop) {
     if (s2<s1) { memmove(q+b,q+a,s2-q); q=s2; s2=stop; b-=c; }
@@ -301,9 +301,9 @@ D_P2(rotate) {
   memmove(q+b,q+a,stop-q);
 }
 
-I count_indices(L l, I n, I* over) {
+U count_indices(L l, U n, U* over) {
   if (l->t!=Z_t) {ERR("Argument must be a list of integers")0;}
-  I o=0, s=0; DO(i,n) {
+  U o=0, s=0; DO(i,n) {
     Z e=LIST_AT_T(Z,l,i);
     if (e<0) {ERR("Numbers in argument must not be negative")0;}
     s+=e; if (s>++o) o=s;
@@ -312,18 +312,18 @@ I count_indices(L l, I n, I* over) {
 }
 
 D_P1(indices) {
-  L il=L(l); I n=il->l;
-  I o=0, s=count_indices(il, n, &o); if (err) { del(l); return; }
-  I c=il->c, oi=il->o, ie=min(c-oi,n);
+  L il=L(l); U n=il->l;
+  U o=0, s=count_indices(il, n, &o); if (err) { del(l); return; }
+  U c=il->c, oi=il->o, ie=min(c-oi,n);
   Z *v0=LP(il), *v=v0+oi, *d, *ds=0;
   if (il->r==1 && o<=c-n) {
     ds=v0+c; d=v0 + (il->o = o>oi ? oi+n : c>=oi+n ? 0 : oi+n-c);
     il->l=s; setL(p, il);
   } else {
-    I rc=next_pow_2(s); d=MALLOC(rc*sizeof(Z));
+    U rc=next_pow_2(s); d=MALLOC(rc*sizeof(Z));
     il->r--; setL(p, wrapL(Z_t, rc, s, 0, d));
   }
-  I i=0; Z *de=d;
+  U i=0; Z *de=d;
   do {
     for (; i<ie; i++) {
       de+=v[i]; while (d<de) { *d++=i; if(d==ds){d-=c;de-=c;} }
@@ -334,23 +334,23 @@ D_P1(indices) {
 }
 
 D_P2(replicate) {
-  L il=L(r), ll=L(l); I n=il->l;
+  L il=L(r), ll=L(l); U n=il->l;
   if (n!=ll->l) { del(l); del(r); ERR("Lengths must match"); }
-  I o=0, s=count_indices(il, n, &o); if (err) { del(l); del(r); return; }
-  T t=ll->t; I ls=t_sizeof(t), c=ll->c;
+  U o=0, s=count_indices(il, n, &o); if (err) { del(l); del(r); return; }
+  T t=ll->t; U ls=t_sizeof(t), c=ll->c;
   P l0=ll->p, src=l0+ll->o*ls, dst, stop=l0+c*ls;
   if (ll->r==1 && o<=c-n) {
-    I oi=ll->o;
+    U oi=ll->o;
     dst=l0+ls*(ll->o = o>oi ? oi+n : c>=oi+n ? 0 : oi+n-c);
     ll->l=s; setL(p, ll);
   } else {
-    I rc=next_pow_2(s); dst=MALLOC(rc*ls);
+    U rc=next_pow_2(s); dst=MALLOC(rc*ls);
     ll->r--; setL(p, wrapL(t, rc, s, 0, dst));
   }
-  Z *v=LP(il)+il->o; I i=0, ie=min(il->c-il->o,n);
+  Z *v=LP(il)+il->o; U i=0, ie=min(il->c-il->o,n);
   do {
     for (; i<ie; i++) {
-      for (I j=v[i]; j--; ) {
+      for (U j=v[i]; j--; ) {
         memcpy(dst, src, ls);
         dst+=ls; if(dst==stop)dst=l0;
       }
