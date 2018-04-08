@@ -29,8 +29,8 @@
 // Same, for array v-o
 #define REALLOC_OFF(v, o, l) (v) = (o) + realloc((v)-(o), (l)*sizeof(*v))
 
-I t_sizeof(T);   // Return the size of values of the input type.
-I next_pow_2(I); // Return the smallest power of two >= the input.
+U t_sizeof(T);   // Return the size of values of the input type.
+U next_pow_2(U); // Return the smallest power of two >= the input.
 // Test whether t is a pure power of two.
 #define PURE(t)   (!((t)&((t)-1)))
 // Test whether t is not a pure power of two.
@@ -51,15 +51,15 @@ I next_pow_2(I); // Return the smallest power of two >= the input.
 #define P(v) ((v).p)
 // Return the reference count of v. Segfaults if (!(T(v)&COMP_t)).
 // Should probably not be used outside of mem.c.
-#define REF(v) (**(I**)P(v))
+#define REF(v) (**(U**)P(v))
 
 // Put type and pointer together to construct an output of type V.
 V TP(T, P);
 
 // A constructor for each composite type.
-O wrapO(V, I, V*);
-F wrapF(V, I, V*);
-L wrapL(T, I c, I l, I o, P);
+O wrapO(V, U, V*);
+F wrapF(V, U, V*);
+L wrapL(T, U c, U l, U o, P);
 
 // Functions (V newT(T t)) and (void setT(V v,T t)) for each type T
 // newT creates a V value to wrap t.
@@ -71,8 +71,8 @@ ON_TYPES(ALL, NEW);
 #undef NEW
 
 // Some common cases of newT
-L wrapArray(T t, I l, P p); // Create list with l elements p[i] of type t.
-L wrapList(I l, V* v); // Create list with l V-type elements v.
+L wrapArray(T t, U l, P p); // Create list with l elements p[i] of type t.
+L wrapList(U l, V* v); // Create list with l V-type elements v.
 L wrapStr(Str); // Turn a C string into an array of characters.
 V makeStr(Str); // Same, but wraps into a V value.
 
@@ -98,7 +98,7 @@ void get(V); // Ensure that the input is safely modifiable. Do not copy.
 
 // For loop shortcuts
 #define DO(var, max) for(I var=0; var<max; var++)
-#define DDO(var, max) I var; for(var=0; var<max; var++)
+#define DDO(var, max) U var; for(var=0; var<max; var++)
 
 // Arithmetic utilities
 // Arguments must not have side effects
@@ -130,7 +130,7 @@ R getR(V);  // Input must have type R or Z. Coerce to R.
 #define LIST_PTR_AT(l, i) (LP(l)+t_sizeof((l)->t)*(((i)+(l)->o)%(l)->c))
 // Like LIST_PTR_AT, but avoids recomputing t_sizeof is size s is known.
 #define LIST_PTR_ATS(l, i, s) (LP(l)+(s)*(((i)+(l)->o)%(l)->c))
-V list_at(L, I);      // Return the list value at the given index.
-V list_ats(L, I, I);  // Same, if size (last argument) is known.
-V listV_at(V, I);     // Like list_at for V argument
-V listV_ats(V, I, I); // Like list_ats for V argument
+V list_at(L, U);      // Return the list value at the given index.
+V list_ats(L, U, U);  // Same, if size (last argument) is known.
+V listV_at(V, U);     // Like list_at for V argument
+V listV_ats(V, U, U); // Like list_ats for V argument
