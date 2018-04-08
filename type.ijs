@@ -46,6 +46,7 @@ preamble =: 0 :0
 // Generated; see type.ijs
 
 #include <stdlib.h>
+#include <stdint.h>
 
 typedef int I;
 typedef void* P;
