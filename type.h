@@ -6,9 +6,9 @@
 typedef intptr_t I;
 typedef void* P;
 typedef char* Str;
-typedef uintptr_t UI;
+typedef uintptr_t U;
 
-typedef I T;
+typedef U T;
 
 typedef struct { T t; P p; } V;
 
@@ -17,14 +17,14 @@ typedef struct { T t; P p; } V;
 typedef uint8_t B;
 typedef int8_t C;
 typedef Str E;
-typedef struct { I r; V f; I l; V* x; } * O;
-typedef struct { I r; V f; I l; V* x; } * F;
+typedef struct { U r; V f; U l; V* x; } * O;
+typedef struct { U r; V f; U l; V* x; } * F;
 typedef Str N;
 typedef Str Q;
 typedef int64_t Z;
 typedef double R;
 typedef struct { R a; R b; } K;
-typedef struct { I r; T t; I c; I l; I o; P p; } * L;
+typedef struct { U r; T t; U c; U l; U o; P p; } * L;
 
 #define B_t           1 //Builtin
 #define C_t           2 //Char

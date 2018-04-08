@@ -67,10 +67,10 @@ typedef unsigned short RegM;
 #define ADDI4(O,I) {REX8(O,0),0x81,A_REG(O,0),BYTES4(I)}
 #define SUBI4(O,I) {REX8(O,0),0x81,A_REG(O,5),BYTES4(I)}
 
-#define ADDI1(O,I) {REX8(O,0),0x83,A_REG(O,0),(UI)(I)}
-#define SUBI1(O,I) {REX8(O,0),0x83,A_REG(O,5),(UI)(I)}
-#define SHLI1(O,I) {REX8(O,0),0xC1,A_REG(O,4),(UI)(I)}
-#define SHRI1(O,I) {REX8(O,0),0xC1,A_REG(O,5),(UI)(I)}
+#define ADDI1(O,I) {REX8(O,0),0x83,A_REG(O,0),(U)(I)}
+#define SUBI1(O,I) {REX8(O,0),0x83,A_REG(O,5),(U)(I)}
+#define SHLI1(O,I) {REX8(O,0),0xC1,A_REG(O,4),(U)(I)}
+#define SHRI1(O,I) {REX8(O,0),0xC1,A_REG(O,5),(U)(I)}
 
 #define XOR4(O,I)  {REX4(O,I),0x31,A_REG(O,I)}
 

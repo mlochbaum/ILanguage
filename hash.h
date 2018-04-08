@@ -1,5 +1,5 @@
-UI hash_string(Str);
-UI hash(V);
+U hash_string(Str);
+U hash(V);
 
 #define _SET_HASH_TABLE_H_AS(K, V, name, L, M) \
   typedef struct L { K k; V v; struct L* n; } *L;                        \

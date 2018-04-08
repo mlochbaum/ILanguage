@@ -23,14 +23,14 @@ typedefs =: lines 0 :0
 B uint8_t
 C int8_t
 E Str
-O struct { I r; V f; I l; V* x; } *
-F struct { I r; V f; I l; V* x; } *
+O struct { U r; V f; U l; V* x; } *
+F struct { U r; V f; U l; V* x; } *
 N Str
 Q Str
 Z int64_t
 R double
 K struct { R a; R b; }
-L struct { I r; T t; I c; I l; I o; P p; } *
+L struct { U r; T t; U c; U l; U o; P p; } *
 )
 
 classes =:      'const arith func  comp'
@@ -51,9 +51,9 @@ preamble =: 0 :0
 typedef intptr_t I;
 typedef void* P;
 typedef char* Str;
-typedef uintptr_t UI;
+typedef uintptr_t U;
 
-typedef I T;
+typedef U T;
 
 typedef struct { T t; P p; } V;
 

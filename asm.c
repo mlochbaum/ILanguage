@@ -382,7 +382,7 @@ void asm_write_at(A a, T t, Reg o, Reg i, Reg e) {
 void a_RfromV(A a, Reg o, Reg i) {
   V*v=NULL;
   ASM(a, CMP4_MI,i,R_t);
-  ASM3(a, MOV_RM,i,i,(UI)(Z)&P(*v));
+  ASM3(a, MOV_RM,i,i,(U)(Z)&P(*v));
   ASM(a, MOVSD_RM0,o,i);
   ASM(a, JE,0,-); I j=a->l;
   ASM(a, MOVQ,i,o);
