@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef int I;
+typedef intptr_t I;
 typedef void* P;
 typedef char* Str;
-typedef unsigned int UI;
+typedef uintptr_t UI;
 
 typedef I T;
 
@@ -14,8 +14,8 @@ typedef struct { T t; P p; } V;
 
 #define ON_TYPES(t, f) ON_##t##_TYPES(f)
 
-typedef unsigned char B;
-typedef char C;
+typedef uint8_t B;
+typedef int8_t C;
 typedef Str E;
 typedef struct { I r; V f; I l; V* x; } * O;
 typedef struct { I r; V f; I l; V* x; } * F;

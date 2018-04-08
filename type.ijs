@@ -20,8 +20,8 @@ Real
 List
 )
 typedefs =: lines 0 :0
-B unsigned char
-C char
+B uint8_t
+C int8_t
 E Str
 O struct { I r; V f; I l; V* x; } *
 F struct { I r; V f; I l; V* x; } *
@@ -48,10 +48,10 @@ preamble =: 0 :0
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef int I;
+typedef intptr_t I;
 typedef void* P;
 typedef char* Str;
-typedef unsigned int UI;
+typedef uintptr_t UI;
 
 typedef I T;
 
