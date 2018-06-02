@@ -4,7 +4,7 @@
 
 Name names;
 
-I equalsStr(Str l, Str r) { return 0==strcmp(l,r); }
+B equalsStr(Str l, Str r) { return 0==strcmp(l,r); }
 SET_HASH_TABLE(Str, V, hash_string, equalsStr, FREE, ddel, ((V){0,0}));
 
 D_L2(set) { return 2 + !!(l&N_t); }

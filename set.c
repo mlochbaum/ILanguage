@@ -8,13 +8,13 @@ B match(V l, V r) {
     default: return 0==memcmp(l.p, r.p, t_sizeof(t));
     case E_t: case N_t: case Q_t: return 0==strcmp(E(l), E(r));
     case O_t: case F_t: {
-      O ol=O(l), or=O(r); I len=ol->l;
+      O ol=O(l), or=O(r); U len=ol->l;
       if (len!=or->l || !match(ol->f,or->f)) return 0;
       DO(i,len) { if (!match(ol->x[i], or->x[i])) return 0; }
       return 1;
     }
     case L_t: {
-      L ll=L(l), lr=L(r); I n=ll->l; T tl=ll->t, tr=lr->t;
+      L ll=L(l), lr=L(r); U n=ll->l; T tl=ll->t, tr=lr->t;
       if (n!=lr->l || PURE(tl)!=PURE(tr)) return 0;
       if (PURE(tl)) {
         if (tl!=tr) return 0;

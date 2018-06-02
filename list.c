@@ -157,7 +157,7 @@ D_P1(length) { U n; if (T(l)&L_t) n=L(l)->l; else n=1; del(l); setZ(p,n); }
 D_L2(copy) { return 2*!!(r&ARITH_t) + 1; }
 D_D2(copy) { return copy_l2(T(l),T(r)); }
 D_P2(copy) {
-  U ll;
+  Z ll;
   if (T(r)==R_t) {
     R rl=getR(r); ll=rl;
     if (ll!=rl) { err=strdup("Argument to # is not an integer"); }
@@ -167,14 +167,14 @@ D_P2(copy) {
   del(r);
   if (!err && ll<0) { err=strdup("Argument to # is negative"); }
   if (err) { del(l); return; }
-  T t=T(l); U s=t_sizeof(T(l));
-  P v=MALLOC(next_pow_2(ll*s)); DO(i,ll) valcpy(v+i*s,P(l),t);
-  del(l); setL(p, wrapArray(t, ll, v));
+  T t=T(l); U s=t_sizeof(T(l)), lu=ll;
+  P v=MALLOC(next_pow_2(lu*s)); DO(i,lu) valcpy(v+i*s,P(l),t);
+  del(l); setL(p, wrapArray(t, lu, v));
 }
 
 D_P1(iota) {
-  Z ll=getCeilZ(l); del(l);
-  B w=(ll<0); if (w) ll=-ll;
+  Z lz=getCeilZ(l); del(l);
+  B w=(lz<0); U ll=w?-lz:lz;
   U c=next_pow_2(ll); DECL_ARR(Z,v,c);
   if (w) { DO(i,ll)v[i]=ll-1-i; } else { DO(i,ll)v[i]=i; }
   setL(p, wrapL(Z_t, c, ll, 0, v));
@@ -182,11 +182,11 @@ D_P1(iota) {
 D_P2(iota) {
   switch (T(l)) {
     case Z_t: { Z lz=getZ(l), ll=getCeilZ(r)-lz; del(l); del(r);
-                I s=sign(ll); ll*=s; U c=next_pow_2(ll); DECL_ARR(Z,v,c);
-                DO(i,ll)v[i]=lz+s*i; return setL(p, wrapL(Z_t, c, ll, 0, v));
+                I s=sign(ll); U lu=ll*s; U c=next_pow_2(lu); DECL_ARR(Z,v,c);
+                DO(i,lu)v[i]=lz+s*i; return setL(p, wrapL(Z_t, c, lu, 0, v));
               }
     case R_t: { R lr=getR(l), llr=getR(r)-lr; del(l); del(r);
-                I s=sign(llr), ll=ceiling(s*llr);
+                I s=sign(llr); U ll=ceiling(s*llr);
                 U c=next_pow_2(ll); DECL_ARR(R,v,c);
                 DO(i,ll)v[i]=lr+(R)s*i; return setL(p, wrapL(R_t, c, ll, 0, v));
               }
@@ -285,14 +285,14 @@ D_P2(rotate) {
   get(l); L v=L(l); setL(p,v);
   U n=v->l, o=v->o, c=v->c, a, b; // Move rot elts from a to b
   if (n==c) { v->o=(o+rot)%c; return; }
-  rot %= n;
-  if (rot <= n/2) { a=o; b=n; o=rot; }
-  else { a=o+rot; if(a>=c)a-=c; rot=n-rot; o=b=c-n; }
+  U rtu = rot%n;
+  if (rtu <= n/2) { a=o; b=n; o=rtu; }
+  else { a=o+rtu; if(a>=c)a-=c; rtu=n-rtu; o=b=c-n; }
   b+=a; if (b>=c) b-=c;
   o+=a; if (o>=c) o-=c; v->o=o;
 
-  U s=t_sizeof(v->t); rot*=s; a*=s; b*=s; c*=s;
-  P q=v->p, stop=q+rot, s1=q+c-a, s2=q+c-b;
+  U s=t_sizeof(v->t); rtu*=s; a*=s; b*=s; c*=s;
+  P q=v->p, stop=q+rtu, s1=q+c-a, s2=q+c-b;
   if (s1<stop) {
     if (s2<s1) { memmove(q+b,q+a,s2-q); q=s2; s2=stop; b-=c; }
     memmove(q+b,q+a,s1-q); q=s1; a-=c;

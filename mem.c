@@ -86,7 +86,7 @@ void ddel(V v) { del(v); FREE(P(v)); }
 
 P arrcpy(P aa, U s, U l, U c, U o) {
   l*=s; c*=s; o*=s; P a=MALLOC(c);
-  memcpy(a,aa+o,min(c,l+o)-o); memcpy(a,aa,max(0,l+o-c));
+  memcpy(a,aa+o,min(c,l+o)-o); memcpy(a,aa,max(0,(I)(l+o-c)));
   return a;
 }
 void mv_P(V p, V v) {

@@ -73,7 +73,7 @@ void builtin_init() {
 }
 
 /////////////// Main definitions ///////////
-void FfromB_P(V p, B b, I n, V* x) {
+void FfromB_P(V p, B b, U n, V* x) {
   DECL_ARR(V,xx,n); DO(i,n) xx[i]=cpy1(x[i]);
   setF(p, wrapF(newB(b),n,xx));
 }
@@ -122,20 +122,20 @@ void apply_P_B2(V p, B b, V* x) {
   } else { FREE_A; } }
   return FfromB_P(p,b,2,x);
 }
-void apply_P_B(V p, B b, I n, V* x) {
+void apply_P_B(V p, B b, U n, V* x) {
   switch (n) {
     case 1: return apply_P_B1(p,b,x);
     case 2: return apply_P_B2(p,b,x);
   }
 }
 
-T apply_R_B(A a, B b, I n, T* x) {
+T apply_R_B(A a, B b, U n, T* x) {
   switch (n) {
     case 1: { R1 f=B_r1[b]; return f ? f(a,x[0]) : 0; }
     case 2: { R2 f=B_r2[b]; return f ? f(a,x[0],x[1]) : 0; }
   }
 }
-void apply_A_B(A a, B b, I n, T* x) {
+void apply_A_B(A a, B b, U n, T* x) {
   switch (n) {
     case 1: { A1 f=B_a1[b]; f(a,x[0]); break; }
     case 2: { A2 f=B_a2[b]; f(a,x[0],x[1]); break; }
@@ -147,7 +147,7 @@ T apply_R12(A a, R12 f, V* x, T* xx) { return f(a, x[0], xx[0], xx[1]); }
 T apply_R21(A a, R21 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0]); }
 T apply_R22(A a, R22 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0], xx[1]); }
 
-T apply_R_FB(A a, F f, I n, T* xx) {
+T apply_R_FB(A a, F f, U n, T* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
   B b=B(f->f); R##yz ff=B_r##yz[b]; \
   return ff ? apply_R##yz(a, ff, f->x, xx) : 0; }
@@ -162,7 +162,7 @@ void apply_A12(A a, A12 f, V* x, T* xx) { return f(a, x[0], xx[0], xx[1]); }
 void apply_A21(A a, A21 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0]); }
 void apply_A22(A a, A22 f, V* x, T* xx) { return f(a, x[0], x[1], xx[0], xx[1]); }
 
-void apply_A_FB(A a, F f, I n, T* xx) {
+void apply_A_FB(A a, F f, U n, T* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
   B b=B(f->f); A##yz ff=B_a##yz[b]; \
   return apply_A##yz(a, ff, f->x, xx); }
@@ -172,7 +172,7 @@ void apply_A_FB(A a, F f, I n, T* xx) {
 #undef LINE1
 }
 
-I dom_B(B b, I n, V* x) {
+U dom_B(B b, U n, V* x) {
   switch (n) {
     case 1: return B_d1[b](x[0]);
     case 2: return B_d2[b](x[0],x[1]);
@@ -186,20 +186,20 @@ T apply_T_B1(B b, T* x) {
 T apply_T_B2(B b, T* x) {
   T2 f=B_t2[b]; if(!f) return F_t; else return f(x[0],x[1]);
 }
-T apply_T_B(B b, I n, T* x) {
+T apply_T_B(B b, U n, T* x) {
   switch (n) {
     case 1: return apply_T_B1(b,x);
     case 2: return apply_T_B2(b,x);
   }
 }
 
-I domu_T_B(B b, I n, T* x) {
+U domu_T_B(B b, U n, T* x) {
   switch (n) {
     case 1: return B_u1[b](x[0]);
     case 2: return B_u2[b](x[0],x[1]);
   }
 }
-I doml_T_B(B b, I n, T* x) {
+U doml_T_B(B b, U n, T* x) {
   switch (n) {
     case 1: return B_l1[b](x[0]);
     case 2: return B_l2[b](x[0],x[1]);
@@ -212,7 +212,7 @@ void apply_P12(V p, P12 f, V* x, V* xx) { return f(p, x[0], xx[0], xx[1]); }
 void apply_P21(V p, P21 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0]); }
 void apply_P22(V p, P22 f, V* x, V* xx) { return f(p, x[0], x[1], xx[0], xx[1]); }
 
-void apply_P_FB(V p, F f, I n, V* xx) {
+void apply_P_FB(V p, F f, U n, V* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
   B b=B(f->f); P##yz ff=B_p##yz[b]; \
   if(!ff) { DO(i,z)del(xx[i]); ERR("Unknown builtin"); } \
@@ -228,7 +228,7 @@ T apply_T12(T12 f, V* x, T* xx) { return f(x[0], xx[0], xx[1]); }
 T apply_T21(T21 f, V* x, T* xx) { return f(x[0], x[1], xx[0]); }
 T apply_T22(T22 f, V* x, T* xx) { return f(x[0], x[1], xx[0], xx[1]); }
 
-T apply_T_FB(F f, I n, T* xx) {
+T apply_T_FB(F f, U n, T* xx) {
 #define LINE1(y,z,yz) case (2*y+z): { \
   B b=B(f->f); T##yz ff=B_t##yz[b]; \
   if(!ff) return E_t; \
@@ -239,7 +239,7 @@ T apply_T_FB(F f, I n, T* xx) {
 #undef LINE1
 }
 
-I dom_FB(F f, I n, V* xx) {
+U dom_FB(F f, U n, V* xx) {
   B b=B(f->f); V* x=f->x;
   switch (10*f->l + n) {
     case 11: return B_d11[b](x[0], xx[0]);
@@ -249,7 +249,7 @@ I dom_FB(F f, I n, V* xx) {
   }
 }
 
-I doml_T_FB(F f, I n, T* xx) {
+U doml_T_FB(F f, U n, T* xx) {
   B b=B(f->f); V* x=f->x;
   switch (10*f->l + n) {
     case 11: return B_l11[b](x[0], xx[0]);
@@ -258,7 +258,7 @@ I doml_T_FB(F f, I n, T* xx) {
     case 22: return B_l22[b](x[0], x[1], xx[0], xx[1]);
   }
 }
-I domu_T_FB(F f, I n, T* xx) {
+U domu_T_FB(F f, U n, T* xx) {
   B b=B(f->f); V* x=f->x;
   switch (10*f->l + n) {
     case 11: return B_u11[b](x[0], xx[0]);

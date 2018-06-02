@@ -24,26 +24,26 @@ typedef void* Asm;
  * modify, or NO_REG_NM to indicate that the callee can choose but not
  * modify.
  */
-typedef struct { Reg* i; Reg o; RegM u; I l; Asm a;
-                 T* ts; I (*ar)[2]; I lc; Reg* cr; Z* cv; } AS;
+typedef struct { Reg* i; Reg o; RegM u; U l; Asm a;
+                 T* ts; U (*ar)[2]; U lc; Reg* cr; Z* cv; } AS;
 typedef AS* A;
 #define MIN_ARR 8 // Minimum length for cr and cv
 
 void init_A(A a);
 // Append register allocation information to a->ar and a->cr
-T apply_R(A a, V f, I n, T* x);
+T apply_R(A a, V f, U n, T* x);
 // Append code for f on the given types to a.
-void apply_A(A a, V f, I n, T* x);
+void apply_A(A a, V f, U n, T* x);
 // Also return the output type (*a->ts after application)
-T apply_A_t(A a, V f, I n, T* x);
+T apply_A_t(A a, V f, U n, T* x);
 
-T apply_R_full(A,V,I,T*);
-RegM start_A(A,I,RegM);
-void apply_A_full(A,V,I,T*);
+T apply_R_full(A,V,U,T*);
+RegM start_A(A,U,RegM);
+void apply_A_full(A,V,U,T*);
 P finish_A(A,RegM); // Returns a function pointer.
 void asm_unmap(A,P);
 
-void request_regs(A, I);
+void request_regs(A, U);
 void request_cv(A, Z);
 Reg use_cr(A);
 
@@ -59,20 +59,20 @@ Reg get_reg_mark(RegM *u, RegM v);
 Reg num_marked(RegM u);
 
 // Get the mask of all input registers.
-RegM input_mask(A,I);
+RegM input_mask(A,U);
 
 // Choose a->i and a->o (ensuring that neither is NO_REG or NO_REG_NM)
-I choose_reg(A); // One input
-I choose_regs(A); // Two inputs
-I choose_regn(A,I); // Multiple inputs
+U choose_reg(A); // One input
+U choose_regs(A); // Two inputs
+U choose_regn(A,U); // Multiple inputs
 
 // Append l bytes of aa to a
-void a_append(A a, I l, Asm aa);
+void a_append(A a, U l, Asm aa);
 // Copy values back from AX to A
 #define UPDATE_A_(A,AX) A->lc=AX.lc; A->ar=AX.ar; A->ts=AX.ts
 #define UPDATE_A(A,AX) A->l=AX.l; A->a=AX.a; UPDATE_A_(A,AX)
 
-void asm_jump(A a, UC cond, I label);
+void asm_jump(A a, UC cond, U label);
 
 void asm_load(A a, T t, Reg o, Reg i);
 void asm_write(A a, T t, Reg o, Reg i);
@@ -119,7 +119,7 @@ typedef struct { RegM p; Reg o; } ProtState;
 
 #define PROTECT_START(U) ProtState prot2 = clear_regs(a,n, U,1)
 
-ProtState clear_regs(A a, I n, RegM u, C start);
+ProtState clear_regs(A a, U n, RegM u, C start);
 void pop_regs_o(A a, RegM pop, Reg o);
 RegM push_regs(A a, RegM u);
 void pop_regs(A a, RegM pop);

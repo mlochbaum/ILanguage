@@ -15,7 +15,7 @@ D_P21(apply) { apply1_P(p,l,ll); }
 
 D_D22(dom) {
   V d=apply2_d(r, cpy(ll), cpy(rr));
-  I dd = T(d)==L_t ? toBool(listV_at(d,0)) + 2*toBool(listV_at(d,1))
+  U dd = T(d)==L_t ? toBool(listV_at(d,0)) + 2*toBool(listV_at(d,1))
                    : 3*toBool(d);
   ddel(d); return dd;
 }

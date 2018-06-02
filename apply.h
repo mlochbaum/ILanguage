@@ -13,35 +13,35 @@ typedef struct {T t; P v;} X;
 #define LIST_X   4 //L
 
 // Apply f to the n arguments x, consuming them. Do not consume f.
-V apply    (V f, I n, V* x);
+V apply    (V f, U n, V* x);
 // Return an integer d so that (d>>i&1) gives whether x[i] is in the
 // domain of f. If some arguments are not in the domain, f will map.
-I dom      (V f, I n, V* x);
+U dom      (V f, U n, V* x);
 // Get the mapclass of the argument.
 X mapclass (V);
 // Map f over arguments x, where d is the domain returned by dom.
 // This consumes each x[i]. Do not delete f.
-V fmap     (V f, I n, V* x, I d);
+V fmap     (V f, U n, V* x, U d);
 
 // None of the _T functions change memory properties.
 // Analogous to apply. Return the possible output types given input types.
-T apply_T    (V, I, T*);
+T apply_T    (V, U, T*);
 // Analogous to dom. Return minimum (doml) or maximum (domu) possible
 // domain given types.
-I doml_T     (V, I, T*);
-I domu_T     (V, I, T*);
+U doml_T     (V, U, T*);
+U domu_T     (V, U, T*);
 // Return possible mapclass types given type.
 T mapclass_T (T);
 // Analogous to fmap, but takes both a lower and upper domain.
 // Currently just calls fmap_TT.
-T fmap_T     (V, I, T*, I, I);
+T fmap_T     (V, U, T*, U, U);
 // Like fmap_TT, but takes only the type of the function.
-T fmap_TT    (T, I, T*, I, I);
+T fmap_TT    (T, U, T*, U, U);
 
 // Return a version of the function specialized for input type
 // The output always has a pure type.
 // Does not consume the argument.
-V apply_S(V, I, T*);
+V apply_S(V, U, T*);
 
 // Global error register for use with apply_P (declared in apply.c)
 extern E err;
@@ -51,9 +51,9 @@ extern E err;
 // Apply a specialized function to arguments. The type of f must be pure.
 // v must have the type returned by apply_T, and an already-allocated
 // pointer. Consumes the arguments.
-void apply_P (V v, V f, I, V*);
+void apply_P (V v, V f, U, V*);
 // Similar, with fmap. The additional argument is the domain.
-void fmap_P  (V v, V f, I, V*, I);
+void fmap_P  (V v, V f, U, V*, U);
 
 // apply.c
 // Shortcuts
@@ -73,11 +73,11 @@ void apply1_P(V, V, V);    // apply_P with one argument.
 void apply2_P(V, V, V, V); // apply_P with two arguments.
 
 // mapclass.c
-I mapclasseq(X, X);  // Test mapclasses for equality
+U mapclasseq(X, X);  // Test mapclasses for equality
 
 // dom.c
-I dom_true(I);  // Domain returning true for all arguments
+U dom_true(U);  // Domain returning true for all arguments
 
 // compose.c
-I toBool(V);   // Consume argument and return a boolean for it.
-I toBoold(V);  // Delete argument and return boolean.
+B toBool(V);   // Consume argument and return a boolean for it.
+B toBoold(V);  // Delete argument and return boolean.
