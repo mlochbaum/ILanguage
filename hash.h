@@ -20,17 +20,19 @@ U hash(V);
 #define _SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, name, L, M, N) \
   M name##new(I l) { l=next_pow_2(l);                                    \
     DECL(M, m); m->l=l; m->n=0; m->v=malloc(l*sizeof(*m->v));            \
-    DDO(i,l) m->v[i]=NULL; return m; }                                   \
+    DO(i,l) m->v[i]=NULL; return m; }                                    \
   void name##freeL(L l) { freeK(l->k); freeV(l->v); FREE(l); }           \
   M name##resize(M m, I l) { M mm=name##new(l);                          \
-    DDO(i,l) { L n=m->v[i]; while(n){                                    \
+    DO(i,l) { L n=m->v[i]; while(n){                                     \
       name##set(mm, n->k, n->v); L nn=n; n=n->n; name##freeL(nn);        \
     } } mm->l=l; mm->n=m->n; FREE(m->v); FREE(m); return mm; }           \
   void name##set(M m, K k, V v) {                                        \
-    if (m->n==m->l) m=name##resize(m, m->l*2);                           \
+    if (m->n++==m->l) m=name##resize(m, m->l*2);                         \
     I i=hash(k)%m->l; L n=m->v[i];                                       \
-    DECL(L, l); l->k=k; l->v=v; l->n=n; m->v[i]=l; }                     \
-  void name##free(M m) { DDO(i,m->l){ L n=m->v[i];                       \
+    for (L nn=n; nn; nn=nn->n) if(equals(k,nn->k)) {                     \
+      freeK(k); freeV(nn->v); nn->v=v; m->n--; return;                   \
+    } DECL(L, l); l->k=k; l->v=v; l->n=n; m->v[i]=l; }                   \
+  void name##free(M m) { DO(i,m->l){ L n=m->v[i];                        \
     while(n){ L nn=n; n=n->n; name##freeL(nn); } } FREE(m->v); FREE(m); }\
   V name##get(M m, K k) { L n=m->v[hash(k)%m->l];                        \
     while(n){if(equals(k,n->k))return n->v; else n=n->n;} return (N); }  \
@@ -46,7 +48,3 @@ U hash(V);
       name##_HashLink, name##_HashMap, N)
 #define SET_HASH_TABLE(K, V, hash, equals, freeK, freeV, N) \
   SET_HASH_TABLE_AS(K, V, hash, equals, freeK, freeV, K##V, N)
-
-// TODO complete equality testing
-// I equalsV(V l, V r) { return compare_arith(l,r)==0; }
-// SET_HASH_TABLE(V, V, hash, equalsV, del, del)
