@@ -12,10 +12,10 @@ post =: 0 : 0
 )
 
 chart =: ;:;._2 ]0 : 0
-L  I     T
-U  I     T
+L  U     T
+U  U     T
 T  T     T
-D  I
+D  U
 P  void  P
 R  T     A
 A  void  A
