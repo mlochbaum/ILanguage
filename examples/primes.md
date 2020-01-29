@@ -137,13 +137,11 @@ computation.
 
 In action:
 ```
-100 . 'sieve' . #.~.fH(#.i)o(,.r)
+100 . 'sieve' . \
  2;3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97
-200000 . 'sieve' . #.~.fH(#.i)o(,.r)}10000
+200000 . 'sieve' . \}10000
 104743
 ```
-here `#.~.fH(#.i)o(,.r)` turns a binary mask into a list of indices.
-There will probably be a better way to do that eventually.
 
 To summarize, we can (efficiently!) get a mask of all the primes up to `n`
 with `n.'sieve'` using the following definitions:
