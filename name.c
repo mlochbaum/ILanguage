@@ -2,6 +2,8 @@
 #include "builtin.h"
 #include "name.h"
 
+Name names;
+
 I equalsStr(Str l, Str r) { return 0==strcmp(l,r); }
 SET_HASH_TABLE(Str, V, hash_string, equalsStr, FREE, ddel, ((V){0,0}));
 
