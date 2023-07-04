@@ -5,4 +5,4 @@ SET_HASH_TABLE_H(Str, V);
 
 typedef StrV_HashMap Name;
 
-Name names;
+extern Name names;
